@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'main',
     'usuarios_app'
     
+    'panel',
 ]
 
 MIDDLEWARE = [

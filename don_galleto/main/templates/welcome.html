@@ -1,5 +1,54 @@
 {% extends "main.html" %}
 {% load static %}
 {% block content %}
-    <h1>Bienvenidos a don chaqueto</h1>
+<div class="container-fluid py-2">
+    <div class="card text-bg-dark">
+        <img src="{% static 'img/fondo_galletas.jpg' %}" class="card-img" alt="..." style="object-fit: cover; height: 600px; object-position: center bottom;">
+      
+        <div class="card-img-overlay">
+          <h5 class="card-title fs-2">¡Bienvenidos a Don Galleto! 🍪✨</h5>
+          <p class="card-text">
+            En Don Galleto, cada galleta es una obra maestra horneada con amor y los mejores ingredientes. Desde clásicos irresistibles hasta creaciones únicas,
+             estamos aquí para endulzar tus momentos y hacer que cada bocado sea una experiencia inolvidable.
+        </p>
+          <p class="card-text">- Don Galleto -</p>
+        </div>
+      </div>
+      <div class="container-fluid py-2 p-0">
+        <div class="row g-2">
+            <div class="col-sm-6">
+              <div class="card text-bg-primary">
+                <div class="card-body">
+                  <h5 class="card-title">🍪 Recetas artesanales:</h5>
+                  <p class="card-text">Cada galleta es hecha a mano, cuidando cada detalle para garantizar su sabor.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="card text-bg-primary">
+                <div class="card-body">
+                  <h5 class="card-title">🌱 Ingredientes naturales:</h5>
+                  <p class="card-text">Usamos solo lo mejor, desde mantequilla de primera calidad hasta chocolate premium.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="card text-bg-primary">
+                <div class="card-body">
+                  <h5 class="card-title">🎨 Variedad creativa:</h5>
+                  <p class="card-text">Explora nuestras galletas clásicas y ediciones especiales para cada temporada.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="card text-bg-primary">
+                <div class="card-body">
+                  <h5 class="card-title">💸 Ventas rápidas:</h5>
+                  <p class="card-text">Recibe tus galletas frescas y recién horneadas.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+</div>
 {% endblock content %}

@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.base import TemplateView
-from django.views.generic.base import TemplateView
+from django.views.generic.base import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 from . import forms
 from clientes.models import Cliente
+from django.contrib.auth.models import User
 
 # Create your views here.
 class clientesList(TemplateView):
@@ -40,3 +41,21 @@ class ClienteEditarView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+    
+class ClienteEliminarView(View):
+    def post(self, request, *args, **kwargs):
+        user = get_object_or_404(User, id=self.kwargs['id'])
+
+        user.is_active = False
+        user.save()
+        
+        return redirect('clientes_crud')
+
+class ClienteActivarView(View):
+    def post(self, request, *args, **kwargs):
+        user = get_object_or_404(User, id=self.kwargs['id'])
+
+        user.is_active = True
+        user.save()
+        
+        return redirect('clientes_crud')

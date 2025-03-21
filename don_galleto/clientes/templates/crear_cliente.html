@@ -1,0 +1,21 @@
+{% extends "panel.html" %}
+
+{% load static %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+        <div class="container w-50 p-4 border mt-5">
+            <div class="text-center">
+                <h2>Crear cliente</h2>
+                <p class="text-secondary">Ingrese los datos para crear un cliente</p>
+            </div>
+            <hr/>
+            {% csrf_token %}
+            {{form.as_p}}
+            {% for error in field.error%}
+                <li>{{error}}</li>
+            {% endfor %}
+            <button class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+{% endblock content %}

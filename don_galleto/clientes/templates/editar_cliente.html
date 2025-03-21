@@ -1,0 +1,14 @@
+{% extends "panel.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-2">
+    <form method="post" enctype="multipart/form-data">
+        <div>
+            {% csrf_token %}
+            {{form.as_p}}
+            <button type="submit" class="btn btn-primary">Editar Cliente</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

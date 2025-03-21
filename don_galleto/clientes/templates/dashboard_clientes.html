@@ -3,6 +3,11 @@
 {% load static %}
 
 {% block content %}
+<header class="header">
+  <div class="d-flex">
+    <a class="btn btn-outline-primary" href="{% url 'crear_cliente' %}">Crear Cliente <i class="bi bi-person-plus"></i></a>
+  </div>
+</header>
 <table class="table table">
     <thead>
         <tr>
@@ -13,61 +18,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="align-middle">
-          <th scope="row">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-warning">Editar</button>
-                <button type="button" class="btn btn-danger">Eliminar</button>
-              </div>
-          </th>
-          <td>Juan</td>
-          <td>correo@correo.com</td>
-          <td>Activo</td>
-        </tr>
-        <tr class="align-middle">
-          <th scope="row">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-warning">Editar</button>
-                <button type="button" class="btn btn-danger">Eliminar</button>
-              </div>
-          </th>
-          <td>Juan</td>
-          <td>correo@correo.com</td>
-          <td>Activo</td>
-        </tr>
-        <tr class="align-middle">
-          <th scope="row">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-warning">Editar</button>
-                <button type="button" class="btn btn-danger">Eliminar</button>
-              </div>
-          </th>
-          <td>Juan</td>
-          <td>correo@correo.com</td>
-          <td>Activo</td>
-        </tr>
-        <tr class="align-middle">
-          <th scope="row">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-warning">Editar</button>
-                <button type="button" class="btn btn-danger">Eliminar</button>
-              </div>
-          </th>
-          <td>Juan</td>
-          <td>correo@correo.com</td>
-          <td>Activo</td>
-        </tr>
-        <tr class="align-middle">
-          <th scope="row">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-warning">Editar</button>
-                <button type="button" class="btn btn-danger">Eliminar</button>
-              </div>
-          </th>
-          <td>Juan</td>
-          <td>correo@correo.com</td>
-          <td>Activo</td>
-        </tr>
+        {% for item in lista %}
+          <tr class="align-middle">
+            <th scope="row">
+              <div class="btn-group" role="group" aria-label="Basic example">
+                  <a class="btn btn-warning btn-sm" href="{% url 'editar_cliente' item.user.id %}"><i class="bi bi-pencil"></i></a>
+                  <a class="btn btn-danger btn-sm" href=""><i class="bi bi-x-octagon"></i></a>
+                </div>
+            </th>
+            <td>{{item.user.username}}</td>
+            <td>{{item.user.email}}</td>
+            <td>
+              <span class="badge text-bg-{% if item.user.is_active %}primary{% else %}secondary{% endif %}">
+                  {% if item.user.is_active %}Activo{% else %}Inactivo{% endif %}
+              </span>
+            </td>
+          </tr>
+        {% endfor %}
       </tbody>
 </table>
 {% endblock content %}

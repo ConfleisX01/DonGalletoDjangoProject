@@ -5,5 +5,6 @@ from panel.views import panelIndex
 
 urlpatterns = [
     path('', panelIndex, name='panel'),
-    path('administracion/', include('clientes.urls'))
+    path('administracion/', include('clientes.urls')),
+    path('inventarios/', include('inventarios.urls')),
 ]

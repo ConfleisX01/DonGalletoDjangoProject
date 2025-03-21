@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'main',
     'panel',
     'clientes',
+    'inventarios',
 ]
 
 MIDDLEWARE = [

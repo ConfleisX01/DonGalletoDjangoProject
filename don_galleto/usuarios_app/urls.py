@@ -7,6 +7,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('lista-usuarios/', listaUsuariosAdmin.as_view(), name='lista_usuarios'),
-    path('crear-usuarios/', crearUsuario.as_view(), name='creaar_usuarios'),
+    path('crear-usuarios/', crearUsuario.as_view(), name='crear_usuarios'),
     path('editar-usuarios/<int:usuario_id>', editarUsuario.as_view(), name='editar_usuarios'),
 ]

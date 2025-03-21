@@ -1,32 +1,57 @@
-{% extends "base.html" %}
+{% extends "main.html" %}
 
 {% block content %}
     <div>
-        <h1>Lista de usuarios<h1>
-    </div>
-    <div>
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Correo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
+        <h1>Lista de administradores</h1>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ usuario.first_name }}</td>
-                    <td>{{ usuario.last_name }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>
-                        <a href="{% url 'editar_usuario' usuario.id %}">Editar</a>
-                        <a href="{% url 'eliminar_usuario' usuario.id %}">Eliminar</a>
-                    </td>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                    <th>Acciones</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.first_name }}</td>
+                        <td>{{ usuario.last_name }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>
+                            <a>Editar</a>
+                            <a>Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
     <div>
+        <h1>Lista de usuarios</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.first_name }}</td>
+                        <td>{{ usuario.last_name }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>
+                            <a>Editar</a>
+                            <a>Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock content %}

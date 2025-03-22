@@ -1,0 +1,87 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-white text-center">
+                    <h2 class="mb-0">Agregar Usuario</h2>
+                </div>
+                <div class="container p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>⚠️ Error en el formulario:</strong>
+                            <ul class="mt-2 mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li><strong>{{ field|title }}</strong>: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Primera columna -->
+                            <div class="col-md-6">
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label fw-bold">Nombres</label><br>
+                                    {{ form.first_name }}<br>
+                                </div>
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label fw-bold">Apellidos</label><br>
+                                    {{ form.last_name }}<br>
+                                </div>
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">Correo electrónico</label><br>
+                                    {{ form.email }}<br>
+                                </div>
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.telefono.id_for_label }}" class="form-label fw-bold">Teléfono</label><br>
+                                    {{ form.telefono }}<br>
+                                </div>
+                            </div>
+
+                            <!-- Segunda columna -->
+                            <div class="col-md-6">
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">Nombre de usuario</label><br>
+                                    {{ form.username }}<br>
+                                </div>
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label fw-bold">Contraseña</label><br>
+                                    {{ form.password }}<br>
+                                </div>
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.password2.id_for_label }}" class="form-label fw-bold">Confirmar Contraseña</label><br>
+                                    {{ form.password2 }}<br>
+                                </div>
+                                <div class="mb-3 form-group">
+                                    <label for="{{ form.rol.id_for_label }}" class="form-label fw-bold">Rol</label><br>
+                                    {{ form.rol }}<br>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de envío -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark btn-lg">
+                                <i class="fas fa-user-plus"></i> Agregar Usuario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Asegúrate de incluir FontAwesome para los iconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% endblock content %}

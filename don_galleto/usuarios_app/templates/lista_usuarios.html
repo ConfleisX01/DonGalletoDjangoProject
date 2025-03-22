@@ -1,0 +1,137 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Tarjeta de Administradores -->
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="mb-0">Lista de Administradores</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" id="searchAdmin" class="form-control" placeholder="Buscar en administradores...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Correo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTable">
+                                {% for usuario in admin %}
+                                <tr>
+                                    <td>{{ usuario.first_name }}</td>
+                                    <td>{{ usuario.last_name }}</td>
+                                    <td>{{ usuario.email }}</td>
+                                    <td>
+                                        <a href="editar_usuarios" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay administradores registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Usuarios -->
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-success text-white text-center">
+                    <h2 class="mb-0">Lista de Usuarios</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" id="searchUser" class="form-control" placeholder="Buscar en usuarios...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Correo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTable">
+                                {% for usuario in usuarios %}
+                                <tr>
+                                    <td>{{ usuario.first_name }}</td>
+                                    <td>{{ usuario.last_name }}</td>
+                                    <td>{{ usuario.email }}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay usuarios registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script>
+    document.getElementById('searchAdmin').addEventListener('keyup', function() {
+        var searchValue = this.value.toLowerCase();
+        var rows = document.querySelectorAll('#adminTable tr');
+        rows.forEach(function(row) {
+            var firstName = row.cells[0].textContent.toLowerCase();
+            var lastName = row.cells[1].textContent.toLowerCase();
+            var email = row.cells[2].textContent.toLowerCase();
+            if (firstName.includes(searchValue) || lastName.includes(searchValue) || email.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    document.getElementById('searchUser').addEventListener('keyup', function() {
+        var searchValue = this.value.toLowerCase();
+        var rows = document.querySelectorAll('#userTable tr');
+        rows.forEach(function(row) {
+            var firstName = row.cells[0].textContent.toLowerCase();
+            var lastName = row.cells[1].textContent.toLowerCase();
+            var email = row.cells[2].textContent.toLowerCase();
+            if (firstName.includes(searchValue) || lastName.includes(searchValue) || email.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

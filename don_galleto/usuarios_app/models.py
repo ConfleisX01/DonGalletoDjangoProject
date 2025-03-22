@@ -9,3 +9,9 @@ class Usuario(models.Model):
     user_type = models.CharField(max_length=10, default='usuario')
 
 
+    class Meta:
+        permissions = [
+            ('view_user', 'Can view user'),
+            ('add_user', 'Can add user'),
+            ('change_user', 'Can change user'),
+        ]

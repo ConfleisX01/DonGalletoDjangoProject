@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .models import Usuario
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -113,8 +113,15 @@ class UsuarioForm(forms.ModelForm):
         if commit:
             usuario.save()
 
+        # Asignar el usuario al grupo correspondiente
+        if self.cleaned_data["rol"] == "admin":
+            group = Group.objects.get(name="Administrador")
+        else:
+            group = Group.objects.get(name="Usuario")
+        user.groups.clear()  # Limpiar los grupos actuales del usuario
+        user.groups.add(group)  # Añadir el usuario al grupo correspondiente
+
         return user
-    
 
 class EditarUsuarioForm(forms.ModelForm):
     username = forms.CharField(
@@ -150,18 +157,23 @@ class EditarUsuarioForm(forms.ModelForm):
     # Campos opcionales para la contraseña
     password = forms.CharField(
         label="Nueva Contraseña", 
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Dejar en blanco si no cambia'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Dejar en blanco si no cambia'}), 
         required=False
     )
     password2 = forms.CharField(
         label="Confirmar Contraseña", 
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmar nueva contraseña'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmar nueva contraseña'}), 
         required=False
+    )
+    is_active = forms.BooleanField(
+        label="Activo", 
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
     class Meta:
         model = User
-        fields = ["username", "email", "first_name", "last_name", "telefono", "rol"]
+        fields = ["username", "email", "first_name", "last_name", "telefono", "rol", "is_active"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -183,7 +195,7 @@ class EditarUsuarioForm(forms.ModelForm):
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
         user.is_staff = self.cleaned_data["rol"] == "admin"
-
+        
         # Si el usuario ingresó una nueva contraseña, la encriptamos antes de guardarla
         password = self.cleaned_data.get("password")
         if password:
@@ -199,6 +211,12 @@ class EditarUsuarioForm(forms.ModelForm):
         if commit:
             usuario.save()
 
+        # Asignar el usuario al grupo correspondiente
+        if self.cleaned_data["rol"] == "admin":
+            group = Group.objects.get(name="administrador")
+        else:
+            group = Group.objects.get(name="usuario")
+        user.groups.clear()  # Limpiar los grupos actuales del usuario
+        user.groups.add(group)  # Añadir el usuario al grupo correspondiente
+
         return user
-
-

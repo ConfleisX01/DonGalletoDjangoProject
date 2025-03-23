@@ -7,5 +7,4 @@ urlpatterns = [
     path('crear_receta/', CrearReceta.as_view(), name='crear_receta'), 
     path('editar-receta/<int:id>/', EditarRecetaView.as_view(), name='editar_receta'),
     path('ver-receta/<int:pk>/', VerRecetaView.as_view(), name='ver_receta'),
-   
 ]

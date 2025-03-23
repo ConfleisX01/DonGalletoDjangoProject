@@ -8,6 +8,5 @@ urlpatterns = [
     path('', include('main.urls')),
     path('usuarios/', include('usuarios_app.urls')),
     path('panel/', include('panel.urls')),
-    path('Receta/', include('Recetas_app.urls')) # SE AGREGO LA URL PARA LA RECETA HASTA SABER COMO SE VA HACER CON EL PANEL
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

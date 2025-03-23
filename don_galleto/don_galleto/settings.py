@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'panel',
     'clientes',
     'inventarios',
+    'Recetas_app',
 ]
 
 MIDDLEWARE = [

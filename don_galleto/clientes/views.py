@@ -8,7 +8,7 @@ from clientes.models import Cliente
 from django.contrib.auth.models import User
 
 # Create your views here.
-class clientesList(TemplateView):
+class ClientesList(TemplateView):
     template_name = 'dashboard_clientes.html'
 
     def get_context_data(self, **kwargs):
@@ -17,7 +17,7 @@ class clientesList(TemplateView):
         context['lista']=lista
         return context
 
-class clientesRegistrarView(FormView):
+class ClientesRegistrarView(FormView):
     template_name = 'crear_cliente.html'
     form_class = forms.ClienteCrearForm
     success_url = reverse_lazy('clientes_crud')

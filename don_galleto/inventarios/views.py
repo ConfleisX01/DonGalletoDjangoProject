@@ -10,6 +10,6 @@ class inventarioProductoView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        lista = InventarioProducto.objects.all()
-        context['lista']=lista
+        listaGalletas = InventarioProducto.objects.all()
+        context['lista']=listaGalletas
         return context

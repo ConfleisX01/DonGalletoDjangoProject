@@ -43,13 +43,7 @@ class ClienteEditarForm(forms.ModelForm):
 
     class Meta:
         model = Cliente
-        fields = []
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance and self.instance.user:
-            self.fields['username'].initial = self.instance.user.username
-            self.fields['email'].initial = self.instance.user.email
+        fields = ['username', 'email', 'password']
 
     def save(self):
         user = self.instance.user

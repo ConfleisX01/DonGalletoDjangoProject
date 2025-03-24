@@ -34,8 +34,8 @@ class ClienteEditarView(FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         id = self.kwargs.get('id')
-        cliente = get_object_or_404(Cliente, id=id)
-        kwargs['instance'] = cliente
+        usuario = get_object_or_404(User, id=id)
+        kwargs['instance'] = usuario
         return kwargs
     
     def form_valid(self, form):

@@ -1,14 +1,21 @@
 {% extends "panel.html" %}
+
 {% load static %}
 
 {% block content %}
-<div class="container py-2">
     <form method="post" enctype="multipart/form-data">
-        <div>
+        <div class="container w-50 p-4 border mt-5">
+            <div class="text-center">
+                <h2>Editar cliente</h2>
+                <p class="text-secondary">Ingrese los datos para editar el cliente</p>
+            </div>
+            <hr/>
             {% csrf_token %}
             {{form.as_p}}
-            <button type="submit" class="btn btn-primary">Editar Cliente</button>
+            {% for error in field.error%}
+                <li>{{error}}</li>
+            {% endfor %}
+            <button class="btn btn-primary">Editar Cliente</button>
         </div>
     </form>
-</div>
 {% endblock content %}

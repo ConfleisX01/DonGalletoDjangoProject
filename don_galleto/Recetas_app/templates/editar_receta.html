@@ -1,0 +1,130 @@
+{% extends 'panel.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h1 class="card-title text-center">Editar Receta: {{ form.instance.nombre }}</h1>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Campo: Nombre -->
+                <div class="mb-3">
+                    <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
+                    {{ form.nombre }}
+                </div>
+
+                <!-- Campo: Cantidad de galletas producidas -->
+                <div class="mb-3">
+                    <label for="{{ form.cantidad_galletas_producidas.id_for_label }}" class="form-label">Cantidad de galletas producidas</label>
+                    {{ form.cantidad_galletas_producidas }}
+                </div>
+
+                <!-- Campo: Peso individual -->
+                <div class="mb-3">
+                    <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Peso individual</label>
+                    {{ form.peso_individual }}
+                </div>
+
+                <!-- Campo: Ingredientes -->
+                <div class="mb-3">
+                    <label for="{{ form.ingredientes.id_for_label }}" class="form-label">Ingredientes</label>
+                    {{ form.ingredientes }}
+                </div>
+
+                <!-- Botones -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-success me-md-2">
+                        <i class="fas fa-save"></i> Guardar cambios
+                    </button>
+                    <a href="{% url 'lista_receta' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos CSS personalizados -->
+<style>
+    body {
+        background-color: #F5F5F5; /* Fondo gris claro */
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background-color: #4CAF50; /* Verde */
+        color: #FFFFFF; /* Blanco */
+        padding: 20px;
+        text-align: center;
+    }
+
+    .card-body {
+        padding: 20px;
+        background-color: #FFFFFF; /* Blanco */
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #333333; /* Gris oscuro */
+    }
+
+    .form-control {
+        border: 1px solid #DDDDDD; /* Gris */
+        border-radius: 5px;
+        padding: 10px;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .form-control:focus {
+        border-color: #4CAF50; /* Verde */
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Sombra verde */
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-success {
+        background-color: #4CAF50; /* Verde */
+        border: none;
+        color: #FFFFFF; /* Blanco */
+    }
+
+    .btn-success:hover {
+        background-color: #45a049; /* Verde oscuro */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d; /* Gris */
+        border: none;
+        color: #FFFFFF; /* Blanco */
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268; /* Gris oscuro */
+    }
+
+    .fas {
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}

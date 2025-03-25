@@ -13,6 +13,7 @@ html {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    overflow-y: auto;
   }
   
   label {
@@ -33,7 +34,6 @@ html {
   }
   
   body.login {
-    background: #FFF9ED url('../img/cookie-pattern.png');
     background-size: 200px;
     background-blend-mode: overlay;
   }
@@ -48,7 +48,6 @@ html {
     border-radius: 15px;
     box-shadow: 0px 10px 30px -5px rgba(0, 0, 0, 0.3);
     border: 8px solid #d4a76a;
-    background-image: url('../img/cookie-texture.jpg');
     background-size: cover;
     background-blend-mode: soft-light;
   }
@@ -70,12 +69,13 @@ html {
   }
   
   .login-form .input-container {
-    margin-bottom: 20px;
     position: relative;
+    min-height: 70px;
   }
   
   .login-form input[type="text"],
-  .login-form input[type="password"] {
+  .login-form input[type="password"],
+  .login-form input[type="email"] {
     width: 100%;
     padding: 12px 20px;
     border-radius: 25px;
@@ -141,3 +141,66 @@ html {
   .login-container-wrapper p a:hover {
     color: #ffd6a5;
   }
+
+  .login-container-wrapper .text-danger {
+    color: #ffcccc !important;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.login-form input.is-invalid {
+  border: 2px solid #ffcccc;
+  background-color: rgba(255, 204, 204, 0.1);
+}
+
+.btn-cute {
+  position: relative;
+  border-radius: 30px;
+  padding: 10px 25px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-cute::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: all 0.5s ease;
+}
+
+.btn-cute:hover::before {
+  left: 100%;
+}
+
+.btn-cute:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-cute-success {
+  background-color: #4a8f55;
+  color: white;
+}
+
+.btn-cute-success:hover {
+  background-color: #3d7846;
+}
+
+.btn-cute-danger {
+  background-color: #e47562;
+  color: white;
+}
+
+.btn-cute-danger:hover {
+  background-color: #d05a47;
+}

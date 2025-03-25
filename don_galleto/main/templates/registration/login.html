@@ -29,7 +29,7 @@
 </head>
 <body class="login">
 
-  <form method="POST" class="container mt-4" action="{% url 'login' %}">
+  <form method="post" class="container mt-4" action="{% url 'login' %}">
     {% csrf_token %}
 
     <div class="container d-flex justify-content-center align-items-center">
@@ -46,7 +46,7 @@
                         </div>
                                 
                         <div class="mb-3">
-                            <label class="form-label">{{ form.password.label }}</label>
+                            <label class="form-label" required>{{ form.password.label }}</label>
                             <div class="input-container">
                                   {{ form.password }}
                             </div>
@@ -55,7 +55,7 @@
                         <div class="d-flex justify-content-center">
                             <input type="submit" class="btn btn-outline-success mt-3" value="Iniciar Sesión">
                             <input type="hidden" name="next" value="{{ next }}">
-                            <a href="#" class="btn btn-outline-danger mt-3">Registrarse</a>
+                            <a href="{% url 'registro' %}" class="btn btn-outline-danger mt-3">Registrarse</a>
                         </div>
                     </div>
                 </div>

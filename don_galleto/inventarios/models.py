@@ -1,5 +1,6 @@
 from django.db import models
-from Recetas_app.models import Receta, MateriaPrima
+from Recetas_app.models import Receta
+from materia_prima.models import MateriaPrima
 
 class InventarioProducto(models.Model):
     galleta = models.OneToOneField(Receta, on_delete=models.CASCADE)

@@ -1,16 +1,6 @@
 from django.db import models
-from django.utils.timezone import now  
-
-# MODELO CREADO APARTIR DE LA BASA DE DATOS DE LUIS
-
-# !!!!!!Insumos temporales hasta tener los reales que quien sabe a quien vrga le toco!!!!!!
-class MateriaPrima(models.Model):
-    nombreIn = models.CharField(max_length=255, unique=True)
-    unidad_base = models.CharField(max_length=50)  
-    cantidad_disponible = models.DecimalField(max_digits=10, decimal_places=2, default=0) #CREO QUE SE REFIERE A LA CANTIDAD DE GALLETAS QUE SE HACEN? POR ANALIZAR
-
-    def __str__(self):
-        return self.nombreIn
+from django.utils.timezone import now
+from materia_prima.models import MateriaPrima
 
 class Receta(models.Model):
     """Modelo que representa una receta de galletas.""" 

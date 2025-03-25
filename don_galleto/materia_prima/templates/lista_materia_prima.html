@@ -1,0 +1,28 @@
+{% extends 'panel.html' %}
+
+{% block content %}
+<header class="header mb-2">
+    <span class="header-brand mb-0 h1">Materias Primas / Ingredientes</span>
+    <a class="btn btn-primary" href="{% url 'agregar_materia_prima' %}">Agregar Materia Prima</a>
+</header>
+<div class="container-fluid">
+    <table class="table">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Materia Prima</th>
+              <th scope="col">Unidad de Medida</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in lista %}
+                <tr class="align-middle">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.nombre_insumo }}</td>
+                    <td>{{ item.unidad_base }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

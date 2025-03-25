@@ -1,9 +1,10 @@
 from django import forms
-from .models import Receta, MateriaPrima, IngredienteReceta
+from .models import Receta, IngredienteReceta
+from materia_prima.models import MateriaPrima
 
 class SelectInsumos(forms.ModelMultipleChoiceField):  
     def label_from_instance(self, obj):
-        return obj.nombreIn 
+        return obj.nombre_insumo
 
 class RecetaRegistrarForm(forms.ModelForm):
     ingredientes = SelectInsumos(

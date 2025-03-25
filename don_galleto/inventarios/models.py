@@ -1,5 +1,5 @@
 from django.db import models
-from Recetas_app.models import Receta
+from Recetas_app.models import Receta, MateriaPrima
 
 class InventarioProducto(models.Model):
     galleta = models.OneToOneField(Receta, on_delete=models.CASCADE)
@@ -18,3 +18,8 @@ class InventarioProducto(models.Model):
         if cantidad > 0 and self.cantidad >= cantidad:
             self.cantidad -= cantidad
             self.save()
+
+class InventarioMaterial(models.Model):
+    insumo = models.OneToOneField(MateriaPrima, on_delete=models.CASCADE)
+    cantidad = models.PositiveBigIntegerField(default=0, null=False, blank=False)
+    ultima_actualizacion = models.DateTimeField(auto_now=True)

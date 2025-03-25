@@ -1,5 +1,5 @@
 from django import forms
-from .models import Receta, InsumoTemporal, IngredienteReceta
+from .models import Receta, MateriaPrima, IngredienteReceta
 
 class SelectInsumos(forms.ModelMultipleChoiceField):  
     def label_from_instance(self, obj):
@@ -7,7 +7,7 @@ class SelectInsumos(forms.ModelMultipleChoiceField):
 
 class RecetaRegistrarForm(forms.ModelForm):
     ingredientes = SelectInsumos(
-        queryset=InsumoTemporal.objects.all(),
+        queryset=MateriaPrima.objects.all(),
         widget=forms.CheckboxSelectMultiple(),  # Casillas de verificación para elegir ingredientes
         required=True,
         label="Ingredientes"
@@ -44,7 +44,7 @@ class RecetaEditarForm(forms.ModelForm):
     cantidad_galletas_producidas = forms.IntegerField(label='Cantidad de galletas producidas')
     peso_individual = forms.DecimalField(label='Peso individual', max_digits=10, decimal_places=2)
     ingredientes = forms.ModelMultipleChoiceField(
-        queryset=InsumoTemporal.objects.all(),
+        queryset=MateriaPrima.objects.all(),
         label='Ingredientes',
         widget=forms.CheckboxSelectMultiple,
     )

@@ -10,6 +10,7 @@ from django.views.generic import FormView
 from .forms import RecetaRegistrarForm
 from .models import Receta, IngredienteReceta
 from django.views.generic import DetailView
+from inventarios.models import InventarioProducto
 
 class CrearReceta(FormView):
     template_name = 'crear_receta.html'
@@ -32,6 +33,8 @@ class CrearReceta(FormView):
                 insumo=insumo,
                 cantidad_necesaria=1  # Puedes personalizar esto si el formulario lo permite
             )
+
+        InventarioProducto.objects.create(galleta=receta, cantidad=0);
 
         return super().form_valid(form)
 

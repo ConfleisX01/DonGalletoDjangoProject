@@ -24,3 +24,19 @@ class CrearMateriaPrimaView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+    
+class EditarMateriaPrima(FormView):
+    template_name = 'editar_materia_prima.html'
+    form_class = forms.EditarMateriaPrimaForm
+    success_url = reverse_lazy('lista_materia_prima')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        id = self.kwargs.get('id')
+        materiaPrima = get_object_or_404(MateriaPrima, id=id)
+        kwargs['instance']=materiaPrima
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)

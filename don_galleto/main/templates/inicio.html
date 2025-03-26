@@ -1,0 +1,199 @@
+{% extends "main.html" %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don Galleto - Deliciosas Galletas Artesanales</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<style>
+    body {
+        font-family: 'Varela', sans-serif;
+        background-color: #FFF9ED;
+        color: #664229;
+    }
+
+    .carousel-item img {
+        height: 500px;
+        object-fit: cover;
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        background-color: #f4e4d0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .product-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    }
+
+    .about-section {
+        background-color: #d4a76a;
+        color: #fff;
+        padding: 50px 0;
+    }
+
+    .footer {
+        background-color: #a67c52;
+        color: #fff;
+        padding: 30px 0;
+    }
+
+    .footer a {
+        color: #fff;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer a:hover {
+        color: #ffd6a5;
+    }
+</style>
+<body>
+
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="###" class="d-block w-100" alt="Galletas Artesanales">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1>Descubre el Sabor de Don Galleto</h1>
+                    <p>Galletas tradicionales con amor en cada bocado</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="###" class="d-block w-100" alt="Variedad de Galletas">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1>Más de 20 Variedades</h1>
+                    <p>Encuentra tu galleta favorita</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="###" class="d-block w-100" alt="Proceso Artesanal">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1>Proceso 100% Artesanal</h1>
+                    <p>Horneamos con tradición y pasión</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="###" class="d-block w-100" alt="Ingredientes Naturales">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1>Ingredientes Naturales</h1>
+                    <p>Sin conservadores, solo sabor real</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="###" class="d-block w-100" alt="Regalo Perfecto">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1>El Regalo Perfecto</h1>
+                    <p>Galletas que alegran cualquier momento</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+
+    
+    <section id="productos" class="container my-5">
+        <h2 class="text-center mb-4">Nuestros Productos</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card product-card" href="{% url 'login' %}">
+                    <img src="###" class="card-img-top" alt="Galletas Clásicas">
+                    <div class="card-body">
+                        <h5 class="card-title">Galletas Clásicas</h5>
+                        <p class="card-text">Receta tradicional de la abuela</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card product-card" >
+                    <img src="###" class="card-img-top" href="{% url 'login' %}" alt="Galletas Integrales">
+                    <div class="card-body">
+                        <h5 class="card-title">Galletas Integrales</h5>
+                        <p class="card-text">Saludables y deliciosas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card product-card" href="{% url 'login' %}">
+                    <img src="####" class="card-img-top" alt="Galletas Gourmet">
+                    <div class="card-body">
+                        <h5 class="card-title">Galletas Gourmet</h5>
+                        <p class="card-text">Sabores únicos y sofisticados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  
+    <section id="nosotros" class="about-section text-center">
+        <div class="container">
+            <h2 class="mb-4">Sobre Don Galleto</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Misión</h3>
+                    <p>Ofrecer galletas artesanales de la más alta calidad, elaboradas con ingredientes locales y tradicionales, preservando el sabor auténtico de la repostería mexicana.</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Visión</h3>
+                    <p>Ser la marca líder en galletas artesanales en México, reconocida por nuestra calidad, creatividad y compromiso con la tradición culinaria de nuestro país.</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Valores</h3>
+                    <p>Tradición, calidad, pasión, innovación y responsabilidad social. Cada galleta cuenta una historia de amor y dedicación.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Don Galleto</h5>
+                    <p>Galletas artesanales con amor desde 2015</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contacto</h5>
+                    <p>
+                        <i class="bi bi-telephone"></i> 55-1234-5678<br>
+                        <i class="bi bi-envelope"></i> contacto@dongalleto.com
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Síguenos</h5>
+                    <div>
+                        <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="me-3"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="me-3"><i class="bi bi-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 Don Galleto. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+{% endblock content %}

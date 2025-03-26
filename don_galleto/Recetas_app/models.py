@@ -24,5 +24,3 @@ class IngredienteReceta(models.Model):
 
     def __str__(self):
         return f"{self.receta.nombre} - {self.insumo.nombre} ({self.cantidad_necesaria})"
-
-

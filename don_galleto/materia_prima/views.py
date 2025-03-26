@@ -5,6 +5,7 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 from . import forms
 from materia_prima.models import MateriaPrima
+from inventarios.models import InventarioMaterial
 
 # Create your views here.
 class ListaMateriaPrimaView(TemplateView):
@@ -22,7 +23,8 @@ class CrearMateriaPrimaView(FormView):
     success_url = reverse_lazy('lista_materia_prima')
 
     def form_valid(self, form):
-        form.save()
+        materia_prima = form.save()
+        InventarioMaterial.objects.create(insumo=materia_prima, cantidad=0)
         return super().form_valid(form)
     
 class EditarMateriaPrima(FormView):

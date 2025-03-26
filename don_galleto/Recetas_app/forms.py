@@ -41,9 +41,19 @@ class RecetaRegistrarForm(forms.ModelForm):
 
 
 class RecetaEditarForm(forms.ModelForm):
-    nombre = forms.CharField(label='Nombre', max_length=100)
-    cantidad_galletas_producidas = forms.IntegerField(label='Cantidad de galletas producidas')
-    peso_individual = forms.DecimalField(label='Peso individual', max_digits=10, decimal_places=2)
+    nombre = forms.CharField(
+        label='Nombre', max_length=100, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre'})
+    )
+
+    cantidad_galletas_producidas = forms.IntegerField(
+        label='',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad de galletas producidas'})
+    )
+    peso_individual = forms.DecimalField(
+        label='Peso individual', max_digits=10, decimal_places=2,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Peso individual'})
+    )
     ingredientes = forms.ModelMultipleChoiceField(
         queryset=MateriaPrima.objects.all(),
         label='Ingredientes',
@@ -75,3 +85,7 @@ class RecetaEditarForm(forms.ModelForm):
                 cantidad_necesaria=1  # !!!CHECAR ESTO CUANDO EL INVENTARIO DE INSUMOS ESTE!!!
             )
             
+class IngredienteRecetaForm(forms.ModelForm):
+    class Meta:
+        model = IngredienteReceta
+        fields = ['insumo']

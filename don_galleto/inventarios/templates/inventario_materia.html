@@ -1,0 +1,33 @@
+{% extends "panel.html" %}
+
+{% load static %}
+
+{% block content %}
+    <header class="header">
+      <span class="header-brand mb-0 h1">Inventario de productos</span>
+    </header>
+    <div class="container-fluid py-2">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre Insumo</th>
+                <th scope="col">Unidad de medida</th>
+                <th scope="col">Cantidad disponible</th>
+                <th scope="col">Ultima actualización</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for item in lista %}
+                    <tr>
+                      <th scope="row" class="{% if item.cantidad <= 0 %}bg-danger{% else %}bg-primary{% endif %}">{{item.id}}</th>
+                      <td class="text-secondary fw-bold">{{item.insumo.nombre_insumo}}</td>
+                      <td>{{item.insumo.unidad_base}}</td>
+                      <td>{{item.cantidad}} {% if item.cantidad <= 0 %}<span class="badge rounded-pill text-bg-danger">Bajo</span>{% endif %}</td>
+                      <td>{{item.ultima_actualizacion}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+    </div>
+{% endblock content %}

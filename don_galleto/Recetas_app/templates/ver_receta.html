@@ -4,7 +4,7 @@
 <header class="header mb-2">
     <span class="header-brand mb-0 h1">Detalles de receta</span>
 </header>
-<div class="container w-75">
+<div class="container w-75 p-4">
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h1 class="card-title text-center">Detalles de la Receta: {{ receta.nombre }}</h1>
@@ -31,7 +31,7 @@
                 <ul class="list-group">
                     {% for ingrediente in receta.ingredientes.all %}
                     <li class="list-group-item">
-                        <strong>{{ ingrediente.insumo.nombreIn }}</strong> - 
+                        <strong>{{ ingrediente.insumo.nombre_insumo }}</strong> - 
                         {{ ingrediente.cantidad_necesaria }} {{ ingrediente.insumo.unidad_base }}
                     </li>
                     {% endfor %}

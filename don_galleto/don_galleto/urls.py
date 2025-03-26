@@ -8,9 +8,5 @@ urlpatterns = [
     path('', include('main.urls')),
     path('usuarios/', include('usuarios_app.urls')),
     path('panel/', include('panel.urls')),
-<<<<<<< HEAD
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-=======
     path('provedores/', include('provedores.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
->>>>>>> provedores

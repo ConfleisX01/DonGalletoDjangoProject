@@ -1,0 +1,42 @@
+{% extends "main.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="container-fluid d-flex justify-content-between align-items-center mb-5">
+        <span class="header-text fw-medium text-dark fs-5">Lista de productos</span>
+        <span class="header-text fw-medium text-dark fs-6 text-decoration-underline">Mostrando todos los productos</span>
+    </div>
+    <div class="container-fluid">
+        <div class="row row-cols-4">
+            {% for item in productos %}
+                <div class="col d-flex">
+                    <div class="card shadow-sm">
+                        <div class="p-3 position-relative">
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <span class="badge bg-primary"><i class="bi bi-cookie"></i></span>
+                            </div>
+                            <img src="{% static 'img/galletas.png' %}" class="card-img-top" alt="..." style="height: 200px;">
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2" style="height: 80px;">
+                                <h5 class="fs-4 m-0">{{ item.galleta.nombre }}</h5>
+                            </div>
+                            <small class="fs-6">Cantidad disponible: <span class="fw-bold">{{item.cantidad}}</span></small>
+                            <div class="text-dark">
+                                <small>Peso individual: {{item.galleta.peso_individual}}g</small>
+                            </div>
+                            <div class="d-grid my-4">
+                                <button class="rounded-5 p-2 btn-lg bg-white border border-1 border-black" type="button">
+                                    Comprar Ahora
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

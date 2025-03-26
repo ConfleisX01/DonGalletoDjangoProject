@@ -1,13 +1,14 @@
 from django import forms
-from .models import Receta, InsumoTemporal, IngredienteReceta
+from .models import Receta, IngredienteReceta
+from materia_prima.models import MateriaPrima
 
 class SelectInsumos(forms.ModelMultipleChoiceField):  
     def label_from_instance(self, obj):
-        return obj.nombreIn 
+        return obj.nombre_insumo
 
 class RecetaRegistrarForm(forms.ModelForm):
     ingredientes = SelectInsumos(
-        queryset=InsumoTemporal.objects.all(),
+        queryset=MateriaPrima.objects.all(),
         widget=forms.CheckboxSelectMultiple(),  # Casillas de verificación para elegir ingredientes
         required=True,
         label="Ingredientes"
@@ -40,11 +41,21 @@ class RecetaRegistrarForm(forms.ModelForm):
 
 
 class RecetaEditarForm(forms.ModelForm):
-    nombre = forms.CharField(label='Nombre', max_length=100)
-    cantidad_galletas_producidas = forms.IntegerField(label='Cantidad de galletas producidas')
-    peso_individual = forms.DecimalField(label='Peso individual', max_digits=10, decimal_places=2)
+    nombre = forms.CharField(
+        label='Nombre', max_length=100, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre'})
+    )
+
+    cantidad_galletas_producidas = forms.IntegerField(
+        label='',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad de galletas producidas'})
+    )
+    peso_individual = forms.DecimalField(
+        label='Peso individual', max_digits=10, decimal_places=2,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Peso individual'})
+    )
     ingredientes = forms.ModelMultipleChoiceField(
-        queryset=InsumoTemporal.objects.all(),
+        queryset=MateriaPrima.objects.all(),
         label='Ingredientes',
         widget=forms.CheckboxSelectMultiple,
     )
@@ -74,3 +85,7 @@ class RecetaEditarForm(forms.ModelForm):
                 cantidad_necesaria=1  # !!!CHECAR ESTO CUANDO EL INVENTARIO DE INSUMOS ESTE!!!
             )
             
+class IngredienteRecetaForm(forms.ModelForm):
+    class Meta:
+        model = IngredienteReceta
+        fields = ['insumo']

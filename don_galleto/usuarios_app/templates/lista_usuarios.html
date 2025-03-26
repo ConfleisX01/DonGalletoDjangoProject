@@ -1,14 +1,15 @@
 {% extends "panel.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class = "mb-3"> 
-        <a href="{% url 'crear_usuarios' %}" class="btn btn-success text-white">Crear Usuario</a>
-    </div>
-    <div class="row">
+<header class="header">
+    <span class="header-brand mb-0 h1">Lista de usuarios</span>
+    <a href="{% url 'crear_usuarios' %}" class="btn btn-success text-white">Crear Usuario</a>
+  </header>
+<div class="container-fluid p-2">
+    <div class="row g-2">
         <!-- Tarjeta de Administradores -->
-        <div class="col-lg-6 col-md-12 mb-4">
-            <div class="card shadow-lg border-0 rounded-3">
+        <div class="col-lg-4 col-md-12">
+            <div class="card border rounded-3">
                 <div class="card-header bg-primary text-white text-center">
                     <h2 class="mb-0">Lista de Administradores</h2>
                 </div>
@@ -51,8 +52,8 @@
         </div>
 
         <!-- Tarjeta de Usuarios -->
-        <div class="col-lg-6 col-md-12 mb-4">
-            <div class="card shadow-lg border-0 rounded-3">
+        <div class="col-lg-4 col-md-12">
+            <div class="card border rounded-3">
                 <div class="card-header bg-success text-white text-center">
                     <h2 class="mb-0">Lista de Usuarios</h2>
                 </div>
@@ -93,8 +94,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-12 mb-4">
-            <div class="card shadow-lg border-0 rounded-3">
+
+
+        <div class="col-lg-4 col-md-12">
+            <div class="card border rounded-3">
                 <div class="card-header bg-danger text-white text-center">
                     <h2 class="mb-0">Lista de Usuarios desactivados</h2>
                 </div>

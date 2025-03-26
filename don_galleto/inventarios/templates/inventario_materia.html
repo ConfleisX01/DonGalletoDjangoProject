@@ -20,10 +20,16 @@
             <tbody>
                 {% for item in lista %}
                     <tr>
-                      <th scope="row" class="{% if item.cantidad <= 0 %}bg-danger{% else %}bg-primary{% endif %}">{{item.id}}</th>
+                      <th scope="row">{{item.id}}</th>
                       <td class="text-secondary fw-bold">{{item.insumo.nombre_insumo}}</td>
                       <td>{{item.insumo.unidad_base}}</td>
-                      <td>{{item.cantidad}} {% if item.cantidad <= 0 %}<span class="badge rounded-pill text-bg-danger">Bajo</span>{% endif %}</td>
+                      <td>
+                        {{item.cantidad}} {% if item.cantidad <= 0 %}
+                          <span class="badge rounded-pill text-bg-danger">Sin existencia</span>
+                        {% else %}
+                          <span class="badge rounded-pill text-bg-primary">Con existencia</span>
+                        {% endif %}
+                      </td>
                       <td>{{item.ultima_actualizacion}}</td>
                     </tr>
                 {% endfor %}

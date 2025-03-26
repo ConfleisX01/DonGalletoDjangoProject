@@ -12,7 +12,8 @@
     <thead>
         <tr>
           <th scope="col">Acciones</th>
-          <th scope="col">Nombre</th>
+          <th scope="col">Nombre de usuario</th>
+          <th scope="col">Nombres</th>
           <th scope="col">Correo</th>
           <th scope="col">Estatus</th>
         </tr>
@@ -41,6 +42,7 @@
               </div>
             </th>
             <td>{{item.user.username}}</td>
+            <td>{{item.user.first_name}} {{item.user.last_name}}</td>
             <td>{{item.user.email}}</td>
             <td>
               <span class="badge text-bg-{% if item.user.is_active %}primary{% else %}secondary{% endif %}">

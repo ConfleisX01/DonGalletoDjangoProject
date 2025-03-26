@@ -4,5 +4,11 @@ from django.conf.urls.static import static
 from panel.views import panelIndex
 
 urlpatterns = [
-    path('', panelIndex, name='panel')
+    path('', panelIndex, name='panel'),
+    path('administracion/', include([
+        path('clientes/', include('clientes.urls')),
+        path('usuarios/', include('usuarios_app.urls')),
+        path('recetas/', include('Recetas_app.urls')),
+    ])),
+    path('inventarios/', include('inventarios.urls')),
 ]

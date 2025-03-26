@@ -1,0 +1,27 @@
+{% extends "panel.html" %}
+
+{% load static %}
+
+{% block content %}
+    <header class="header">
+      <span class="header-brand mb-0 h1">Inventario de productos</span>
+    </header>
+    <div class="container-fluid">
+        <div class="row row-cols-1 row-cols-md-4 g-1">
+          {% for item in lista %}
+            <div class="col">
+              <div class="card h-100 border-primary">
+                <div class="container-fluid text-center">
+                    <img src="{% static 'img/galletas.png' %}" class="card-img-top w-50" alt="...">
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">Galleta de chispas</h5>
+                  <p class="card-text text-center"><span class="fs-6 fw-medium text-secondary">Galletas disponibles</span></p>
+                  <p class="card-text text-center"><span class="fs-2 fw-bold">1024</span><span class="fs-6 fw-medium text-secondary">ud.</span></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

@@ -6,7 +6,8 @@ from django.conf import settings
 
 
 urlpatterns = [
-    path('', principal, name='home'),
-    
-
+    path('', main, name='home'),
+    path('welcome', welcome, name='welcome'),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("compras/", include('ventas_app.urls')),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

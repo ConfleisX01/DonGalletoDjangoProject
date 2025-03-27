@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <form method="post" enctype="multipart/form-data">
+            <div class="container w-50 p-4 border mt-5 rounded shadow-sm">
+                <div>
+                    <div>
+                        <h2>Crear pedido</h2>
+                        <p class="text-secondary">Rellene el formulario para hacer el pedido</p>
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        {% for error in field.error%}
+                            <li>{{error}}</li>
+                        {% endfor %}
+                        <button class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

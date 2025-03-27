@@ -1,0 +1,49 @@
+{% extends 'panel.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5 border rounded w-50 p-4">
+    <div class="text-center">
+        <h2>Crear Nueva Receta</h2>
+        <p class="text-secondary">Ingresa los datos para crear una nueva receta</p>
+    </div>
+    
+    <form method="POST" class="form-container">
+        {% csrf_token %}
+        
+        <!-- Campo: Nombre de la Receta -->
+        <div class="mb-3">
+            <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre de la Receta</label>
+            {{ form.nombre }}
+            <small class="form-text">Ingresa el nombre de la receta.</small>
+        </div>
+
+        <!-- Campo: Cantidad de Galletas -->
+        <div class="mb-3">
+            <label for="{{ form.cantidad_galletas_producidas.id_for_label }}" class="form-label">Cantidad de Galletas</label>
+            {{ form.cantidad_galletas_producidas }}
+            <small class="form-text">Ingresa la cantidad de galletas que producirá esta receta.</small>
+        </div>
+
+        <!-- Campo: Peso Individual -->
+        <div class="mb-3">
+            <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Peso Individual (en gramos)</label>
+            {{ form.peso_individual }}
+            <small class="form-text">Ingresa el peso individual de cada galleta.</small>
+        </div>
+
+        <!-- Campo: Ingredientes -->
+        <div class="mb-4">
+            <label class="form-label">Ingredientes</label>
+            {{ form.ingredientes }}
+            <small class="form-text">Selecciona los ingredientes necesarios para esta receta.</small>
+        </div>
+
+        <!-- Botón de Guardar -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>Guardar Receta
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

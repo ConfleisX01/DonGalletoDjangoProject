@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.min.js" integrity="sha384-Rj9po7KQz8y0hVoeRgl1LRoQcxYkHxszkpKUdatY+9b5o35FsiENOwOWwxzWfAfF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.bundle.min.js" integrity="sha384-8QmUFX1sl4cMveCP2+H1tyZlShMi1LeZCJJxTZeXDxOwQexlDdRLQ3O9L78gwBbe" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-PDUiPu3vDllMfrUHnurV430Qg8chPZTNhY8RUpq89lq22R3PzypXQifBpcpE1eoB" crossorigin="anonymous">
+    <script src="{% static 'js/menu_principal.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.bundle.min.js" integrity="sha384-8QmUFX1sl4cMveCP2+H1tyZlShMi1LeZCJJxTZeXDxOwQexlDdRLQ3O9L78gwBbe" crossorigin="anonymous"></script>
+    <script src="{ static 'js/config.js'}"></script>
+    <title>Don Galleto - Clientes</title>
+</head>
+<body>
+    <div class="vh-100 d-flex">
+        <div class="sidebar sidebar-dark border-end">
+            <div class="sidebar-header border-bottom">
+              <div class="sidebar-brand">
+                <h1 class="fs-5 m-0">Don Galleto</h1>
+              </div>
+            </div>
+            <ul class="sidebar-nav">
+              <li class="nav-item nav-group hide">
+                <a class="nav-link nav-group-toggle" href="#">
+                  <i class="nav-icon bi bi-house"></i> Principal
+                </a>
+                <ul class="nav-group-items">
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Inicio
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Producción
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Solicitud de producción
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!-- TERMINA LA SECCION PRINCIPAL -->
+              <li class="nav-item nav-group hide">
+                <a class="nav-link nav-group-toggle" href="#">
+                  <i class="nav-icon bi bi-box-seam"></i> Inventarios
+                </a>
+                <ul class="nav-group-items">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'inventario_materia' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Materia Prima
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'inventario_productos' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Productos
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!-- TERMINA LA SECCION INVENTARIO -->
+              <li class="nav-item nav-group hide">
+                <a class="nav-link nav-group-toggle" href="#">
+                  <i class="nav-icon bi bi-graph-up-arrow"></i> Ventas
+                </a>
+                <ul class="nav-group-items">
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Lista de ventas
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Corte de ventas
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Pedidos realizados
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!-- TERMINA LA SECCION VENTAS -->
+              <li class="nav-item nav-group hide">
+                <a class="nav-link nav-group-toggle" href="#">
+                  <i class="nav-icon bi bi-table"></i> Dashboards
+                </a>
+                <ul class="nav-group-items">
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Ventas
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Más vendidos
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Presentaciones
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!-- TERMINA LA SECCION DASHBOARDS -->
+              <li class="nav-item nav-group hide">
+                <a class="nav-link nav-group-toggle" href="#">
+                  <i class="nav-icon bi bi-building-gear"></i> Administración
+                </a>
+                <ul class="nav-group-items">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'clientes_crud' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Clientes
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_usuarios' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Usuarios
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_provedores' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Proveedores
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_receta' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Recetas
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_materia_prima' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Materia Prima
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!-- TERMINA LA SECCION ADMINISTRACION -->
+            </ul>
+          </div>
+          <div class="container-fluid p-0 h-100 overflow-auto">
+            <header class="header header-sticky px-4">
+              <a class="header-brand" href="#">
+                Panel de Administración
+              </a>
+                <ul class="header-nav">
+                  <li class="nav-item dropdown">
+                    <a class="nav-link py-0 pe-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                      <div class="avatar avatar-md text-white bg-primary">JP</div>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li><h6 class="dropdown-header">Ajustes</h6></li>
+                      <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+                    </ul>
+                  </li>
+                </ul>
+            </header>
+            <div class="container-fluid p-0">
+              {% block content %}
+              {% endblock content %}
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+</html>

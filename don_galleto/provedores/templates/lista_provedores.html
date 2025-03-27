@@ -1,0 +1,59 @@
+{% extends "panel.html" %}
+{% load static %}
+
+{% block content %}
+<header class="header mb-2">
+    <span class="header-brand mb-0 h1">Lista de provedores</span>
+    <a class="btn btn-dark" role="button" href="{% url 'crear_provedores' %}">
+        <i class="bi bi-file-earmark-plus-fill"></i> 
+        Agregar Provedor
+    </a>
+</header>
+<div class="container-fluid">
+    <div class="d-flex justify-content-center">
+        <table class="table table-sm table-striped w-100 text-center table-light">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Telefono</th>
+                    <th scope="col">Dirección</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">N° Identificación</th>
+                    <th scope="col">Razón Social</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider" >
+                {% for item in lista %}
+                    <tr class="align-middle">
+                        <td>{{ item.provedor_nombre }}</td>
+                        <td>{{ item.provedor_telefono }}</td>
+                        <td>{{ item.provedor_direccion }}</td>
+                        <td>{{ item.provedor_email }}</td>
+                        <td>{{ item.provedor_identificacionNumero }}</td>
+                        <td>{{ item.provedor_razonSocial }}</td>
+                        <td>{{ item.provedor_tipo }}</td>
+                        <td>
+                            <span class="badge {% if item.estatus %} text-bg-success text-white {% else %} text-bg-secondary  {% endif %}">
+                                {% if item.estatus %} Activo {% else %} Inactivo {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-dark" href="{% url 'editar_provedores' item.id %}">
+                                <i class="bi bi-pencil-square"></i>
+                                Editar
+                            </a>
+                            <a class="btn btn-sm btn-danger text-white" href="{% url 'eliminar_provedores' item.id %}" 
+                                onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <div>
+</div>
+{% endblock content %}

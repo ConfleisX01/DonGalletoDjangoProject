@@ -8,6 +8,7 @@ class Receta(models.Model):
     nombre = models.CharField(max_length=100)
     cantidad_galletas_producidas = models.IntegerField()
     peso_individual = models.DecimalField(max_digits=10, decimal_places=2)
+    # Agregar el precio de cada galleta
 
     class Meta:
         permissions = [("puede_ver_recetas", "Puede ver recetas")]

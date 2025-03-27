@@ -23,14 +23,13 @@
                             <div class="mb-2" style="height: 80px;">
                                 <h5 class="fs-4 m-0">{{ item.galleta.nombre }}</h5>
                             </div>
-                            <small class="fs-6">Cantidad disponible: <span class="fw-bold">{{item.cantidad}}</span></small>
                             <div class="text-dark">
                                 <small>Peso individual: {{item.galleta.peso_individual}}g</small>
                             </div>
                             <div class="d-grid my-4">
-                                <button class="rounded-5 p-2 btn-lg bg-white border border-1 border-black" type="button">
+                                <a class="rounded-5 p-2 btn btn-lg bg-white border border-1 border-black" href="{% url 'detalle_producto' item.id %}" type="button">
                                     Comprar Ahora
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>

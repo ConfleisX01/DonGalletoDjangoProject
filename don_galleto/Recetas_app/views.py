@@ -67,23 +67,6 @@ class VerRecetaView(DetailView): #CHECAR SI NO HAY PROBLEMA EN USAR EL DETAILVIE
     model = Receta
     template_name = 'ver_receta.html'
     context_object_name = 'receta'
-
-# class DefinirInsumoView(FormView):
-#     template_name = 'definir_insumos.html'
-#     form_class = IngredienteRecetaForm
-#     success_url = reverse_lazy('lista_receta')
-
-#     def get_form_kwargs(self):
-#         kwargs = super().get_form_kwargs()
-#         id = self.kwargs.get('id')
-#         receta = get_object_or_404(Receta, id=id)
-#         kwargs['instance'] = receta
-#         return kwargs
-    
-#     def form_valid(self, form):
-#         id = self.kwargs.get('id')
-#         form.save(id)
-#         return super().form_valid(form)
     
 class DefinirInsumoView(TemplateView):
     template_name = 'definir_insumos.html'

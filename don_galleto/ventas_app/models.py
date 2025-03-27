@@ -1,5 +1,6 @@
 from django.db import models
 from Recetas_app.models import Receta
+from clientes.models import Cliente
 
 class Venta(models.Model):
     fecha_venta = models.DateTimeField(auto_now=True)
@@ -12,8 +13,8 @@ class VentaDetalle(models.Model):
         ('ud', 'Unidad'),
     ]
 
-    total = models.FloatField(default=100)
-    cantidad = models.FloatField()
+    total = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    cantidad = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     tipo_unidad = models.CharField(
         max_length=50,
         choices=UNIDADES_DE_COMPRA,
@@ -22,3 +23,4 @@ class VentaDetalle(models.Model):
     fecha_recoleccion = models.DateField(null=True, blank=True)
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, null=False)
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
+    # comprado_por = models.ForeignKey(Cliente, on_delete=models.CASCADE)

@@ -6,6 +6,7 @@ from inventarios.models import InventarioProducto
 from Recetas_app.models import Receta
 from . import forms
 from ventas_app.models import Venta
+from decimal import Decimal
 
 class ListaProductosView(ListView):
     model = InventarioProducto
@@ -25,14 +26,39 @@ class DetallesProductoView(FormView):
         return kwargs
     
     def form_valid(self, form):
-        nueva_venta = Venta.objects.create() # Creamos la relacion con la venta.
+        nueva_venta = Venta.objects.create() # Creamos la relacion con la venta
 
         detalle_venta = form.save(commit=False)
         detalle_venta.venta = nueva_venta
 
         inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
-        inventario.disminuir_cantidad(detalle_venta.cantidad)
-        
+
+        tipo_compra = detalle_venta.tipo_unidad
+        cantidad_galleta = detalle_venta.cantidad
+        precio_galleta = inventario.galleta.precio_galleta
+        peso_galleta = inventario.galleta.peso_individual
+
+        precio_total_calculado = calcularPrecioGalleta(tipo_compra, cantidad_galleta, precio_galleta, peso_galleta)
+
+        if precio_total_calculado is False:
+            form.add_error(None, "No se pudo calcular el precio.")
+            return self.form_invalid(form)
+
+        detalle_venta.total = precio_total_calculado
         detalle_venta.save()
 
         return super().form_valid(form)
+    
+def calcularPrecioGalleta(tipo_compra, cantidad_galletas, precio_galleta, peso_galleta):
+    precio_galleta = Decimal(precio_galleta)  # Convertimos a Decimal para evitar problemas
+    peso_galleta = Decimal(peso_galleta)
+    cantidad_galletas = Decimal(cantidad_galletas)
+
+    if tipo_compra == 'pq': # Para paquetes
+        return (cantidad_galletas * 12) * precio_galleta
+    elif tipo_compra == 'g': # Para gramos
+        precio_por_gramo = precio_galleta / peso_galleta
+        return cantidad_galletas * precio_por_gramo
+    elif tipo_compra == 'ud': # Para unidades
+        return cantidad_galletas * precio_galleta
+    else: raise ValueError("Tipo de compra no válido") # Como llegaste hasta aqui gallo?

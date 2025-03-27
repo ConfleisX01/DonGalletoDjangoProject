@@ -2,13 +2,14 @@
 {% load static %}
 
 {% block content %}
-<div class="d-flex row justify-content-center text-center w-100 vh-100 align-content-center align-items-center m-0 p-0">
-    <div class="d-flex justify-content-center">
-        <a class="btn btn-dark m-3" role="button" href="{% url 'crear_provedores' %}">
-            <i class="bi bi-file-earmark-plus-fill"></i> 
-            Agregar Provedor
-        </a>
-    </div>
+<header class="header mb-2">
+    <span class="header-brand mb-0 h1">Lista de provedores</span>
+    <a class="btn btn-dark" role="button" href="{% url 'crear_provedores' %}">
+        <i class="bi bi-file-earmark-plus-fill"></i> 
+        Agregar Provedor
+    </a>
+</header>
+<div class="container-fluid">
     <div class="d-flex justify-content-center">
         <table class="table table-sm table-striped w-100 text-center table-light">
             <thead class="table-dark">
@@ -26,7 +27,7 @@
             </thead>
             <tbody class="table-group-divider" >
                 {% for item in lista %}
-                    <tr>
+                    <tr class="align-middle">
                         <td>{{ item.provedor_nombre }}</td>
                         <td>{{ item.provedor_telefono }}</td>
                         <td>{{ item.provedor_direccion }}</td>

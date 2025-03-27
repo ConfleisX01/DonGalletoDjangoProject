@@ -1,136 +1,44 @@
 {% extends 'panel.html' %}
+
 {% load static %}
+
 {% block content %}
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Recetas</title>
-    <style>
-
-      
-        /* PUSE ESTOS ESTILOS POR EL MOMENTO PARA QUE NO SE VEA FEO  */
-
-
-
-        body {
-            color: #4A3520; /* Texto principal */
-            font-family: Arial, sans-serif;
-        }
-
-        h1 {
-            color: #C68E17; /* Color principal/marca */
-            margin-bottom: 20px;
-        }
-
-        /* Estilos para la tabla */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #F5EAD7; /* Fondo secundario */
-            margin-bottom: 20px;
-        }
-
-        .table th, .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #EFDFC0; /* Fondo destacado */
-        }
-
-        .table th {
-            background-color: #4A3520; /* Fondo pie de página */
-            color: #FFF9ED; /* Texto en pie de página */
-        }
-
-        .table tbody tr:hover {
-            background-color: #EFDFC0; /* Fondo destacado */
-        }
-
-        /* Estilos para los botones */
-        .btn {
-            background-color: #C68E17; /* Botón normal */
-            color: #FFF9ED; /* Texto en botón */
-            padding: 8px 16px;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #D9A033; /* Botón hover */
-        }
-
-        .btn:active {
-            background-color: #8B572A; /* Botón activo/seleccionado */
-        }
-
-        .btn:disabled {
-            background-color: #D9C9A3; /* Botón desactivado */
-            cursor: not-allowed;
-        }
-
-        /* Estilos para enlaces */
-        a {
-            color: #C68E17; /* Color principal/marca */
-            text-decoration: none;
-        }
-
-        a:hover {
-            color: #D9A033; /* Color hover */
-        }
-
-        /* Estilos para notificaciones (opcional) */
-        .success {
-            color: #7A9E54; /* Éxito */
-        }
-
-        .error {
-            color: #C25B56; /* Error */
-        }
-
-        .warning {
-            color: #E6B325; /* Advertencia */
-        }
-
-        .info {
-            color: #5B8BA7; /* Información */
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1 class="text-center">LISTA DE RECETAS</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Cantidad de galletas</th>
-                    <th>Peso individual</th>
-                    <th>
-                        <a href="{% url 'crear_receta' %}" class="btn">Crear receta</a>
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in lista %}
-                <tr>
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.nombre }}</td>
-                    <td>{{ item.cantidad_galletas_producidas }}</td>
-                    <td>{{ item.peso_individual }}</td>
-                    <td>
+    <header class="header">
+        <span class="header-brand mb-0 h1">Lista de recetas</span>
+        <a href="{% url 'crear_receta' %}" class="btn btn-primary">Crear receta</a>
+    </header>
+    <table class="table">
+        <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Cantidad de galletas</th>
+              <th>Peso individual</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in lista %}
+              <tr class="align-middle">
+                <td>{{ item.id }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.cantidad_galletas_producidas }}<span class="text-secondary">ud.</span></td>
+                <td>{{ item.peso_individual }}<span class="text-secondary">g.</span></td>
+                <th scope="row">
+                  <div class="d-flex gap-1">
+                    <div>
                         <a href="{% url 'editar_receta' item.id %}" class="btn btn-sm btn-warning">Editar</a>
-                    </td>
-                    <td>
+                    </div>
+                    <div>
                         <a href="{% url 'ver_receta' item.id %}" class="btn btn-sm btn-info">Ver Receta</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endblock %}
-</body>
-</html>
+                    </div>
+                    <div>
+                        <a href="{% url 'definir_insumos' item.id %}" class="btn btn-sm btn-primary">Editar Insumos</a>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            {% endfor %}
+          </tbody>
+    </table>
+{% endblock %}

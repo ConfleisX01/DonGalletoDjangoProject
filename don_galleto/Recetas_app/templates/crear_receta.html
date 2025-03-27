@@ -1,79 +1,11 @@
 {% extends 'panel.html' %}
 {% load static %}
 {% block content %}
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-
-/* !!!!!!PUSE ESTOS ESTILOS POR EL MOMENTO PARA QUE NO SE VEA FEO !!!!!! */
- 
-    body {
-        background-color: #FFF9ED; /* Fondo principal */
-        color: #4A3520; /* Texto principal */
-        font-family: Arial, sans-serif;
-    }
-
-    h2 {
-        color: #C68E17; /* Color principal/marca */
-    }
-
-    /* Estilos para el formulario */
-    .form-container {
-        background-color: #F5EAD7; /* Fondo secundario */
-        border: 1px solid #EFDFC0; /* Borde beige medio */
-        border-radius: 8px;
-        padding: 20px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .form-label {
-        color: #4A3520; /* Texto principal */
-        font-weight: bold;
-    }
-
-    .form-control {
-        background-color: #FFF9ED; /* Fondo principal */
-        border: 1px solid #D9A76A; /* Borde caramelo claro */
-        border-radius: 4px;
-        padding: 8px;
-        color: #4A3520; /* Texto principal */
-    }
-
-    .form-control:focus {
-        border-color: #C68E17; /* Borde dorado ámbar al enfocar */
-        box-shadow: 0 0 5px rgba(198, 142, 23, 0.5); /* Sombra dorada */
-    }
-
-    .form-text {
-        color: #8B572A; /* Texto marrón chocolate */
-    }
-
-    /* Estilos para el botón */
-    .btn-primary {
-        background-color: #C68E17; /* Botón normal */
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background-color: #D9A033; /* Botón hover */
-    }
-
-    .btn-primary:active {
-        background-color: #8B572A; /* Botón activo/seleccionado */
-    }
-
-    /* Estilos para íconos */
-    .fa-save {
-        margin-right: 8px;
-    }
-</style>
-
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Crear Nueva Receta</h2>
+<div class="container mt-5 border rounded w-50 p-4">
+    <div class="text-center">
+        <h2>Crear Nueva Receta</h2>
+        <p class="text-secondary">Ingresa los datos para crear una nueva receta</p>
+    </div>
     
     <form method="POST" class="form-container">
         {% csrf_token %}

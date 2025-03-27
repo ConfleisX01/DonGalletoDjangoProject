@@ -5,8 +5,7 @@ from django.views.generic import ListView, FormView
 from inventarios.models import InventarioProducto
 from Recetas_app.models import Receta
 from . import forms
-from ventas_app.models import Venta
-from decimal import Decimal
+from ventas_app.models import Venta, calcularPrecioGalleta
 
 class ListaProductosView(ListView):
     model = InventarioProducto
@@ -48,17 +47,3 @@ class DetallesProductoView(FormView):
         detalle_venta.save()
 
         return super().form_valid(form)
-    
-def calcularPrecioGalleta(tipo_compra, cantidad_galletas, precio_galleta, peso_galleta):
-    precio_galleta = Decimal(precio_galleta)  # Convertimos a Decimal para evitar problemas
-    peso_galleta = Decimal(peso_galleta)
-    cantidad_galletas = Decimal(cantidad_galletas)
-
-    if tipo_compra == 'pq': # Para paquetes
-        return (cantidad_galletas * 12) * precio_galleta
-    elif tipo_compra == 'g': # Para gramos
-        precio_por_gramo = precio_galleta / peso_galleta
-        return cantidad_galletas * precio_por_gramo
-    elif tipo_compra == 'ud': # Para unidades
-        return cantidad_galletas * precio_galleta
-    else: raise ValueError("Tipo de compra no válido") # Como llegaste hasta aqui gallo?

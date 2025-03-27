@@ -1,5 +1,5 @@
 from django import forms
-from ventas_app.models import Venta, VentaDetalle
+from ventas_app.models import VentaDetalle
 from Recetas_app.models import Receta
 
 class DetallesProductoForm(forms.ModelForm):

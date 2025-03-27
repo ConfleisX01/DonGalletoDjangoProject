@@ -2,10 +2,11 @@ from django.db import models
 
 # Modelo Venta
 class Venta(models.Model):
-    fecha = models.DateField()
-    
+    fecha = models.DateTimeField(auto_now_add=True) 
+
     def __str__(self):
-        return f"Venta del {self.fecha}"
+        return f"Venta del {self.fecha.strftime('%Y-%m-%d %H:%M:%S')}"
+
 
 # Modelo Receta
 class Receta(models.Model):

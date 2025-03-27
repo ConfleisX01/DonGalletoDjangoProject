@@ -11,12 +11,14 @@ from .models import Usuario
 # vistas admin
 
 # ver usuarios
-class listaUsuariosAdmin(PermissionRequiredMixin, TemplateView):
+class listaUsuariosAdmin( TemplateView):
     template_name = 'lista_usuarios.html'
     permission_required = 'usuarios_app.view_user'
     
+    
     def handle_no_permission(self):
         return redirect('home')
+    
     def get_context_data(self):
         users = User.objects.filter(is_staff=False, is_active=True)
         user_off = User.objects.filter(is_active=False)
@@ -26,7 +28,7 @@ class listaUsuariosAdmin(PermissionRequiredMixin, TemplateView):
                 'usuarios_off': user_off}
 
 # crear usuarios
-class CrearUsuario(PermissionRequiredMixin, FormView):
+class CrearUsuario( FormView):
     template_name = "crear_usuarios.html"
     form_class = UsuarioForm
     success_url = reverse_lazy("lista_usuarios")
@@ -34,6 +36,7 @@ class CrearUsuario(PermissionRequiredMixin, FormView):
     
     def handle_no_permission(self):
         return redirect('home')
+
     
     def form_valid(self, form):
         form.save()
@@ -42,14 +45,17 @@ class CrearUsuario(PermissionRequiredMixin, FormView):
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
 
-class editarUsuario(PermissionRequiredMixin, FormView):
+class editarUsuario( FormView):
     template_name = "editar_usuarios.html"
     form_class = EditarUsuarioForm
     success_url = reverse_lazy("lista_usuarios")
     permission_required = 'usuarios_app.change_user'
     
+    
     def handle_no_permission(self):
         return redirect('home')
+    
+
     
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

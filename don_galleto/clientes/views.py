@@ -1,13 +1,20 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.base import TemplateView
+from django.views.generic import ListView
 from django.views.generic.base import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 from . import forms
 from clientes.models import Cliente
 from django.contrib.auth.models import User
+from ventas_app.models import CarritoCompras
 
 # Create your views here.
+class ListaCarritoComprasView(ListView):
+    model = CarritoCompras
+    template_name = 'list_carrito_compas.html'
+    context_object_name = 'productos'
+
 class ClientesList(TemplateView):
     template_name = 'dashboard_clientes.html'
 

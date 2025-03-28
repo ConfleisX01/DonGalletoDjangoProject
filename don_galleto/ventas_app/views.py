@@ -5,7 +5,7 @@ from django.views.generic import ListView, FormView
 from inventarios.models import InventarioProducto
 from Recetas_app.models import Receta
 from . import forms
-from ventas_app.models import Venta, calcularPrecioGalleta
+from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 
 class ListaProductosView(ListView):
     model = InventarioProducto
@@ -25,24 +25,28 @@ class DetallesProductoView(FormView):
         return kwargs
     
     def form_valid(self, form):
-        nueva_venta = Venta.objects.create() # Creamos la relacion con la venta
+        carrito, created = CarritoCompras.objects.get_or_create(
+            usuario=self.request.user
+        )
 
         detalle_venta = form.save(commit=False)
-        detalle_venta.venta = nueva_venta
+        detalle_venta.carrito = carrito
+        detalle_venta.venta = None
 
         inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
-
         tipo_compra = detalle_venta.tipo_unidad
         cantidad_galleta = detalle_venta.cantidad
         precio_galleta = inventario.galleta.precio_galleta
         peso_galleta = inventario.galleta.peso_individual
 
-        precio_total_calculado = calcularPrecioGalleta(tipo_compra, cantidad_galleta, precio_galleta, peso_galleta)
+        precio_total_calculado = calcularPrecioGalleta(
+            tipo_compra, cantidad_galleta, precio_galleta, peso_galleta
+        )
 
         if precio_total_calculado is False:
-            form.add_error(None, "No se pudo calcular el precio.")
+            form.add_error(None, "No se pudo calcular el precio")
             return self.form_invalid(form)
-
+        
         detalle_venta.total = precio_total_calculado
         detalle_venta.save()
 

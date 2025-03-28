@@ -2,6 +2,7 @@ from django.db import models
 from Recetas_app.models import Receta
 from clientes.models import Cliente
 from decimal import Decimal
+from django.contrib.auth.models import User
 
 def calcularPrecioGalleta(tipo_compra, cantidad, precio_galleta, peso_galleta):
     cantidad = Decimal(cantidad)
@@ -20,7 +21,7 @@ class Venta(models.Model):  # Modelo de ventas
     estatus = models.BooleanField(default=False)
 
 class CarritoCompras(models.Model):  # Modelo del carrito de compras
-    usuario = models.ForeignKey(Cliente, on_delete=models.CASCADE, null=True, blank=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     creado_en = models.DateTimeField(auto_now=True)
 
     def agregar_producto(self, receta, cantidad, tipo_unidad, precio_galleta):

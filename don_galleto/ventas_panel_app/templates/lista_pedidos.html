@@ -1,45 +1,47 @@
 {% extends "panel.html" %}
-
 {% load static %}
 
 {% block content %}
     <header class="header mb-2">
         <span class="header-brand mb-0 h1">Lista de pedidos</span>
     </header>
+
     <div class="container-fluid">
         <div class="row row-cols-3 g-2">
-            {% for pedido in pedidos %}
+            {% for carrito in carritos %}
                 <div class="col d-flex">
-                    <div class="rounded shadow-sm border p-1">
+                    <div class="w-100 rounded shadow-sm border p-1">
                         <div class="container-fluid d-flex justify-content-between align-items-center border-bottom mb-4">
-                            <div><h5 class="fw-medium">Pedido <span class="text-primary">#{{pedido.id}}</span></h5></div>
-                            <div>
-                                <span class="badge text-bg-secondary">{% if pedido.venta.estatus %}Cerrado{% else %}Abierto{% endif %}</span>
+                            <h4 class="fw-medium text-primary">Pedido de {{ carrito.usuario.username }}</h4>
+                            <small class="text-secondary">ID del pedido: #{{ carrito.id }}</small>
+                        </div>
+                        <div class="container-fluid mt-3">
+                            <h5 class="fw-medium">Detalles del Pedido:</h5>
+                            <div class="row">
+                                {% for detalle in carrito.detalles.all %}
+                                    <div class="col-12">
+                                        <div class="border rounded p-2 mb-2">
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <p class="fw-bold">{{ detalle.receta.nombre }}</p>
+                                                </div>
+                                                <div class="col-4 text-end">
+                                                    <p class="fw-bold">{{ detalle.cantidad }} {{ detalle.tipo_unidad }}</p>
+                                                </div>
+                                            </div>
+                                            <p class="text-secondary">Precio Total: ${{ detalle.total }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
-                        <div class="container-fluid row row-cols-2">
-                            <div class="col"><p class="text-secondary">Realizado por:</p></div>
-                            <div class="col text-end"><p class="fw-bold text-dark">Juno Teo</p></div>
-                            <div class="col"><p class="text-secondary">Precio Total:</p></div>
-                            <div class="col text-end"><p class="fw-bold text-dark">{{pedido.total}}$</p></div>
-                            <div class="col"><p class="text-secondary">Fecha de recolección:</p></div>
-                            <div class="col text-end"><p class="fw-bold text-dark">{{pedido.fecha_recoleccion}}</p></div>
-                            <div class="col"><p class="text-secondary">Realizado el:</p></div>
-                            <div class="col text-end"><small class="text-secondary">{{pedido.venta.fecha_venta}}</small></div>
-                        </div>
-                        <div class="d-grid mb-2">
-                            <button class="btn btn-primary btn-sm" type="button">Confirmar pedido</button>
-                        </div>
-                        <div class="container-fluid d-flex justify-content-between align-items-center border-bottom mb-2">
-                            <div><h5 class="fw-medium">Detalles</h5></div>
-                            <div><small class="text-secondary">Detalles del pedido realizado</small></div>
-                        </div>
-                        <div class="container-fluid row row-cols-2 mb-2">
-                            <div class="col"><h5 class="fs-6">{{pedido.receta.nombre}}</h5></div>
-                            <div class="col text-end"><h5 class="fs-6">{{pedido.cantidad}} {{pedido.tipo_unidad}}.</h5></div>
+                        <div class="text-end mt-3">
+                            <button class="btn btn-primary btn-sm">Confirmar pedido</button>
                         </div>
                     </div>
                 </div>
+            {% empty %}
+                <p class="text-center text-muted">No hay pedidos registrados.</p>
             {% endfor %}
         </div>
     </div>

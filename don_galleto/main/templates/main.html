@@ -31,18 +31,21 @@
             <div class="d-flex">
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav align-items-center">
-                        <li class="nav-item me-3">
-                            <span class="navbar-text">Bienvenido {{ user.username }}</span>
-                        </li>
                         <li class="nav-item">
                             <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-cute btn-cute-danger">Cerrar Sesión</button>
                             </form>
                         </li>
+                        <li class="nav-item me-3">
+                            <span class="navbar-text">Bienvenido {{ user.username }}</span>
+                        </li>
                     </ul>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-cute btn-cute-success">Iniciar sesión</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                        <a class="btn btn-outline-dark rounded-pill" href="{% url 'carrito_de_compras' %}"><i class="bi bi-cart4"></i></a>
                 {% endif %}
             </div>
         </div>

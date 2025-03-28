@@ -10,10 +10,16 @@ from django.contrib.auth.models import User
 from ventas_app.models import CarritoCompras
 
 # Create your views here.
-class ListaCarritoComprasView(ListView):
-    model = CarritoCompras
-    template_name = 'list_carrito_compas.html'
-    context_object_name = 'productos'
+class ListaCarritoComprasView(TemplateView):
+    template_name = 'lista_carrito_compras.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user).first()
+        context['carrito']=carrito
+        context['detalles'] =carrito.detalles.all()
+        context['numero_productos'] =carrito.detalles.count()
+        return context
 
 class ClientesList(TemplateView):
     template_name = 'dashboard_clientes.html'

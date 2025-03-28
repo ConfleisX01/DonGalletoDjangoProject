@@ -3,5 +3,40 @@
 {% load static %}
 
 {% block content %}
-
+    <div class="container mt-5">
+        <div class="row gap-3">
+            <div class="col-7 row p-2 border rounded shadow-sm">
+                <div class="col-12"><p class="text-secondary">Lista de productos</p></div>
+                {% for detalle in detalles %}
+                    <div class="col-12 p-2 d-flex border-bottom docs-highlight">
+                        <div class="docs-highlight px-2">
+                            <img width="200px" src="{% static 'img/galletas.png' %}">
+                        </div>
+                        <div class="border-start px-2 flex-grow-1 docs-highlight">
+                            <h5>Producto: {{detalle.receta.nombre}}</h5>
+                            <p class="text-secondary">Cantidad: {{detalle.cantidad}}{{ detalle.tipo_unidad }}.</p>
+                            <p class="text-secondary">Subtotal: ${{ detalle.total }}</p>
+                        <div class="container-fluid text-end">
+                            <a class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3"></i> Eliminar producto</a>
+                        </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-5">
+                <div class="container p-2 border shadow-sm rounded position-sticky py-5">
+                    <div class="container-fluid"><h2>Total</h2></div>
+                    <div class="container-fluid"><p class="text-secondary">Productos agregados: {{numero_productos}}</p></div>
+                    <div class="container-fluid">
+                        <p class="m-0 text-secondary mt-5">Total del carrito: <span class="text-success fw-bold">${{carrito.calcular_total}}</span></p>
+                        <div class="d-grid gap-2 mt-5 mb-2 text-center">
+                            <a class="btn btn-primary btn-lg rounded-0">Hacer pedido</a>
+                            <a class="btn btn-outline-danger btn-lg rounded-0" href="">Vaciar mi carrito</a>
+                        </div>
+                        <small class="text-secondary">*Todos los productos se entregaran en la fecha designada</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

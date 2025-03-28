@@ -22,7 +22,7 @@ class Venta(models.Model):  # Modelo de ventas
 
 class CarritoCompras(models.Model):  # Modelo del carrito de compras
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    creado_en = models.DateTimeField(auto_now=True)
+    creado_el = models.DateTimeField(auto_now=True)
 
     def agregar_producto(self, receta, cantidad, tipo_unidad, precio_galleta):
         total = calcularPrecioGalleta(tipo_unidad, cantidad, precio_galleta, receta.peso_individual)

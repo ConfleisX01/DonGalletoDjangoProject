@@ -46,6 +46,10 @@ class CarritoCompras(models.Model):  # Modelo del carrito de compras
     
     def vaciar_carrito(self):
         self.detalles.all().delete()
+    
+    def contar_productos(self):
+        return self.detalles.count()
+    
 
 class VentaDetalle(models.Model):  # Modelo del detalle del pedido
     UNIDADES_DE_COMPRA = [

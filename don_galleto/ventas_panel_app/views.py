@@ -12,4 +12,6 @@ class ListaPedidosView(TemplateView):
         carritos = CarritoCompras.objects.prefetch_related("detalles").all()
 
         context["carritos"] = carritos
+        context['numero_productos'] = carritos
+        print(carritos)
         return context

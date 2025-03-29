@@ -18,7 +18,6 @@ class ListaCarritoComprasView(TemplateView):
         carrito = CarritoCompras.objects.filter(usuario=self.request.user).first()
         context['carrito']=carrito
         context['detalles'] =carrito.detalles.all()
-        context['numero_productos'] =carrito.detalles.count()
         return context
 
 class ClientesList(TemplateView):

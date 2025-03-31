@@ -1,78 +1,106 @@
 import pandas as pd
 from django.db.models import F, Sum, Count
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.utils.timezone import now, localtime
 import plotly.express as px
-from datetime import datetime, time
+from datetime import datetime, timedelta
 from django.urls import reverse_lazy
-from django.views.generic import ListView, FormView
+from django.views.generic import ListView, FormView, TemplateView
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from inventarios.models import InventarioProducto
 from Recetas_app.models import Receta
 from . import forms
 from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras
 
-def dashboard(request):
-    
-    fecha_hoy = localtime(now()).date()
-    inicio_del_dia = datetime.combine(fecha_hoy, time.min) 
-    fin_del_dia = datetime.combine(fecha_hoy, time.max)
-    objetivo_ventas = 1000
+from django.views.generic import TemplateView
+from django.db.models import Sum, F, Count
+from datetime import datetime, time
+from django.utils.timezone import localtime
+from .models import Venta, VentaDetalle
+import pandas as pd
+import plotly.express as px
 
-    ventas_diarias = (
-        VentaDetalle.objects
-        .values('venta__fecha_venta')
-        .annotate(total_vendido=Sum(F('cantidad') * F('total')))
-        .order_by('venta__fecha_venta')
-    )
-    
-    recetas_agrupadas = (
-        VentaDetalle.objects
-        .filter(venta__fecha_venta__range=[inicio_del_dia, fin_del_dia])
-        .values('receta__nombre')
-        .annotate(total_vendidas=Count('id'))
-        .order_by('-total_vendidas')
-    )
-    total_hoy = sum(
-        venta['total_vendido'] or 0 for venta in ventas_diarias if venta['venta__fecha_venta'].date() == fecha_hoy
-    )
-    
-    num_pedidos = (
-        Venta.objects
-        .filter(estatus=True, fecha_venta__range=[inicio_del_dia, fin_del_dia]) 
-        .count()  
-    )
-    
-    receta_mas_pedida = (
-        VentaDetalle.objects
-        .values('receta__nombre')
-        .annotate(total_cantidad=Sum('cantidad'))
-        .order_by('-total_cantidad')
-        .first()
-    )
-    receta_mas_pedida = receta_mas_pedida['receta__nombre'] if receta_mas_pedida else "No hay datos"
-    progreso_ventas = (total_hoy / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
-    
-    fechas = [venta['venta__fecha_venta'] for venta in ventas_diarias]
-    totales = [venta['total_vendido'] for venta in ventas_diarias]
-    df_barras = pd.DataFrame({'Fecha': fechas, 'Total Vendido': totales})
-    
-    fig_barras = px.bar(df_barras, x='Fecha', y='Total Vendido', title='Ventas Diarias', color='Total Vendido')
-    graph_html_barras = fig_barras.to_html(full_html=False)
-    
-    
-    fig_pie = px.pie(recetas_agrupadas, names='receta__nombre', values='total_vendidas', title='Recetas Vendidas')
-    graph_html_pie = fig_pie.to_html(full_html=False)
+class DashboardVentasView(TemplateView):
+    template_name = 'dashboard_ventas.html'
 
-    return render(request, 'dashboard_ventas.html', {
-        'graph_html_barras': graph_html_barras,
-        'graph_html_pie': graph_html_pie,
-        'total_hoy': total_hoy,
-        'num_pedidos': num_pedidos,
-        'receta_mas_pedida': receta_mas_pedida,
-        'objetivo_ventas': objetivo_ventas,
-        'progreso_ventas': progreso_ventas
-    })
+    def get_context_data(self, **kwargs):
+        # Obtener la fecha de hoy
+        fecha_hoy = localtime(now()).date()
+        inicio_dia = datetime.combine(fecha_hoy, datetime.min.time())
+        fin_dia  = datetime.combine(fecha_hoy, datetime.max.time())
+        objetivo_ventas = 1000
+        
+        # Ventas diarias
+        ventas_diarias = (
+            VentaDetalle.objects
+            .values('venta__fecha_venta')
+            .annotate(total_vendido=Sum(F('cantidad') * F('total')))
+            .order_by('venta__fecha_venta')
+        )
+        
+        
+        recetas_agrupadas = (
+            VentaDetalle.objects
+            .values('receta__nombre')
+            .annotate(total_vendidas=Count('id'))
+            .order_by('-total_vendidas')
+        )
 
+        # Total vendido hoy
+        total_hoy = sum(
+            venta['total_vendido'] or 0 for venta in ventas_diarias if venta['venta__fecha_venta'].date() == fecha_hoy
+        )
+
+        # Número de pedidos con estatus True
+        num_pedidos = (
+            Venta.objects
+            .filter(estatus=True, fecha_venta__range=[inicio_dia, fin_dia])
+            .count()
+        )
+
+        # Receta más pedida
+        receta_mas_pedida = (
+            VentaDetalle.objects
+            .values('receta__nombre')
+            .annotate(total_cantidad=Sum('cantidad'))
+            .order_by('-total_cantidad')
+            .first()
+        )
+        receta_mas_pedida = receta_mas_pedida['receta__nombre'] if receta_mas_pedida else "No hay datos"
+
+        # Progreso de ventas
+        progreso_ventas = (total_hoy / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
+
+        # Datos para el gráfico de barras
+        fechas = [venta['venta__fecha_venta'] for venta in ventas_diarias]
+        totales = [venta['total_vendido'] for venta in ventas_diarias]
+        df_barras = pd.DataFrame({'Fecha': fechas, 'Total Vendido': totales})
+
+        # Crear el gráfico de barras con Plotly
+        fig_barras = px.bar(df_barras, x='Fecha', y='Total Vendido', title='Ventas Diarias', color='Total Vendido')
+        graph_html_barras = fig_barras.to_html(full_html=False)
+        
+        # Convertir el queryset en un DataFrame de Pandas
+        df_recetas_agrupadas = pd.DataFrame(list(recetas_agrupadas))
+
+        # Crear el gráfico de pie con Plotly
+        fig_pie = px.pie(df_recetas_agrupadas, names='receta__nombre', values='total_vendidas', title='Recetas Vendidas')
+        graph_html_pie = fig_pie.to_html(full_html=False)
+
+        # Pasar todos los datos al contexto
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'graph_html_barras': graph_html_barras,
+            'graph_html_pie': graph_html_pie,
+            'total_hoy': total_hoy,
+            'num_pedidos': num_pedidos,
+            'receta_mas_pedida': receta_mas_pedida,
+            'objetivo_ventas': objetivo_ventas,
+            'progreso_ventas': progreso_ventas
+        })
+
+        return context
+    
 class VerListaPedidosView(ListView):
     model = CarritoCompras
     template_name = 'lista_pedidos_cliente.html'

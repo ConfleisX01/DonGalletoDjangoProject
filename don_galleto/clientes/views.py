@@ -17,43 +17,61 @@ class ConfirmarCarritoView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        venta_id = self.kwargs['venta_id'] 
-        venta = get_object_or_404(Venta, id=venta_id)
-        context['venta'] = venta
+        carrito_id = self.kwargs['carrito_id']
+        carrito = get_object_or_404(CarritoCompras, id=carrito_id)
+        context['carrito'] = carrito
         return context
 
     def form_valid(self, form):
-        venta_id = self.kwargs['venta_id']
-        venta = get_object_or_404(Venta, id=venta_id)
+        carrito_id = self.kwargs['carrito_id']
+        carrito = get_object_or_404(CarritoCompras, id=carrito_id)
+
+        venta = Venta.objects.create(estatus=0)
 
         venta.fecha_recoleccion = form.cleaned_data['fecha_recoleccion']
 
         venta.confirmar_pedido()
 
+        carrito.venta = venta
+        carrito.estatus = True
+        carrito.save()
+
+        detalles = carrito.detalles.all()
+        for detalle in detalles:
+            detalle.venta = venta
+            detalle.save()
+
         venta.save()
 
+        nuevo_carrito = CarritoCompras.objects.create(usuario=self.request.user)
+
         return super().form_valid(form)
+
 
 class ListaCarritoComprasView(TemplateView):
     template_name = 'lista_carrito_compras.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        carrito = CarritoCompras.objects.filter(usuario=self.request.user).first()
+        
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user).order_by('-id').first()
 
-        if carrito:
-            context['carrito'] = carrito
+        if not carrito:
+            context['carrito_vacio'] = True
+            context['carrito'] = None
+        else:
             detalles = carrito.detalles.all()
-
+            
             if detalles.exists():
+                context['carrito_vacio'] = False
+                context['carrito'] = carrito
                 context['detalles'] = detalles
-                context['numero_venta'] = detalles.first().venta.id
                 context['numero_productos'] = detalles.count()
             else:
+                context['carrito_vacio'] = True
+                context['carrito'] = carrito
                 context['detalles'] = []
-        else:
-            context['carrito'] = None
-            context['detalles'] = []
+
 
         return context
 

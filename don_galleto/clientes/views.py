@@ -8,7 +8,7 @@ from . import forms
 from clientes.models import Cliente
 from django.contrib.auth.models import User
 from ventas_app.models import CarritoCompras
-from ventas_app.models import Venta
+from ventas_app.models import Venta, VentaDetalle
 
 class ConfirmarCarritoView(FormView):
     template_name = 'confirmar_pedido.html'
@@ -71,9 +71,25 @@ class ListaCarritoComprasView(TemplateView):
                 context['carrito_vacio'] = True
                 context['carrito'] = carrito
                 context['detalles'] = []
-
-
         return context
+
+class VaciarCarritoView(View):
+    def get(self, request, *args, **kwargs):
+        carrito = CarritoCompras.objects.filter(usuario=request.user, estatus=False).first()
+
+        if carrito:
+            carrito.detalles.all().delete()
+            
+        return redirect('lista_productos')
+
+class EliminarProductoCarritoView(View):
+    def get(self, request, detalle_id, *args, **kwargs):
+        detalle_venta = get_object_or_404(VentaDetalle, id=detalle_id)
+
+        detalle_venta.delete()
+
+        return redirect('lista_productos')
+
 
 class ClientesList(TemplateView):
     template_name = 'dashboard_clientes.html'

@@ -53,8 +53,7 @@ INSTALLED_APPS = [
     'provedores',
     'materia_prima',
     'ventas_app',
-    'ventas_panel_app',
-    'ventas_app'
+    'ventas_panel_app'
 ]
 
 MIDDLEWARE = [

@@ -33,6 +33,13 @@
                         <li class="nav-item me-3">
                             <span class="navbar-text">Bienvenido {{ user.username }}</span>
                         </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link d-flex align-items-center" href="{% url 'panel' %}">
+                                <span class="me-2">Administración</span>
+                                <i class="bi bi-person-fill-gear"></i>
+                            </a>
+                        </li>
+
                         <li class="nav-item">
                             <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
                                 {% csrf_token %}

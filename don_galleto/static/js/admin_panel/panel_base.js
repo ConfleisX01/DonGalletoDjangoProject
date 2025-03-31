@@ -1,18 +1,9 @@
-// Funciones para la administracion
-// Seccion del CRUD de clientes
+const toastTrigger = document.getElementById('liveToastBtn')
+const toastLiveExample = document.getElementById('liveToast')
 
-function confirmarAccion(url) {
-    Swal.fire({
-        title: '¿Quieres realizar esta acción?',
-        icon: 'warning',
-        showCancelButton: false,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Sí",
-        cancelButtonText: "Cancelar"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = url
-        }
-    })
+if (toastTrigger) {
+  const toastCoreUI = coreui.Toast.getOrCreateInstance(toastLiveExample)
+  toastTrigger.addEventListener('click', () => {
+    toastCoreUI.show()
+  })
 }

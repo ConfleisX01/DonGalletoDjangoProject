@@ -8,16 +8,53 @@ from . import forms
 from clientes.models import Cliente
 from django.contrib.auth.models import User
 from ventas_app.models import CarritoCompras
+from ventas_app.models import Venta
 
-# Create your views here.
+class ConfirmarCarritoView(FormView):
+    template_name = 'confirmar_pedido.html'
+    form_class = forms.ConfirmarCarritoForm
+    success_url = reverse_lazy('lista_productos')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        venta_id = self.kwargs['venta_id'] 
+        venta = get_object_or_404(Venta, id=venta_id)
+        context['venta'] = venta
+        return context
+
+    def form_valid(self, form):
+        venta_id = self.kwargs['venta_id']
+        venta = get_object_or_404(Venta, id=venta_id)
+
+        venta.fecha_recoleccion = form.cleaned_data['fecha_recoleccion']
+
+        venta.confirmar_pedido()
+
+        venta.save()
+
+        return super().form_valid(form)
+
 class ListaCarritoComprasView(TemplateView):
     template_name = 'lista_carrito_compras.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         carrito = CarritoCompras.objects.filter(usuario=self.request.user).first()
-        context['carrito']=carrito
-        context['detalles'] =carrito.detalles.all()
+
+        if carrito:
+            context['carrito'] = carrito
+            detalles = carrito.detalles.all()
+
+            if detalles.exists():
+                context['detalles'] = detalles
+                context['numero_venta'] = detalles.first().venta.id
+                context['numero_productos'] = detalles.count()
+            else:
+                context['detalles'] = []
+        else:
+            context['carrito'] = None
+            context['detalles'] = []
+
         return context
 
 class ClientesList(TemplateView):

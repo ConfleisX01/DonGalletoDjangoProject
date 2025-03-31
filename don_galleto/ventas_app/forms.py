@@ -8,10 +8,6 @@ class DetallesProductoForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad total a comprar'})
     )
 
-    fecha_recoleccion = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
-    )
-
     receta = forms.ModelChoiceField(
         queryset=Receta.objects.all(),
         widget=forms.HiddenInput()  # Ocultamos el campo en la interfaz
@@ -19,7 +15,7 @@ class DetallesProductoForm(forms.ModelForm):
 
     class Meta:
         model = VentaDetalle
-        fields = ['cantidad', 'tipo_unidad', 'fecha_recoleccion', 'receta']
+        fields = ['cantidad', 'tipo_unidad', 'receta']
         widgets = {
             'tipo_unidad': forms.Select(attrs={"class": "form-select"})
         }

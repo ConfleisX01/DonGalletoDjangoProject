@@ -7,6 +7,17 @@ from Recetas_app.models import Receta
 from . import forms
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 
+class VerListaPedidosView(ListView):
+    model = CarritoCompras
+    template_name = 'lista_pedidos_cliente.html'
+    context_object_name = 'pedidos'
+
+    def get_queryset(self):
+        return CarritoCompras.objects.filter(
+            usuario=self.request.user,
+            detalles__venta__estatus=True
+        ).distinct()
+
 class ListaProductosView(ListView):
     model = InventarioProducto
     template_name = 'lista_productos.html'
@@ -29,9 +40,18 @@ class DetallesProductoView(FormView):
             usuario=self.request.user
         )
 
+        venta, created = Venta.objects.get_or_create(
+            id=carrito.id,
+            defaults={"estatus": False}
+        )
+
+        if venta.estatus:
+            carrito = CarritoCompras.objects.create(usuario=self.request.user)
+            venta = Venta.objects.create()
+
         detalle_venta = form.save(commit=False)
         detalle_venta.carrito = carrito
-        detalle_venta.venta = None
+        detalle_venta.venta = venta
 
         inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
         tipo_compra = detalle_venta.tipo_unidad

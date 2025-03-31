@@ -1,63 +1,54 @@
-.card {
-    background-color: #fff;
+/* Tarjetas de métricas */
+.card-metric {
+    flex: 1;
+    min-width: 250px;
+    max-width: 400px;
+    padding: 1px;
+    background: white;
     border-radius: 10px;
-    border: none;
-    position: relative;
-    box-shadow: 0 0.46875rem 2.1875rem rgba(90,97,105,0.1), 0 0.9375rem 1.40625rem rgba(90,97,105,0.1), 0 0.25rem 0.53125rem rgba(90,97,105,0.12), 0 0.125rem 0.1875rem rgba(90,97,105,0.1);
-    padding: 15px;
-    min-height: 120px;
-}
-.l-bg-cherry {
-    background: linear-gradient(to right, #493240, #f09) !important;
-    color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #007bff; /* Azul por defecto */
+    transition: border-color 0.3s ease;
+    margin-bottom: 1rem; /* Espacio inferior para separar las tarjetas */
 }
 
-.l-bg-blue-dark {
-    background: linear-gradient(to right, #373b44, #4286f4) !important;
-    color: #fff;
+.card-metric:hover {
+    border-color: #dc3545; /* Rojo al pasar el ratón */
 }
 
-.l-bg-green-dark {
-    background: linear-gradient(to right, #0a504a, #38ef7d) !important;
-    color: #fff;
+.metric-title {
+    font-size: 1rem;         /* Reducido para mayor sutileza */
+    font-weight: normal;   /* Normal en lugar de bold para que sea más suave */
+    color: #6c757d;          /* Gris más suave para el título */
+    margin-bottom: 0.25rem;   /* Reducido para acercar el título al valor */
 }
 
-.l-bg-orange-dark {
-    background: linear-gradient(to right, #a86008, #ffba56) !important;
-    color: #fff;
+.metric-value {
+    font-size: 1.5rem;       /* Un poco más pequeño que antes */
+    font-weight: bold;
+    color: #495057;          /* Un gris oscuro para el valor, en lugar de azul brillante */
 }
 
-.card .card-statistic-3 .card-icon-large .fas, .card .card-statistic-3 .card-icon-large .far, .card .card-statistic-3 .card-icon-large .fab, .card .card-statistic-3 .card-icon-large .fal {
-    font-size: 80px;
+.metric-target {
+    font-size: 0.875rem;      /* Tamaño de fuente más pequeño para el objetivo */
+    color: #adb5bd;          /* Gris más claro para el objetivo */
 }
 
-.card .card-statistic-3 .card-icon {
-    text-align: center;
-    line-height: 50px;
-    margin-left: 15px;
-    color: #000;
-    position: absolute;
-    right: -5px;
-    top: 20px;
-    opacity: 0.1;
+/* Iconos dentro de las tarjetas */
+.icon-sm {
+    font-size: 1.75rem;      /* Ligeramente más pequeño que antes */
+    color: #007bff;          /* Manteniendo el color azul */
 }
 
-.l-bg-cyan {
-    background: linear-gradient(135deg, #289cf5, #84c0ec) !important;
-    color: #fff;
+/* Estilos para la barra de progreso */
+.progress {
+    height: 8px;            /* Barra de progreso un poco más delgada */
+    background-color: #e9ecef; /* Fondo gris claro */
+    border-radius: 0.25rem;  /* Bordes redondeados */
+    margin-top: 0.5rem;     /* Espacio superior para separar la barra del texto */
 }
 
-.l-bg-green {
-    background: linear-gradient(135deg, #23bdb8 0%, #43e794 100%) !important;
-    color: #fff;
-}
-
-.l-bg-orange {
-    background: linear-gradient(to right, #f9900e, #ffba56) !important;
-    color: #fff;
-}
-
-.l-bg-cyan {
-    background: linear-gradient(135deg, #289cf5, #84c0ec) !important;
-    color: #fff;
+.progress-bar {
+    background-color: #28a745; /* Verde éxito para la barra */
+    border-radius: 0.25rem;
 }

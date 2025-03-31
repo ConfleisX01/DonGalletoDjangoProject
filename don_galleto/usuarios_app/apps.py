@@ -20,6 +20,7 @@ class UsuariosAppConfig(AppConfig):
         grupos_permisos = {
             "administrador": ["add_usuario", "change_usuario", "view_usuario"],
             "usuario": ["view_usuario"],
+            "cliente": ["view_carrito", "buy_galletas"]
         }
 
         try:

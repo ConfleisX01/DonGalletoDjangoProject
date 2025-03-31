@@ -2,15 +2,22 @@ import pandas as pd
 from django.db.models import F, Sum
 from django.shortcuts import render
 from .models import Venta, DetalleVenta
-from django.utils.timezone import now
+from django.utils.timezone import now, get_current_timezone
 import plotly.express as px
-
-
+from django.utils.timezone import localtime
+from datetime import datetime, timedelta
+import pytz
+from django.db.models import Count
 
 def dashboard(request):
-    # Obtener todas las ventas sin filtrar por fecha
-    ventas_query = Venta.objects.all()
+    # Obtener la fecha actual en la zona horaria configurada
+    fecha_hoy = localtime(now()).date()  # Obtener solo la fecha sin la hora
+    print(f"Fecha de hoy: {fecha_hoy}")
     
+    objetivo_ventas = 1000
+    
+    # Obtener todas las ventas
+    ventas_query = Venta.objects.all()
 
     # Agrupar ventas por fecha y calcular el total vendido por día
     ventas_diarias = (
@@ -19,14 +26,15 @@ def dashboard(request):
         .annotate(total_vendido=Sum(F('detalleventa__cantidad') * F('detalleventa__precio_unitario')))  # Sumar totales
         .order_by('fecha')  # Ordenar por fecha
     )
+    # Filtrar las ventas del día actual y sumar los totales
+    total_hoy = sum(
+        venta['total_vendido'] or 0 for venta in ventas_diarias if venta['fecha'].date() == fecha_hoy
+    )
+    # Número de pedidos del día actual
+    num_pedidos = sum(
+        1 for venta in ventas_diarias if venta['fecha'].date() == fecha_hoy
+    )
     
-    print(ventas_diarias)
-    fecha_hoy = now().date()
-    print(fecha_hoy)
-    
-    total_hoy = ventas_diarias.filter(fecha__date='2025-03-27').aggregate(total=Sum('total_vendido'))['total'] or 0
-    num_pedidos = ventas_query.filter(fecha__date='2025-03-27').count()
-
     # Obtener la receta más pedida
     receta_mas_pedida = (
         DetalleVenta.objects
@@ -38,27 +46,53 @@ def dashboard(request):
     )
     receta_mas_pedida = receta_mas_pedida['id_receta__nombre'] if receta_mas_pedida else "No hay datos"
 
-    objetivo_ventas = 100
     progreso_ventas = (total_hoy / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
 
-    # Extraer fechas y totales para la gráfica
+    # Extraer fechas y totales para la gráfica de barras
     fechas = [venta['fecha'] for venta in ventas_diarias]
     totales = [venta['total_vendido'] for venta in ventas_diarias]
+    df_barras = pd.DataFrame({'Fecha': fechas, 'Total Vendido': totales})
 
-    df = pd.DataFrame({'Fecha': fechas, 'Total Vendido': totales})
+    # Crear la gráfica de barras
+    fig_barras = px.bar(df_barras, x='Fecha', y='Total Vendido', labels={'x': 'Fecha', 'y': 'Total Vendido'}, 
+                        title='Ventas Diarias', color='Total Vendido', color_continuous_scale='Viridis')
+    graph_html_barras = fig_barras.to_html(full_html=False)
 
-    # Crear la gráfica con una sola línea que represente los totales por día
-    fig = px.line(df, x='Fecha', y='Total Vendido', labels={'x': 'Fecha', 'y': 'Total Vendido'}, title='Ventas Diarias')
-    graph_html = fig.to_html(full_html=False)
+
+    inicio_dia = datetime.combine(fecha_hoy, datetime.min.time())
+    fin_dia = datetime.combine(fecha_hoy, datetime.max.time())
     
-    print(total_hoy)
-    print(num_pedidos)
-    print(receta_mas_pedida)
-    print(progreso_ventas)
+    recetas_agrupadas = (
+        DetalleVenta.objects
+        .filter(id_venta__fecha__range=(inicio_dia, fin_dia)) 
+        .values('id_receta__nombre')  
+        .annotate(total_vendidas=Count('id'))  
+        .order_by('-total_vendidas')  
+    )
+    
+    
+    fig_pie = px.pie(
+    recetas_agrupadas, 
+    names='id_receta__nombre',  
+    values='total_vendidas',  
+    title='Distribución de Recetas Vendidas Hoy',
+    color='id_receta__nombre',  
+    color_discrete_sequence=px.colors.qualitative.Set1
+)
+
+# Personalizar el texto que aparece al pasar el ratón (tooltip)
+    fig_pie.update_traces(
+        hovertemplate='<b>Receta:</b> %{label}<br><b>Cantidad Vendida:</b> %{value}<extra></extra>'
+    )
+
+    # Convertir el gráfico a HTML
+    graph_html_pie = fig_pie.to_html(full_html=False)
 
 
-    return render(request, 'dashboard.html', {
-        'graph_html': graph_html,
+    
+    return render(request, 'dashboard_ventas.html', {
+        'graph_html_barras': graph_html_barras,
+        'graph_html_pie': graph_html_pie,
         'total_hoy': total_hoy,
         'num_pedidos': num_pedidos,
         'receta_mas_pedida': receta_mas_pedida,

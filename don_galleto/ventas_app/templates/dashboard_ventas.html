@@ -1,0 +1,86 @@
+{% extends "panel.html" %}
+
+{% load static %}
+{% block title %} Dashboard de Ventas Diarias{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/cardsDashboard.css' %}">
+    <div class="container-fluid mt-2 mb-5" > 
+            <div class="col-md-12 mb-1">
+                <h1 class="mb-1 text-center">Dashboard de Ventas Diarias</h1>
+            </div>
+
+            <div class="row">
+                <!-- Gráfica de barras más ancha -->
+                <div class="col-lg-6 col-md-12 mb-2">
+                    <div class="card bg-light shadow-sm w-100 h-80">
+                        <div class="card-body">
+                            <h2 class="card-title">Ventas</h2>
+                            <div class="chart mt-2">
+                                {{ graph_html_barras|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-12 mb-2">
+                    <div class="card bg-light shadow-sm w-100 h-80">
+                        <div class="card-body">
+                            <h2 class="card-title">Distribucion de recetas hoy</h2>
+                            <div class="chart mt-2">
+                                {{ graph_html_pie|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='row'>
+                <!-- Tarjetas más estrechas -->
+                <div class="col-lg-4 col-md-12 p-2">
+                    <div class="card l-bg-cherry">
+                        <div class="card-statistic-3 p-3">
+                            <h5 class="card-title mb-0">Pedidos realizados</h5>
+                            <h2 class="d-flex align-items-center mb-0">
+                                {{ num_pedidos }}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 p-2">
+                    <div class="card l-bg-blue-dark">
+                        <div class="card-statistic-3 p-3">
+                            <h5 class="card-title mb-0">Receta Más Pedida</h5>
+                            <h2 class="d-flex align-items-center mb-0">
+                                {{ receta_mas_pedida }}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 p-2">
+                    <div class="card l-bg-orange-dark">
+                        <div class="card-statistic-3 p-3">
+                            <h5 class="card-title">Objetivo de ventas</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">${{ total_hoy }}</h4>
+                                <h4 class="mb-0">{{ objetivo_ventas|floatformat:2 }}$</h4>
+                            </div>
+                            <div class="progress" style="height: 15px;">
+                                <div id="barra-progreso" 
+                                    class="progress-bar progress-bar-striped progress-bar-animated" 
+                                    role="progressbar"
+                                    data-progreso="{{ progreso_ventas|floatformat:2 }}" 
+                                    aria-valuenow="{{ progreso_ventas|floatformat:2 }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100" 
+                                    style="width: {{ progreso_ventas }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+    <script src="{% static 'js/dash_ventas.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

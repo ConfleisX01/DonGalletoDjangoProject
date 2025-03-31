@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'Recetas_app',
     'provedores',
     'materia_prima',
+    'ventas_app'
 ]
 
 MIDDLEWARE = [

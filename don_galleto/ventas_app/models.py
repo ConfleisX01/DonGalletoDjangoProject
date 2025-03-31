@@ -18,8 +18,18 @@ def calcularPrecioGalleta(tipo_compra, cantidad, precio_galleta, peso_galleta):
     return Decimal(0)
 
 class Venta(models.Model):  # Modelo de ventas
+    ESTATUS_PEDIDO = [
+        ('0', 'hecho'),
+        ('1', 'Creado'),
+        ('2', 'Listo'),
+        ('3', 'Entregado'),
+    ]
     fecha_venta = models.DateTimeField(auto_now=True)
-    estatus = models.BooleanField(default=False) # False: solo creado, True: pedido realizado y visto en la sucursal
+    estatus = models.IntegerField(
+        max_length=50,
+        choices=ESTATUS_PEDIDO,
+        default='0'
+    )
     fecha_recoleccion = models.DateField(blank=True, null=True)
 
     def confirmar_pedido(self):
@@ -29,6 +39,7 @@ class Venta(models.Model):  # Modelo de ventas
 class CarritoCompras(models.Model):  # Modelo del carrito de compras
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     creado_el = models.DateTimeField(auto_now=True)
+    estatus = models.BooleanField(default=False)# False: carrito abierto, True: carrito cerrado
 
     def agregar_producto(self, receta, cantidad, tipo_unidad, precio_galleta):
         total = calcularPrecioGalleta(tipo_unidad, cantidad, precio_galleta, receta.peso_individual)
@@ -78,4 +89,4 @@ class VentaDetalle(models.Model):  # Modelo del detalle del pedido
     )
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, null=False)
     venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True)
-    carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=True, blank=True)
+    carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=False, blank=False)

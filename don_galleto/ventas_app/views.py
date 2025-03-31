@@ -1,11 +1,9 @@
 import pandas as pd
 from django.db.models import F, Sum
 from django.shortcuts import render
-from .models import Venta, DetalleVenta
+from .models import Venta, VentaDetalle
 from django.utils.timezone import now
 import plotly.express as px
-
-
 
 def dashboard(request):
     # Obtener todas las ventas sin filtrar por fecha
@@ -16,7 +14,7 @@ def dashboard(request):
     ventas_diarias = (
         ventas_query
         .values('fecha')  # Agrupación por fecha
-        .annotate(total_vendido=Sum(F('detalleventa__cantidad') * F('detalleventa__precio_unitario')))  # Sumar totales
+        .annotate(total_vendido=Sum(F('VentaDetalle__cantidad') * F('VentaDetalle__precio_unitario')))  # Sumar totales
         .order_by('fecha')  # Ordenar por fecha
     )
     
@@ -29,7 +27,7 @@ def dashboard(request):
 
     # Obtener la receta más pedida
     receta_mas_pedida = (
-        DetalleVenta.objects
+        VentaDetalle.objects
         .filter(id_venta__in=ventas_query)
         .values('id_receta__nombre')
         .annotate(total_cantidad=Sum('cantidad'))

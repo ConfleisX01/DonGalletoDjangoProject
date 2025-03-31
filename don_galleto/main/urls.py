@@ -1,3 +1,4 @@
+from django.urls import path
 from django.urls import path, include
 from main.views import main, welcome ,principal, panel
 from django.conf.urls.static import static
@@ -5,6 +6,7 @@ from django.conf import settings
 from clientes.views import ListaCarritoComprasView
 
 urlpatterns = [
+    path('', principal, name='home'),
     path('', main, name='home'),
     path('welcome/', welcome, name='welcome'),
     path("accounts/", include("django.contrib.auth.urls")),

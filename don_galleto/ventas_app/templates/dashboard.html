@@ -1,0 +1,76 @@
+{% extends "panel.html" %}
+
+{% load static %}
+{% block title %} Dashboard de Ventas Diarias{% endblock %}
+
+{% block content %}
+    <div class="container mt-1">
+        <div class="row">
+            <div class="col-md-12 mb-1">
+                <h1 class="mb-5 text-center">Dashboard de Ventas Diarias</h1>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Gráfico de Ventas -->
+            <div class="col-lg-8 col-md-12 mb-1">
+                <div class="card bg-light shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title">Ventas</h2>
+                        <div class="chart mt-4">
+                            {{ graph_html|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Resumen -->
+            <div class="col-lg-4 col-md-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">total de ventas</h3>
+                        <p class="card-text">{{ total_hoy }}</p>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Progreso de objetivo de ventas</h3>
+                
+                        <!-- Contenedor de ventas y objetivo -->
+                        <div class="d-flex justify-content-between">
+                            <div>Ventas actuales: ${{ total_hoy }}</div>
+                            <div class="text-muted">Objetivo: ${{ objetivo_ventas }}</div>
+                        </div>
+                
+                        <!-- Barra de Progreso de Bootstrap -->
+                        <div class="progress mt-2">
+                            <div class="progress-bar 
+                                {% if progreso_ventas >= 100 %} bg-success 
+                                {% elif progreso_ventas >= 75 %} bg-info 
+                                {% elif progreso_ventas >= 50 %} bg-warning 
+                                {% else %} bg-danger {% endif %}" 
+                                role="progressbar" 
+                                style="width: {{ progreso_ventas }}%" 
+                                aria-valuenow="{{ progreso_ventas }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                                {{ progreso_ventas|floatformat:2 }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Número de pedidos</h3>
+                        <p class="card-text">{{ num_pedidos }}</p>
+                    </div>
+                </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">Receta más pedida</h3>
+                        <p class="card-text">{{ receta_mas_pedida }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

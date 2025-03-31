@@ -9,7 +9,7 @@
         {% if pedidos %}
             <div class="row row-cols-3 g-2">
                 {% for carrito in pedidos %}
-                    <div class="col p-3 border rounded shadow-sm mb-3">
+                    <div class="col p-3 border rounded shadow-sm mb-3 bg-white">
                         <h4>Pedido #{{ carrito.id }}</h4>
                         <p><strong>Fecha:</strong> {{ carrito.detalles.first.venta.fecha_venta }}</p>
                         <p><strong>Fecha de recolección:</strong> {{ carrito.detalles.first.venta.fecha_recoleccion }}</p>

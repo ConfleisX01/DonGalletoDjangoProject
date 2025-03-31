@@ -1,6 +1,18 @@
 from django.contrib.auth.models import User
 from django import forms
 from clientes.models import Cliente
+from ventas_app.models import Venta
+
+class ConfirmarCarritoForm(forms.ModelForm):
+    class Meta:
+        model = Venta
+        fields = ['fecha_recoleccion']
+        widgets = {
+            'fecha_recoleccion': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
+            }),
+        }
 
 class ClienteCrearForm(forms.ModelForm):
     first_name = forms.CharField(

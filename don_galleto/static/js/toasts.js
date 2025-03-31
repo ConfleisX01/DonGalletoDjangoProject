@@ -1,17 +1,15 @@
-/* global coreui */
-
-/**
- * --------------------------------------------------------------------------
- * CoreUI Boostrap Admin Template toasts.js
- * Licensed under MIT (https://github.com/coreui/coreui-free-bootstrap-admin-template/blob/main/LICENSE)
- * --------------------------------------------------------------------------
- */
-
 const toastTrigger = document.getElementById('liveToastBtn')
 const toastLiveExample = document.getElementById('liveToast')
 if (toastTrigger) {
   toastTrigger.addEventListener('click', () => {
     const toast = new coreui.Toast(toastLiveExample)
+    alert('toast')
     toast.show()
   })
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  var toastEl = document.getElementById("liveToast");
+  var toast = new coreui.Toast(toastEl); // Inicializar CoreUI Toast
+  toast.show();
+});

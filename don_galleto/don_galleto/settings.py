@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'Recetas_app',
     'provedores',
     'materia_prima',
+    'ventas_app',
+    'ventas_panel_app',
     'ventas_app'
 ]
 

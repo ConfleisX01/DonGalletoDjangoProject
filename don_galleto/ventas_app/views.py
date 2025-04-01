@@ -3,7 +3,7 @@ from django.db.models import F, Sum, Count
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now, localtime
 import plotly.express as px
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -11,14 +11,6 @@ from inventarios.models import InventarioProducto
 from Recetas_app.models import Receta
 from . import forms
 from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras
-
-from django.views.generic import TemplateView
-from django.db.models import Sum, F, Count
-from datetime import datetime, time
-from django.utils.timezone import localtime
-from .models import Venta, VentaDetalle
-import pandas as pd
-import plotly.express as px
 
 class DashboardVentasView(TemplateView):
     template_name = 'dashboard_ventas.html'

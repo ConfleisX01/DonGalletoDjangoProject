@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'materia_prima',
     'ventas_app',
     'ventas_panel_app',
+    'produccion_app'
 ]
 
 MIDDLEWARE = [

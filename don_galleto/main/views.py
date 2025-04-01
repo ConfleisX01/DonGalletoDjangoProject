@@ -30,9 +30,9 @@ def registro(request):
 
             #se verifica primero si es admin o solo usuario:
             if user.is_superuser:
-                return redirect("panel.html")
+                return redirect("panel")
             else:
-                return redirect("welcome.html")
+                return redirect("welcome")
     else:
         form = RegistroForm()
 

@@ -14,9 +14,14 @@ class RecetaRegistrarForm(forms.ModelForm):
         label="Ingredientes"
     )
 
+    precio_galleta = forms.DecimalField(
+        label='Precio Galleta', max_digits=10, decimal_places=5,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Precio galleta'})
+    )
+
     class Meta:
         model = Receta
-        fields = ['nombre', 'cantidad_galletas_producidas', 'peso_individual', 'ingredientes']
+        fields = ['nombre', 'cantidad_galletas_producidas', 'peso_individual', 'ingredientes', 'precio_galleta']
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
             "cantidad_galletas_producidas": forms.NumberInput(attrs={"class": "form-control"}),
@@ -50,10 +55,17 @@ class RecetaEditarForm(forms.ModelForm):
         label='',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad de galletas producidas'})
     )
+
     peso_individual = forms.DecimalField(
         label='Peso individual', max_digits=10, decimal_places=2,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Peso individual'})
     )
+
+    precio_galleta = forms.DecimalField(
+        label='Precio Galleta', max_digits=10, decimal_places=5,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Precio galleta'})
+    )
+
     ingredientes = forms.ModelMultipleChoiceField(
         queryset=MateriaPrima.objects.all(),
         label='Ingredientes',
@@ -62,7 +74,7 @@ class RecetaEditarForm(forms.ModelForm):
 
     class Meta:
         model = Receta
-        fields = ['nombre', 'cantidad_galletas_producidas', 'peso_individual', 'ingredientes']
+        fields = ['nombre', 'cantidad_galletas_producidas', 'peso_individual', 'ingredientes', 'precio_galleta']
 
     def save(self, id):
         # Obtener la receta existente

@@ -1,12 +1,76 @@
 import pandas as pd
 from django.db.models import F, Sum
 from django.shortcuts import render
-from .models import Venta, DetalleVenta
+from .models import Venta, VentaDetalle
 from django.utils.timezone import now
 import plotly.express as px
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic.base import TemplateView
+from django.views.generic import ListView, FormView
+from inventarios.models import InventarioProducto
+from Recetas_app.models import Receta
+from . import forms
+from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 
+class VerListaPedidosView(ListView):
+    model = CarritoCompras
+    template_name = 'lista_pedidos_cliente.html'
+    context_object_name = 'pedidos'
 
+    def get_queryset(self):
+        return CarritoCompras.objects.filter(
+            usuario=self.request.user,
+            detalles__venta__estatus=True
+        ).distinct()
 
+class ListaProductosView(ListView):
+    model = InventarioProducto
+    template_name = 'lista_productos.html'
+    context_object_name = 'productos'
+
+class DetallesProductoView(FormView): #Literalmente agregar el producto al carrito (no se que estaba pensando al nombrar esta vista :/)
+    template_name = 'detalles_producto.html'
+    form_class = forms.DetallesProductoForm
+    success_url = reverse_lazy('lista_productos')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        id = self.kwargs.get('id')
+        receta = get_object_or_404(Receta, id=id)
+        kwargs['initial'] = {'receta': receta}
+        return kwargs
+
+    def form_valid(self, form):
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus=False).first()
+
+        if not carrito:
+            carrito = CarritoCompras.objects.create(usuario=self.request.user)
+
+        if carrito.estatus:
+                form.add_error(None, "Este carrito está cerrado. No puedes agregar más productos.")
+                return self.form_invalid(form)
+        
+        detalle_venta = form.save(commit=False)
+        detalle_venta.carrito = carrito
+
+        inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
+        tipo_compra = detalle_venta.tipo_unidad
+        cantidad_galleta = detalle_venta.cantidad
+        precio_galleta = inventario.galleta.precio_galleta
+        peso_galleta = inventario.galleta.peso_individual
+
+        precio_total_calculado = calcularPrecioGalleta(tipo_compra, cantidad_galleta, precio_galleta, peso_galleta)
+
+        if not precio_total_calculado:
+            form.add_error(None, "No se pudo calcular el precio correctamente.")
+            return self.form_invalid(form)
+        
+        detalle_venta.total = precio_total_calculado
+        detalle_venta.save()
+
+        return super().form_valid(form)
+    
 def dashboard(request):
     # Obtener todas las ventas sin filtrar por fecha
     ventas_query = Venta.objects.all()
@@ -16,7 +80,7 @@ def dashboard(request):
     ventas_diarias = (
         ventas_query
         .values('fecha')  # Agrupación por fecha
-        .annotate(total_vendido=Sum(F('detalleventa__cantidad') * F('detalleventa__precio_unitario')))  # Sumar totales
+        .annotate(total_vendido=Sum(F('VentaDetalle__cantidad') * F('VentaDetalle__precio_unitario')))  # Sumar totales
         .order_by('fecha')  # Ordenar por fecha
     )
     
@@ -29,7 +93,7 @@ def dashboard(request):
 
     # Obtener la receta más pedida
     receta_mas_pedida = (
-        DetalleVenta.objects
+        VentaDetalle.objects
         .filter(id_venta__in=ventas_query)
         .values('id_receta__nombre')
         .annotate(total_cantidad=Sum('cantidad'))

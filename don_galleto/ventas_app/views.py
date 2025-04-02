@@ -29,8 +29,9 @@ from django.forms import inlineformset_factory
 from . import forms
 from django.shortcuts import get_object_or_404
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class VerListaPedidosView(ListView):
+class VerListaPedidosView(LoginRequiredMixin, ListView):
     model = CarritoCompras
     template_name = 'lista_pedidos_cliente.html'
     context_object_name = 'pedidos'
@@ -41,12 +42,12 @@ class VerListaPedidosView(ListView):
             detalles__venta__estatus=True
         ).distinct()
 
-class ListaProductosView(ListView):
+class ListaProductosView(LoginRequiredMixin, ListView):
     model = InventarioProducto
     template_name = 'lista_productos.html'
     context_object_name = 'productos'
 
-class DetallesProductoView(FormView): #Literalmente agregar el producto al carrito (no se que estaba pensando al nombrar esta vista :/)
+class DetallesProductoView(LoginRequiredMixin, FormView): #Literalmente agregar el producto al carrito (no se que estaba pensando al nombrar esta vista :/)
     template_name = 'detalles_producto.html'
     form_class = forms.DetallesProductoForm
     success_url = reverse_lazy('lista_productos')

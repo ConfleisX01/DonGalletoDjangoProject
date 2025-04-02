@@ -4,8 +4,9 @@ from django.views.generic.base import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 from inventarios.models import InventarioProducto, InventarioMaterial
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class inventarioProductoView(TemplateView):
+class inventarioProductoView(LoginRequiredMixin, TemplateView):
     template_name = 'inventario_productos.html'
 
     def get_context_data(self, **kwargs):
@@ -14,7 +15,7 @@ class inventarioProductoView(TemplateView):
         context['lista']=listaGalletas
         return context
     
-class inventrioMateriaView(TemplateView):
+class inventrioMateriaView(LoginRequiredMixin, TemplateView):
     template_name = 'inventario_materia.html'
 
     def get_context_data(self, **kwargs):

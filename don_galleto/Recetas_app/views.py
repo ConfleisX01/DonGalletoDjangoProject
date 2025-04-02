@@ -1,18 +1,17 @@
 from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
 from django.views.generic import FormView
 from .models import Receta
 from .forms import RecetaEditarForm
 from django.urls import reverse_lazy
-from django.views.generic import FormView
 from .forms import RecetaRegistrarForm, IngredienteRecetaForm
 from .models import Receta, IngredienteReceta
 from django.views.generic import DetailView
 from inventarios.models import InventarioProducto
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class CrearReceta(FormView):
+class CrearReceta(LoginRequiredMixin, FormView):
     template_name = 'crear_receta.html'
     form_class = RecetaRegistrarForm
     success_url = reverse_lazy('lista_receta')
@@ -39,13 +38,13 @@ class CrearReceta(FormView):
         return super().form_valid(form)
 
 
-class ListaRecetasView(TemplateView):
+class ListaRecetasView(LoginRequiredMixin, TemplateView):
     template_name = 'lista_receta.html'
     def get_context_data(self):
         lista = Receta.objects.all()
         return {'lista':lista}
     
-class EditarRecetaView(FormView):
+class EditarRecetaView(LoginRequiredMixin, FormView):
     template_name = 'editar_receta.html'
     form_class = RecetaEditarForm
     success_url = reverse_lazy('lista_receta')
@@ -63,7 +62,7 @@ class EditarRecetaView(FormView):
         form.save(id)
         return super().form_valid(form)
                 
-class VerRecetaView(DetailView): #CHECAR SI NO HAY PROBLEMA EN USAR EL DETAILVIEW , YO CREO QUE NO
+class VerRecetaView(LoginRequiredMixin, DetailView): #CHECAR SI NO HAY PROBLEMA EN USAR EL DETAILVIEW , YO CREO QUE NO
     model = Receta
     template_name = 'ver_receta.html'
     context_object_name = 'receta'

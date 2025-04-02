@@ -35,19 +35,23 @@
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav align-items-center">
                         <li class="nav-item dropdown dropstart">
-                            <a class="nav-link py-0 pe-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                              <div class="avatar avatar-md text-white bg-primary">{{ user.username.0|upper }}</div>
+                            <a class="nav-link py-0 pe-0" data-coreui-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                              <div class="avatar avatar-md text-white bg-primary">
+                                {{ user.username.0|upper }}
+                                <span class="avatar-status bg-success"></span>
+                              </div>
                             </a>
                             <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header small text-info">¡Hola, {{ user.username }}!</h6></li>
                                 <li><h6 class="dropdown-header">Menu</h6></li>
-                                <li><a class="dropdown-item text-primary" href="{% url 'carrito_de_compras' %}">Carrito de compras</a></li>
+                                <li><a class="dropdown-item" href="{% url 'carrito_de_compras' %}"><i class="bi bi-cart4 mx-1"></i>Carrito de compras</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-info" href="{% url 'two_factor:setup' %}">Configurar 2FA</a></li>
+                                <li><a class="dropdown-item " href="{% url 'two_factor:setup' %}"><i class="bi bi-shield-fill mx-1"></i>Configurar 2FA</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="post" action="{% url 'logout' %}">
                                         {% csrf_token %}
-                                        <button class="dropdown-item text-danger fw-bold" type="submit" href="{% url 'logout' %}">Cerrar Sesión</button>
+                                        <button class="dropdown-item text-danger fw-bold" type="submit" href="{% url 'logout' %}"><i class="bi bi-box-arrow-left mx-1"></i>Cerrar Sesión</button>
                                     </form>
                                 </li>
                             </ul>

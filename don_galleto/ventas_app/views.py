@@ -6,7 +6,7 @@ import plotly.express as px
 from datetime import datetime
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, TemplateView
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin,LoginRequiredMixin
 from inventarios.models import InventarioProducto
 from Recetas_app.models import Receta
 from django.contrib import messages

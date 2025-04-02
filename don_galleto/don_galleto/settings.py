@@ -63,12 +63,13 @@ INSTALLED_APPS = [
     'provedores',
     'materia_prima',
     'ventas_app',
-    'ventas_panel_app'
+    'ventas_panel_app',
     'axes', # esto es para la seguirar o bloquear la cuenta tras algunos intentos fallidos
     'django_otp',
     'django_otp.plugins.otp_totp',  # OTP basado en tiempo (como Google Authenticator)
     'django_otp.plugins.otp_static',  # Códigos de respaldo (opcional)
     'two_factor',
+
 ]
 
 MIDDLEWARE = [

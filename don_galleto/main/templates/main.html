@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.min.js" integrity="sha384-Rj9po7KQz8y0hVoeRgl1LRoQcxYkHxszkpKUdatY+9b5o35FsiENOwOWwxzWfAfF" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.bundle.min.js" integrity="sha384-8QmUFX1sl4cMveCP2+H1tyZlShMi1LeZCJJxTZeXDxOwQexlDdRLQ3O9L78gwBbe" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-PDUiPu3vDllMfrUHnurV430Qg8chPZTNhY8RUpq89lq22R3PzypXQifBpcpE1eoB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.bundle.min.js" integrity="sha384-8QmUFX1sl4cMveCP2+H1tyZlShMi1LeZCJJxTZeXDxOwQexlDdRLQ3O9L78gwBbe" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{% static 'css/formularios.css' %}">
     <link rel="stylesheet" href="{% static '/css/main.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="{% static 'js/config.js' %}"></script>
     <title>Don Galleto - Inicio</title>
 </head>
 <body>
@@ -34,21 +34,27 @@
             <div class="d-flex">
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav align-items-center">
-                        <li class="nav-item">
-                            <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-cute btn-cute-danger btn-sm mx-2">Cerrar Sesión</button>
-                            </form>
-                        </li>
-                        <li class="nav-item me-3">
-                            <span class="navbar-text">Bienvenid@ {{ user.username }}</span>
+                        <li class="nav-item dropdown dropstart">
+                            <a class="nav-link py-0 pe-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                              <div class="avatar avatar-md text-white bg-primary">{{ user.username.0|upper }}</div>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">Menu</h6></li>
+                                <li><a class="dropdown-item text-primary" href="{% url 'carrito_de_compras' %}">Carrito de compras</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-info" href="{% url 'two_factor:setup' %}">Configurar 2FA</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button class="dropdown-item text-danger fw-bold" type="submit" href="{% url 'logout' %}">Cerrar Sesión</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-cute btn-cute-success">Iniciar sesión</a>
-                {% endif %}
-                {% if user.is_authenticated %}
-                        <a class="btn btn-outline-dark rounded-pill" href="{% url 'carrito_de_compras' %}"><i class="bi bi-cart4"></i></a>
                 {% endif %}
             </div>
         </div>

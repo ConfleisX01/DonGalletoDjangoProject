@@ -35,7 +35,6 @@ class SolicitudProduccion(models.Model):
         ('RECHAZADA', 'Rechazada'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     galleta = models.ForeignKey(Receta, on_delete=models.CASCADE)
     estado = models.CharField(max_length=20, choices=ESTADOS_SOLICITUD, default='PENDIENTE')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)

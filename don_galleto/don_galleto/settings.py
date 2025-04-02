@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',  # OTP basado en tiempo (como Google Authenticator)
     'django_otp.plugins.otp_static',  # Códigos de respaldo (opcional)
     'two_factor',
+
 ]
 
 MIDDLEWARE = [

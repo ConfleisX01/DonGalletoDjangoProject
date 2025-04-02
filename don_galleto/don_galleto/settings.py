@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'ventas_app',
     'ventas_panel_app',
     'produccion_app'
+    'produccion_app',
 ]
 
 MIDDLEWARE = [
@@ -96,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dongalleto',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'Antonioleos1',
         'HOST': 'localhost',
         'PORT': '3306',
     }

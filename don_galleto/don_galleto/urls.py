@@ -17,4 +17,7 @@ urlpatterns = [
     path('usuarios/', include('usuarios_app.urls')),
     path('panel/', include('panel.urls')),
     path('provedores/', include('provedores.urls')),
+    path('materia_prima/', include('materia_prima.urls')),
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

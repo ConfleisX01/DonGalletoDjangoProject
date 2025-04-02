@@ -7,7 +7,29 @@
     <span class="header-brand" href="#">Lista de solicitudes</span>
     <ul class="header-nav">
       <li class="nav-item active">
-        <small class="text-secondary">Lista de solicitudes para la producción de lotes</small>
+        <a class="btn btn-outline-dark">Crear nueva solicitud</a>
       </li>
-  </header>
+    </ul>
+</header>
+<div class="p-4">
+  <div class="row g-4">
+    <div class="col-12 col-sm-6 col-xl-4 col-xxl-3">
+      <div class="card rounded overflow-hidden">
+        <div class="card-body p-0 d-flex align-items-center">
+          <div class="bg-primary text-white py-4 px-4 me-3">
+            <i class="bi bi-box2-fill fs-4"></i>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fs-5 fw-semibold">Galleta de chocolate</div>
+            <div class="row row-cols-3 mt-2">
+              <div class="text-uppercase fw-semibold small">$12</div>
+              <div class="text-uppercase fw-semibold small">40pz</div>
+              <span class="badge rounded-pill text-bg-secondary">Creado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}

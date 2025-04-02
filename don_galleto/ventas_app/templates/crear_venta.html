@@ -1,0 +1,186 @@
+{% extends 'panel.html' %}
+{% load static %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="card shadow-sm p-4" style="border-top: 4px solid #1d4774;">
+      <h2 class="text-center mb-4" style="color: #1d4774 ; border-bottom: 2px solid #1d4774; padding-bottom: 10px;">Registrar Venta</h2>
+
+      <form method="post" id="ventaForm">
+        {% csrf_token %}
+
+        <!-- Información de la venta -->
+        <div class="mb-4">
+          <h4 style="color: #1d4774 ; font-weight: 500;">Detalles de la Venta</h4>
+          <div class="card p-3" style="background-color: #f8f9fa; border-left: 3px solid #1d4774;">
+            {{ form.as_p }}
+          </div>
+        </div>
+
+        <!-- Información de los productos -->
+        <div class="mb-4">
+          <h4 style="color: #1d4774; font-weight: 500;">Productos en la Venta</h4>
+          <p class="text-muted small">Número de formularios generados: <strong class="text-dark">{{ formset.total_form_count }}</strong></p>
+
+          {{ formset.management_form }}
+
+          <div class="row g-3" id="productos-container">
+            {% for form in formset %}
+              {% for form, receta in forms_and_recipes %}
+                <div class="col-md-6">
+                  <!-- Card para cada producto -->
+                  <div class="card mb-3 producto-form" style="border-top: 3px solid #1d4774;">
+                    <div class="card-header bg-white">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link w-100 text-start p-0 text-decoration-none collapsed" 
+                                type="button" 
+                                data-coreui-toggle="collapse" 
+                                data-coreui-target="#collapseProducto{{ forloop.counter }}" 
+                                aria-expanded="false"
+                                style="color: #1d4774; font-weight: 500;">
+                          <i class="bi bi-caret-right-fill me-2"></i>
+                          {{ receta.nombre }}
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="collapseProducto{{ forloop.counter }}" class="collapse" data-coreui-parent="#productos-container">
+                      <div class="card-body pt-2">
+                        {{ form.as_p }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between gap-3">
+          <button type="button" class="btn btn-lg mt-3 flex-grow-1" 
+                  style="background-color: #6c757d; color: white; border: none; font-weight: 500;"
+                  id="btnTicket">
+            <i class="bi bi-receipt me-2"></i> Generar Ticket
+          </button>
+          
+          <button type="button" class="btn btn-lg mt-3 flex-grow-1" 
+                  style="background-color: #6f42c1; color: white; border: none; font-weight: 500;"
+                  id="btnResumen">
+            <i class="bi bi-eye-fill me-2"></i> Ver Resumen
+          </button>
+          
+          <button type="submit" class="btn btn-lg mt-3 flex-grow-1" 
+                  style="background-color: #198754; color: white; border: none; font-weight: 500;">
+            <i class="bi bi-check-circle-fill me-2"></i> Confirmar Venta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .form-control {
+        border: 1px solid #007BFF;
+        border-radius: 5px;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        outline: none;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+    .producto-form {
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+    .producto-form:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .form-control:focus {
+      border-color: #6f42c1;
+      box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+    }
+    .card-header {
+      border-bottom: 1px solid rgba(13, 110, 253, 0.2);
+    }
+    .btn-link:hover {
+      color: #6f42c1 !important;
+    }
+    [data-coreui-toggle="collapse"] .bi-caret-right-fill {
+      transition: transform 0.3s ease;
+    }
+    [data-coreui-toggle="collapse"].collapsed .bi-caret-right-fill {
+      transform: rotate(0);
+    }
+    [data-coreui-toggle="collapse"]:not(.collapsed) .bi-caret-right-fill {
+      transform: rotate(90deg);
+    }
+    .resumen-venta {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializar selects como nulos
+      document.querySelectorAll('select[name$="-receta"]').forEach(select => {
+        select.value = '';
+      });
+
+      const collapseElements = document.querySelectorAll('[data-coreui-toggle="collapse"]');
+      collapseElements.forEach(el => {
+        el.addEventListener('click', function() {
+          const icon = this.querySelector('i');
+          this.classList.toggle('collapsed');
+        });
+      });
+
+      // Botón de Ticket 
+      document.getElementById('btnTicket').addEventListener('click', function() {
+        Swal.fire({
+          title: 'Función no implementada',
+          text: 'La generación de tickets estará disponible en la próxima actualización',
+          icon: 'info',
+          confirmButtonColor: '#6f42c1'
+        });
+      });
+
+      // Botón de Resumen
+      document.getElementById('btnResumen').addEventListener('click', function() {
+        const fechaActual = new Date().toLocaleDateString('es-MX');
+        let totalGalletas = 0;
+        
+        // Calcular total de galletas (simulado)
+        document.querySelectorAll('input[name$="-cantidad"]').forEach(input => {
+          if(input.value) {
+            totalGalletas += parseInt(input.value);
+          }
+        });
+        
+        Swal.fire({
+          title: 'Resumen de Venta',
+          html: `
+            <div class="resumen-venta">
+              <p><strong>Fecha de Venta:</strong> ${fechaActual}</p>
+              <p><strong>Total de Galletas:</strong> ${totalGalletas}</p>
+              <p><strong>Total a Pagar:</strong> $${(totalGalletas * 15).toFixed(2)} (simulado)</p>
+              <hr>
+              <p class="small text-muted">* Los datos reales se calcularán al confirmar la venta</p>
+            </div>
+          `,
+          icon: 'info',
+          confirmButtonColor: '#6f42c1',
+          confirmButtonText: 'Entendido'
+        });
+      });
+    });
+  </script>
+{% endblock %}

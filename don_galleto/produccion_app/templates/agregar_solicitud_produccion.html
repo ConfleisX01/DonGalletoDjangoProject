@@ -1,0 +1,32 @@
+{% extends "panel.html" %}
+
+{% load static %}
+
+{% block content %}
+<header class="header">
+    <span class="header-brand" href="#">Agregar solicitud</span>
+    <ul class="header-nav">
+      <li class="nav-item active">
+        <small>Agregar una nueva solicitud de producción</small>
+      </li>
+    </ul>
+</header>
+<div class="p-4">
+    <div class="container w-50 p-5 border shadow-sm rounded">
+        <div class="container-fluid p-0 border-bottom mb-5">
+            <h5>Agregar una nueva soliciud de producción</h5>
+            <small class="text-secondary">Selecciona la receta para solicitarla</small>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button class="btn btn-primary" type="submit">Agregar solicitud</button>
+        </form>
+        <div>
+            {% for error in field.error %}
+            <div class="alert alert-warning" role="alert">{{error}}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -25,10 +25,12 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{% url 'principal' %}">Inicio</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_productos' %}">Comprar</a>
-                </li>
+
+
+             
+                
             </ul>
+               
             <div class="d-flex">
                 {% if user.is_staff or user.is_superuser %}
                 <ul class="navbar-nav align-items-center">
@@ -49,6 +51,9 @@
                     </li>
                 </ul>
             {% elif user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'lista_productos' %}">Comprar</a>
+            </li>
             <li class="nav-item me-3">
                 <span class="navbar-text">Bienvenid@ {{ user.username }}</span>
             </li>

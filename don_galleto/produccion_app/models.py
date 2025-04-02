@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from Recetas_app.models import Receta
+from datetime import timedelta
 
 class LoteGalletas(models.Model):
     ESTADOS = [

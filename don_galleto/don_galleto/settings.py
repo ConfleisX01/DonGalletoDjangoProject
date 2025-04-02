@@ -21,6 +21,16 @@ pymysql.install_as_MySQLdb()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+SESSION_COOKIE_AGE = 600  # 10 minutos en segundos
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Expira al cerrar el navegador
+SESSION_SAVE_EVERY_REQUEST = True  # Reinicia el contador con cada acción del usuario
+
+AXES_FAILURE_LIMIT = 3  # Número máximo de intentos antes de bloquear
+AXES_COOLOFF_TIME = 5  # Tiempo en minutos antes de desbloquear (opcional)
+AXES_LOCK_OUT_AT_FAILURE = True  # Bloquear tras alcanzar el límite
+AXES_RESET_ON_SUCCESS = True  # Reiniciar intentos fallidos después de un login exitoso
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -54,6 +64,7 @@ INSTALLED_APPS = [
     'materia_prima',
     'ventas_app',
     'ventas_panel_app',
+    'axes', # esto es para la seguirar o bloquear la cuenta tras algunos intentos fallidos
 ]
 
 MIDDLEWARE = [
@@ -64,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'don_galleto.urls'
@@ -111,6 +123,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,  # Mínimo 8 caracteres
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -151,3 +166,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'welcome'
 LOGOUT_REDIRECT_URL = 'principal'
+
+AUTHENTICATION_BACKENDS = (
+    'axes.backends.AxesBackend',  # Habilita el control de accesos
+    'django.contrib.auth.backends.ModelBackend',  # Backend predeterminado de Django
+)

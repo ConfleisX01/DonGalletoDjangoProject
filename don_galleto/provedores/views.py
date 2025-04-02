@@ -5,8 +5,9 @@ from django.views.generic import FormView
 from . import forms
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class lista_provedoresView(TemplateView):
+class lista_provedoresView(LoginRequiredMixin, TemplateView):
     template_name = "lista_provedores.html"
     def get_context_data(self):
         lista = Provedor.objects.all()
@@ -14,7 +15,7 @@ class lista_provedoresView(TemplateView):
             "lista": lista
         }
     
-class CrearProvedorView(FormView):
+class CrearProvedorView(LoginRequiredMixin, FormView):
     template_name = "crear_provedor.html"
     form_class = forms.ProvedorRegistrarForm
     success_url = reverse_lazy('lista_provedores')
@@ -22,7 +23,7 @@ class CrearProvedorView(FormView):
         form.save()
         return super().form_valid(form)
     
-class EditarProvedorView(FormView):
+class EditarProvedorView(LoginRequiredMixin, FormView):
     template_name = "editar_provedor.html"
     form_class = forms.ProvedorEditarForm
     success_url = reverse_lazy('lista_provedores')

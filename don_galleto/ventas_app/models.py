@@ -89,4 +89,4 @@ class VentaDetalle(models.Model):  # Modelo del detalle del pedido
     )
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, null=False)
     venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True)
-    carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=False, blank=False)
+    carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=True, blank=False)

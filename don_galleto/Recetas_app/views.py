@@ -9,7 +9,7 @@ from .models import Receta, IngredienteReceta
 from materia_prima.models import MateriaPrima
 from django.views.generic import DetailView
 
-class CrearReceta(FormView):
+class CrearReceta(LoginRequiredMixin, FormView):
     template_name = 'crear_receta.html'
     form_class = RecetaRegistrarForm
     success_url = reverse_lazy('lista_receta')
@@ -46,7 +46,7 @@ class CrearReceta(FormView):
 
 
 
-class ListaRecetasView(TemplateView):
+class ListaRecetasView(LoginRequiredMixin, TemplateView):
     template_name = 'lista_receta.html'
     def get_context_data(self):
         lista = Receta.objects.all()

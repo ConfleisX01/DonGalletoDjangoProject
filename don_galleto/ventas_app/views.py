@@ -10,10 +10,28 @@ from django.views.generic.base import TemplateView
 from django.views.generic import ListView, FormView
 from inventarios.models import InventarioProducto
 from Recetas_app.models import Receta
-from . import forms
-from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
+from django.contrib import messages
+from .forms import VentaForm, VentaDetalleForm
+from django.views.generic.edit import FormView
+from django.urls import reverse_lazy
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from .forms import VentaForm, VentaDetalleFormSet
+from django.shortcuts import render, redirect
+from django.views.generic.edit import FormView
+from django.db import transaction
+from .models import Venta, VentaDetalle
+from .forms import VentaForm, VentaDetalleFormSet
+from django.http import HttpResponseRedirect
+from django.forms import inlineformset_factory
 
-class VerListaPedidosView(ListView):
+from . import forms
+from django.shortcuts import get_object_or_404
+from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class VerListaPedidosView(LoginRequiredMixin, ListView):
     model = CarritoCompras
     template_name = 'lista_pedidos_cliente.html'
     context_object_name = 'pedidos'
@@ -24,12 +42,12 @@ class VerListaPedidosView(ListView):
             detalles__venta__estatus=True
         ).distinct()
 
-class ListaProductosView(ListView):
+class ListaProductosView(LoginRequiredMixin, ListView):
     model = InventarioProducto
     template_name = 'lista_productos.html'
     context_object_name = 'productos'
 
-class DetallesProductoView(FormView): #Literalmente agregar el producto al carrito (no se que estaba pensando al nombrar esta vista :/)
+class DetallesProductoView(LoginRequiredMixin, FormView): #Literalmente agregar el producto al carrito (no se que estaba pensando al nombrar esta vista :/)
     template_name = 'detalles_producto.html'
     form_class = forms.DetallesProductoForm
     success_url = reverse_lazy('lista_productos')
@@ -70,6 +88,84 @@ class DetallesProductoView(FormView): #Literalmente agregar el producto al carri
         detalle_venta.save()
 
         return super().form_valid(form)
+    
+    
+    
+    
+recetas = Receta.objects.all()
+
+def get_venta_detalle_formset(num_galletas):
+    return inlineformset_factory(
+        Venta,
+        VentaDetalle,
+        form=VentaDetalleForm,
+        extra=num_galletas, 
+        can_delete=True
+    )
+
+class VentaCreateView(FormView):
+    template_name = "crear_venta.html"
+    form_class = VentaForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Contar cuántas recetas hay en la base de datos
+        recetas = Receta.objects.all()
+        num_galletas = recetas.count()
+        messages.info(self.request, f"Se están generando {num_galletas} formularios para las recetas disponibles.")
+        VentaDetalleFormSet = get_venta_detalle_formset(num_galletas)
+
+        if self.request.POST:
+            context["formset"] = VentaDetalleFormSet(self.request.POST)
+        else:
+            initial_data = [{"receta": receta} for receta in recetas] if num_galletas > 0 else []
+            context["formset"] = VentaDetalleFormSet(queryset=VentaDetalle.objects.none(), initial=initial_data)
+
+        forms_and_recipes = zip(context["formset"].forms, recetas)
+        context["forms_and_recipes"] = forms_and_recipes
+
+        print(f"Formularios generados: {len(context['formset'].forms)}")
+
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context["formset"]
+        errores_stock = []  # Lista para errores de stock
+
+        with transaction.atomic():
+            venta = form.save(commit=False)
+            venta.save()
+
+            if formset.is_valid():
+                for detalle_form in formset:
+                    if not detalle_form.cleaned_data.get("receta") or not detalle_form.cleaned_data.get("cantidad"):
+                        continue  # Ignorar formularios vacíos
+
+                    detalle = detalle_form.save(commit=False)
+                    detalle.venta = venta  
+
+                    try:
+                        inventario = InventarioProducto.objects.get(galleta=detalle.receta)
+                        if inventario.cantidad >= detalle.cantidad:
+                            inventario.disminuir_cantidad(detalle.cantidad)
+                            detalle.save()
+                        else:
+                            errores_stock.append(f"Stock insuficiente para {detalle.receta.nombre}.")
+                    except InventarioProducto.DoesNotExist:
+                        errores_stock.append(f"No hay inventario registrado para {detalle.receta.nombre}.")
+
+                # Si hubo errores de stock, mostrar los mensajes pero seguir con la venta de los demás productos
+                if errores_stock:
+                    for error in errores_stock:
+                        messages.error(self.request, error)
+                    return redirect("/corteVenta")
+
+                messages.success(self.request, "Venta registrada con éxito.")
+                return redirect("/ventas/corteVenta/")
+
+        return self.form_invalid(form)
     
 def dashboard(request):
     # Obtener todas las ventas sin filtrar por fecha

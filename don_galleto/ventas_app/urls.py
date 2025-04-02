@@ -8,5 +8,5 @@ urlpatterns = [
     path('detalle_producto/<int:id>', DetallesProductoView.as_view(), name='detalle_producto'),
     path('corteVenta/', VentaCreateView.as_view(), name='corteVenta'),
     path('lista_pedidos_cliente/', VerListaPedidosView.as_view(), name='lista_pedidos_cliente'),
-    path('dashboardProductos/', dashboard, name='dashboardProductos'),
+    path('dashboard/', dashboard, name='dashboard_ventas'),
 ]

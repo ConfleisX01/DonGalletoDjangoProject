@@ -6,9 +6,10 @@ from django.urls import reverse_lazy
 from . import forms
 from materia_prima.models import MateriaPrima
 from inventarios.models import InventarioMaterial
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-class ListaMateriaPrimaView(TemplateView):
+class ListaMateriaPrimaView(LoginRequiredMixin, TemplateView):
     template_name = 'lista_materia_prima.html'
 
     def get_context_data(self, **kwargs):
@@ -17,7 +18,7 @@ class ListaMateriaPrimaView(TemplateView):
         context['lista']=lista
         return context
     
-class CrearMateriaPrimaView(FormView):
+class CrearMateriaPrimaView(LoginRequiredMixin, FormView):
     template_name = 'crear_materia_prima.html'
     form_class = forms.CrearMateriaPrimaForm
     success_url = reverse_lazy('lista_materia_prima')
@@ -27,7 +28,7 @@ class CrearMateriaPrimaView(FormView):
         InventarioMaterial.objects.create(insumo=materia_prima, cantidad=0)
         return super().form_valid(form)
     
-class EditarMateriaPrima(FormView):
+class EditarMateriaPrima(LoginRequiredMixin, FormView):
     template_name = 'editar_materia_prima.html'
     form_class = forms.EditarMateriaPrimaForm
     success_url = reverse_lazy('lista_materia_prima')

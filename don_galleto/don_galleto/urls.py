@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 from main import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('superduper_adminpanel/', admin.site.urls),
     path('', include('main.urls')),
     path('accounts/', include("django.contrib.auth.urls")),
     path('accounts/registro/', views.registro, name="registro"),

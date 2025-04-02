@@ -9,8 +9,10 @@ from clientes.models import Cliente
 from django.contrib.auth.models import User
 from ventas_app.models import CarritoCompras
 from ventas_app.models import Venta, VentaDetalle
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class ConfirmarCarritoView(FormView):
+
+class ConfirmarCarritoView(LoginRequiredMixin, FormView):
     template_name = 'confirmar_pedido.html'
     form_class = forms.ConfirmarCarritoForm
     success_url = reverse_lazy('lista_productos')
@@ -48,7 +50,7 @@ class ConfirmarCarritoView(FormView):
         return super().form_valid(form)
 
 
-class ListaCarritoComprasView(TemplateView):
+class ListaCarritoComprasView(LoginRequiredMixin, TemplateView):
     template_name = 'lista_carrito_compras.html'
 
     def get_context_data(self, **kwargs):
@@ -73,7 +75,7 @@ class ListaCarritoComprasView(TemplateView):
                 context['detalles'] = []
         return context
 
-class VaciarCarritoView(View):
+class VaciarCarritoView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         carrito = CarritoCompras.objects.filter(usuario=request.user, estatus=False).first()
 
@@ -82,7 +84,7 @@ class VaciarCarritoView(View):
             
         return redirect('lista_productos')
 
-class EliminarProductoCarritoView(View):
+class EliminarProductoCarritoView(LoginRequiredMixin, View):
     def get(self, request, detalle_id, *args, **kwargs):
         detalle_venta = get_object_or_404(VentaDetalle, id=detalle_id)
 
@@ -91,7 +93,7 @@ class EliminarProductoCarritoView(View):
         return redirect('lista_productos')
 
 
-class ClientesList(TemplateView):
+class ClientesList(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard_clientes.html'
 
     def get_context_data(self, **kwargs):
@@ -100,7 +102,7 @@ class ClientesList(TemplateView):
         context['lista']=lista
         return context
 
-class ClientesRegistrarView(FormView):
+class ClientesRegistrarView(LoginRequiredMixin, FormView):
     template_name = 'crear_cliente.html'
     form_class = forms.ClienteCrearForm
     success_url = reverse_lazy('clientes_crud')
@@ -109,7 +111,7 @@ class ClientesRegistrarView(FormView):
         form.save()
         return super().form_valid(form)
     
-class ClienteEditarView(FormView):
+class ClienteEditarView(LoginRequiredMixin, FormView):
     template_name = 'editar_cliente.html'
     form_class = forms.ClienteEditarForm
     success_url = reverse_lazy('clientes_crud')
@@ -125,7 +127,7 @@ class ClienteEditarView(FormView):
         form.save()
         return super().form_valid(form)
     
-class ClienteEliminarView(View):
+class ClienteEliminarView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user = get_object_or_404(User, id=self.kwargs['id'])
 
@@ -134,7 +136,7 @@ class ClienteEliminarView(View):
         
         return redirect('clientes_crud')
 
-class ClienteActivarView(View):
+class ClienteActivarView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user = get_object_or_404(User, id=self.kwargs['id'])
 

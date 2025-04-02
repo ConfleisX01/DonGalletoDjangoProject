@@ -98,7 +98,7 @@ def get_venta_detalle_formset(num_galletas):
         Venta,
         VentaDetalle,
         form=VentaDetalleForm,
-        extra=num_galletas,  # Se genera un formulario por cada receta disponible
+        extra=num_galletas, 
         can_delete=True
     )
 
@@ -118,15 +118,12 @@ class VentaCreateView(FormView):
         if self.request.POST:
             context["formset"] = VentaDetalleFormSet(self.request.POST)
         else:
-            # Generar datos iniciales solo si hay recetas
             initial_data = [{"receta": receta} for receta in recetas] if num_galletas > 0 else []
             context["formset"] = VentaDetalleFormSet(queryset=VentaDetalle.objects.none(), initial=initial_data)
 
-        # Combinamos las recetas con los formularios
         forms_and_recipes = zip(context["formset"].forms, recetas)
         context["forms_and_recipes"] = forms_and_recipes
 
-        # Verificar cuántos formularios se generan realmente
         print(f"Formularios generados: {len(context['formset'].forms)}")
 
         return context
@@ -162,10 +159,10 @@ class VentaCreateView(FormView):
                 if errores_stock:
                     for error in errores_stock:
                         messages.error(self.request, error)
-                    return redirect("crear_venta")
+                    return redirect("/corteVenta")
 
                 messages.success(self.request, "Venta registrada con éxito.")
-                return redirect("crear_venta")
+                return redirect("/ventas/corteVenta/")
 
         return self.form_invalid(form)
     

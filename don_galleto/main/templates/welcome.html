@@ -1,8 +1,95 @@
 {% extends "main.html" %}
 {% load static %}
 {% block content %}
-<div class="container-fluid py-2">
-    <div class="card text-bg-dark">
+  <div class="vh-100 position-relative">
+    <img src="{% static 'img/fondo_galletas.jpg' %}" class="img-fluid h-100 w-100 object-fit-cover" alt="...">
+    <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+      <h5 class="fw-bold display-4">¡Bienvenidos a Don Galleto! 🍪</h5>
+      <p class="fs-5 fw-light text-light">
+        En Don Galleto, cada galleta es una obra maestra horneada con amor y los mejores ingredientes. Desde clásicos irresistibles hasta creaciones únicas,
+          estamos aquí para endulzar tus momentos y hacer que cada bocado sea una experiencia inolvidable.
+      </p>
+      <div class="container-fluid row row-cols-4 mt-5">
+        <div class="col border-bottom">
+          <div class="text-center fs-6">
+            🍪 Recetas artesanales
+          </div>
+        </div>
+        <div class="col border-bottom">
+          <div class="text-center fs-6">
+            🌱 Ingredientes naturales
+          </div>
+        </div>
+        <div class="col border-bottom">
+          <div class="text-center fs-6">
+            🎨 Variedad creativa
+          </div>
+        </div>
+        <div class="col border-bottom">
+          <div class="text-center fs-6">
+            💸 Ventas rápidas
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <p class="fw-light fs-6 m-0">Ver mas</p>
+        <i class="bi bi-arrow-bar-down"></i>
+      </div>
+    </div>
+  </div>
+  <div class="container mt-4 p-2">
+    <div class="row row-cols-1 row-cols-md-2 align-items-center">
+        <div class="col">
+            <h2 class="mb-4 text-primary fw-bold">Sobre Don Ricoche</h2>
+            <h3 class="text-secondary fw-semibold">Nuestra Misión</h3>
+            <p>Endulzar cada momento con galletas artesanales de la más alta calidad, elaboradas con ingredientes locales y recetas tradicionales que preservan el auténtico sabor de la repostería mexicana.</p>
+            
+            <h3 class="text-secondary fw-semibold">Nuestra Visión</h3>
+            <p>Convertirnos en la marca líder de galletas artesanales en México, reconocidos por nuestra calidad, innovación y compromiso con la tradición culinaria de nuestro país.</p>
+            
+            <h3 class="text-secondary fw-semibold">Nuestros Valores</h3>
+            <p><strong>Tradición, calidad, pasión, innovación y responsabilidad social.</strong> Cada galleta es un reflejo de nuestra dedicación y amor por la repostería.</p>
+        </div>
+        <div class="col">
+            <img src="{% static 'img/fondo_galletas.jpg' %}" class="img-fluid rounded shadow" alt="Deliciosas galletas artesanales">
+        </div>
+    </div>
+  </div>
+  <div class="container mt-4 p-2">
+    <small>Servicios</small>
+    <h2 class="fw-bold">Revisa nuestros servicios</h2>
+    <div class="row row-cols-3 gy-4">
+      <div class="col">
+        <div class="p-5 border shadow-sm text-center rounded">
+          <h5 class="fs-3 fw-bold">Galletas Clásicas</h5>
+          <p class="card-text">Receta tradicional de la abuela</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="p-5 border shadow-sm text-center rounded">
+          <h5 class="fs-3 fw-bold">Galletas Integrales</h5>
+          <p class="card-text">Saludables y deliciosas</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="p-5 border shadow-sm text-center rounded">
+          <h5 class="fs-3 fw-bold">Galletas Gourmet</h5>
+          <p class="card-text">Sabores únicos y sofisticados</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer py-5 bg-dark text-white">
+    <div>
+      <a href="https://coreui.io">Don Ricoche</a>
+      <span>&copy; 2025 lazydevs.</span>
+    </div>
+    <div>
+      <span>Powered by</span>
+      <a href="https://coreui.io">CoreUI</a>
+    </div>
+  </footer>
+    <!-- <div class="card text-bg-dark">
         <img src="{% static 'img/fondo_galletas.jpg' %}" class="card-img" alt="..." style="object-fit: cover; height: 600px; object-position: center bottom;">
       
         <div class="card-img-overlay">
@@ -49,6 +136,5 @@
               </div>
             </div>
           </div>
-    </div>
-</div>
+    </div> -->
 {% endblock content %}

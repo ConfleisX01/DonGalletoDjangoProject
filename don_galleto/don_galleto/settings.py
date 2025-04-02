@@ -26,7 +26,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Expira al cerrar el navegador
 SESSION_SAVE_EVERY_REQUEST = True  # Reinicia el contador con cada acción del usuario
 
 AXES_FAILURE_LIMIT = 5  # Número máximo de intentos antes de bloquear
-AXES_COOLOFF_TIME = 1  # Tiempo en minutos antes de desbloquear (opcional)
 AXES_LOCK_OUT_AT_FAILURE = True  # Bloquear tras alcanzar el límite
 AXES_RESET_ON_SUCCESS = True  # Reiniciar intentos fallidos después de un login exitoso
 

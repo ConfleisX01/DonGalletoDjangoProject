@@ -23,6 +23,7 @@ class CrearReceta(FormView):
             nombre=form.cleaned_data["nombre"],
             cantidad_galletas_producidas=form.cleaned_data["cantidad_galletas_producidas"],
             peso_individual=form.cleaned_data["peso_individual"],
+            precio_galleta=form.cleaned_data["precio_galleta"]
         )
 
         # Asociar ingredientes a la receta
@@ -58,10 +59,10 @@ class EditarRecetaView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        # Guardar los cambios en la receta
-        id = self.kwargs.get('id')
-        form.save(id)
+        receta = form.save(commit=False)
+        receta.save()  
         return super().form_valid(form)
+
                 
 class VerRecetaView(DetailView): #CHECAR SI NO HAY PROBLEMA EN USAR EL DETAILVIEW , YO CREO QUE NO
     model = Receta

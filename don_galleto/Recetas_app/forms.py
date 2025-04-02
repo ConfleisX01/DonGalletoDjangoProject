@@ -1,64 +1,20 @@
 from django import forms
 from .models import Receta, IngredienteReceta
-from materia_prima.models import MateriaPrima
+from django.forms import inlineformset_factory
+from materia_prima.models import MateriaPrima  # Si es necesario para los ingredientes
 
-class SelectInsumos(forms.ModelMultipleChoiceField):  
-    def label_from_instance(self, obj):
-        return obj.nombre_insumo
-
-class RecetaRegistrarForm(forms.ModelForm):
-    precio_galleta = forms.DecimalField(
-        label='Precio Galleta',
-        max_digits=10,
-        decimal_places=5,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Precio galleta'})
-    )
-
-    class Meta:
-        model = Receta
-        fields = ['nombre', 'cantidad_galletas_producidas', 'peso_individual', 'precio_galleta']
-        widgets = {
-            "nombre": forms.TextInput(attrs={"class": "form-control"}),
-            "cantidad_galletas_producidas": forms.NumberInput(attrs={"class": "form-control"}),
-            "peso_individual": forms.NumberInput(attrs={"class": "form-control"}),
-        }
-
-    def save(self, commit=True):
-        receta = super().save(commit=False)  # Guarda la receta sin enviarla a la BD aún
-        if commit:
-            receta.save()  # Guarda la receta en la BD
-            ingredientes = self.cleaned_data["ingredientes"]  # Obtiene los ingredientes seleccionados
-
-            # Crear la relación en IngredienteReceta
-            for insumo in ingredientes:
-                IngredienteReceta.objects.create(
-                    receta=receta,
-                    insumo=insumo,
-                    cantidad_necesaria=0  # Puedes modificar esto para capturar la cantidad real
-                )
-
-        return receta
-
-
-class IngredienteForm(forms.ModelForm):
+# Formulario para el modelo IngredienteReceta
+class IngredienteRecetaForm(forms.ModelForm):
     class Meta:
         model = IngredienteReceta
         fields = ['insumo', 'cantidad_necesaria']
         widgets = {
             'insumo': forms.Select(attrs={'class': 'form-control'}),
-            'cantidad_necesaria': forms.NumberInput(attrs={'class': 'form-control'})
+            'cantidad_necesaria': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
         }
 
-# Formset para los ingredientes
-IngredienteFormSet = forms.inlineformset_factory(
-    Receta,
-    IngredienteReceta,
-    form=IngredienteForm,
-    extra=1,
-    can_delete=True,
-    fields=['insumo', 'cantidad_necesaria']
-)
 
+# Formulario para registrar una nueva receta
 class RecetaRegistrarForm(forms.ModelForm):
     precio_galleta = forms.DecimalField(
         label='Precio Galleta', 
@@ -79,6 +35,14 @@ class RecetaRegistrarForm(forms.ModelForm):
             "peso_individual": forms.NumberInput(attrs={"class": "form-control"}),
         }
 
+    def save(self, commit=True):
+        receta = super().save(commit=False)
+        if commit:
+            receta.save()  # Guarda la receta
+        return receta
+
+
+# Formulario para editar una receta existente
 class RecetaEditarForm(forms.ModelForm):
     class Meta:
         model = Receta
@@ -92,14 +56,16 @@ class RecetaEditarForm(forms.ModelForm):
 
     def save(self, commit=True):
         receta = super().save(commit=False)
-
         if commit:
             receta.save()  # Guardamos la receta
-
         return receta
 
-            
-class IngredienteRecetaForm(forms.ModelForm):
-    class Meta:
-        model = IngredienteReceta
-        fields = ['insumo']
+
+# Formset para los ingredientes de la receta
+IngredienteRecetaFormSet = inlineformset_factory(
+    Receta,  # Modelo padre
+    IngredienteReceta,  # Modelo relacionado
+    form=IngredienteRecetaForm,  # Formulario para los ingredientes
+    extra=1,  # Mínimo un ingrediente
+    can_delete=True  # Permite eliminar ingredientes en la edición
+)

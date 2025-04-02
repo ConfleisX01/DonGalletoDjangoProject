@@ -25,4 +25,4 @@ class IngredienteReceta(models.Model):
     cantidad_necesaria = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.receta.nombre} - {self.insumo.nombre} ({self.cantidad_necesaria})"
+        return f"{self.receta.nombre} - {self.insumo.nombre_insumo} ({self.cantidad_necesaria})"

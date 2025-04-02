@@ -1,9 +1,6 @@
 {% extends 'panel.html' %}
 
 {% block content %}
-<header class="header mb-2">
-    <span class="header-brand mb-0 h1">Editar la receta</span>
-</header>
 <div class="container w-75">
     <div class="card">
         <div class="card-header bg-primary text-white">
@@ -12,7 +9,7 @@
         <div class="card-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                
+
                 <!-- Campo: Nombre -->
                 <div class="mb-3">
                     <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
@@ -33,14 +30,29 @@
 
                 <!-- Campo: Precio galleta -->
                 <div class="mb-3">
-                    <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Precio de galleta (Unidades)</label>
+                    <label for="{{ form.precio_galleta.id_for_label }}" class="form-label">Precio de galleta</label>
                     {{ form.precio_galleta }}
                 </div>
 
-                <!-- Campo: Ingredientes -->
+                <!-- Ingredientes - Mostrar solo como texto -->
                 <div class="mb-3">
-                    <label for="{{ form.ingredientes.id_for_label }}" class="form-label">Ingredientes</label>
-                    {{ form.ingredientes }}
+                    <label for="ingredientes" class="form-label">Ingredientes</label>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Ingrediente</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ingrediente in ingredientes %}
+                            <tr>
+                                <td>{{ ingrediente.insumo }}</td>
+                                <td>{{ ingrediente.cantidad_necesaria }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Botones -->

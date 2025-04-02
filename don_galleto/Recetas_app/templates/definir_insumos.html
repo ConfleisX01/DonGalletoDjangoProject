@@ -1,9 +1,6 @@
 {% extends 'panel.html' %}
 
 {% block content %}
-<header class="header mb-2">
-    <span class="header-brand mb-0 h1">Ingredientes para la receta: {{ receta.nombre }}</span>
-</header>
 <div class="container border rounded p-4">
     <form method="post">
         {% csrf_token %}

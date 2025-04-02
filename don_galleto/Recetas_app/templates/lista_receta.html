@@ -3,44 +3,37 @@
 {% load static %}
 
 {% block content %}
-    <header class="header">
-        <span class="header-brand mb-0 h1">Lista de recetas</span>
-        <a href="{% url 'crear_receta' %}" class="btn btn-primary">Crear receta</a>
-    </header>
-    <table class="table">
-        <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Cantidad de galletas</th>
-              <th>Precio</th>
-              <th>Peso individual</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in lista %}
-              <tr class="align-middle">
-                <td>{{ item.id }}</td>
-                <td>{{ item.nombre }}</td>
-                <td>{{ item.cantidad_galletas_producidas }}<span class="text-secondary">ud.</span></td>
-                <td>{{ item.precio_galleta }}</td>
-                <td>{{ item.peso_individual }}<span class="text-secondary">g.</span></td>
-                <th scope="row">
-                  <div class="d-flex gap-1">
-                    <div>
-                        <a href="{% url 'editar_receta' item.id %}" class="btn btn-sm btn-warning">Editar</a>
-                    </div>
-                    <div>
-                        <a href="{% url 'ver_receta' item.id %}" class="btn btn-sm btn-info">Ver Receta</a>
-                    </div>
-                    <div>
-                        <a href="{% url 'definir_insumos' item.id %}" class="btn btn-sm btn-primary">Editar Insumos</a>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-            {% endfor %}
-          </tbody>
-    </table>
+
+    <div class="table-responsive mx-3">
+      <a href="{% url 'crear_receta' %}" class="btn btn-primary">Crear Receta</a>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cantidad de Galletas</th>
+                    <th>Precio</th>
+                    <th>Peso Individual</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in lista %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.nombre }}</td>
+                        <td>{{ item.cantidad_galletas_producidas }} <span class="text-secondary">ud.</span></td>
+                        <td>{{ item.precio_galleta }} <span class="text-secondary">€</span></td>
+                        <td>{{ item.peso_individual }} <span class="text-secondary">g.</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'editar_receta' item.id %}" class="btn btn-sm btn-warning">Editar</a>
+                                <a href="{% url 'ver_receta' item.id %}" class="btn btn-sm btn-info">Ver Receta</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

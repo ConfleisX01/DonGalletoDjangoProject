@@ -15,7 +15,7 @@ class Receta(models.Model):
         permissions = [("puede_ver_recetas", "Puede ver recetas")]
 
     def __str__(self):
-        return self.nombre
+        return  f" {self.id} - {self.nombre}"
 
 
 class IngredienteReceta(models.Model):

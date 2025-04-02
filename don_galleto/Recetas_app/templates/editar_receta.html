@@ -7,62 +7,76 @@
             <h1 class="card-title text-center">Editar Receta: {{ form.instance.nombre }}</h1>
         </div>
         <div class="card-body">
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" class="row">
                 {% csrf_token %}
 
-                <!-- Campo: Nombre -->
-                <div class="mb-3">
-                    <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
-                    {{ form.nombre }}
+                <!-- Formulario de edición de receta -->
+                <div class="col-md-6 mb-4">
+                    <h5 class="mb-3">Detalles de la Receta</h5>
+
+                    <!-- Campo: Nombre -->
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
+                        {{ form.nombre }}
+                    </div>
+
+                    <!-- Campo: Cantidad de galletas producidas -->
+                    <div class="mb-3">
+                        <label for="{{ form.cantidad_galletas_producidas.id_for_label }}" class="form-label">Cantidad de galletas producidas</label>
+                        {{ form.cantidad_galletas_producidas }}
+                    </div>
+
+                    <!-- Campo: Peso individual -->
+                    <div class="mb-3">
+                        <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Peso individual</label>
+                        {{ form.peso_individual }}
+                    </div>
+
+                    <!-- Campo: Precio galleta -->
+                    <div class="mb-3">
+                        <label for="{{ form.precio_galleta.id_for_label }}" class="form-label">Precio de galleta</label>
+                        {{ form.precio_galleta }}
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar cambios
+                        </button>
+                        <a href="{% url 'lista_receta' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Campo: Cantidad de galletas producidas -->
-                <div class="mb-3">
-                    <label for="{{ form.cantidad_galletas_producidas.id_for_label }}" class="form-label">Cantidad de galletas producidas</label>
-                    {{ form.cantidad_galletas_producidas }}
-                </div>
+                <!-- Tabla de ingredientes en la segunda columna -->
+                <div class="col-md-6 mb-4">
+                    <h5 class="mb-3">Ingredientes</h5>
 
-                <!-- Campo: Peso individual -->
-                <div class="mb-3">
-                    <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Peso individual</label>
-                    {{ form.peso_individual }}
-                </div>
-
-                <!-- Campo: Precio galleta -->
-                <div class="mb-3">
-                    <label for="{{ form.precio_galleta.id_for_label }}" class="form-label">Precio de galleta</label>
-                    {{ form.precio_galleta }}
-                </div>
-
-                <!-- Ingredientes - Mostrar solo como texto -->
-                <div class="mb-3">
-                    <label for="ingredientes" class="form-label">Ingredientes</label>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Ingrediente</th>
-                                <th>Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for ingrediente in ingredientes %}
-                            <tr>
-                                <td>{{ ingrediente.insumo }}</td>
-                                <td>{{ ingrediente.cantidad_necesaria }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Botones -->
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button type="submit" class="btn btn-primary me-md-2">
-                        <i class="fas fa-save"></i> Guardar cambios
-                    </button>
-                    <a href="{% url 'lista_receta' %}" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancelar
+                    <!-- Botón para redirigir a la pantalla de insumos -->
+                    <a href="{% url 'definir_insumos' pk=receta.id %}" class="btn btn-success mb-3">
+                        <i class="fas fa-edit"></i> Editar insumos
                     </a>
+                    
+                    <!-- Tabla de ingredientes -->
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Ingrediente</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ingrediente in ingredientes %}
+                                <tr>
+                                    <td>{{ ingrediente.insumo }}</td>
+                                    <td>{{ ingrediente.cantidad_necesaria }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </form>
         </div>

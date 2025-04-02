@@ -82,42 +82,45 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let totalForms = document.querySelector('#id_ingredientes-TOTAL_FORMS');
-        let container = document.querySelector('tbody');
+        let container = document.querySelector('#ingredientes-container'); // Usar el contenedor correcto
         let addButton = document.querySelector('#add-ingredient');
-
+    
         // Agregar nuevo ingrediente
         addButton.addEventListener('click', function() {
             let formNum = Number(totalForms.value);
-            let newForm = container.children[0].cloneNode(true);
-
+            let newForm = container.querySelector('.ingrediente-form').cloneNode(true); // Clonar el primer formulario
+    
             // Reemplazar índices en los nombres de los campos
-            newForm.innerHTML = newForm.innerHTML.replace(/_0-/g, `_${formNum}-`).replace(/-0-/g, `-${formNum}-`);
-
-            // Validar que no se agregue un ingrediente vacío
-            let insumoField = newForm.querySelector('input[name$="-insumo"]');
-            let cantidadField = newForm.querySelector('input[name$="-cantidad_necesaria"]');
-            if (insumoField.value && cantidadField.value) {
-                container.appendChild(newForm);
-                totalForms.value = formNum + 1;
-            } else {
-                alert('Por favor, ingrese los datos del ingrediente antes de agregarlo.');
+            newForm.innerHTML = newForm.innerHTML.replace(/-0-/g, `-${formNum}-`).replace(/_0-/g, `_${formNum}-`);
+    
+            // Reemplazar valores de los campos para que estén vacíos en el nuevo formulario
+            newForm.querySelector('select').value = '';  // Limpiar el campo de insumo
+            newForm.querySelector('input').value = '';   // Limpiar el campo de cantidad
+    
+            // Agregar el nuevo formulario al contenedor
+            container.appendChild(newForm);
+    
+            // Actualizar el valor del totalForms
+            totalForms.value = formNum + 1;
+        });
+    
+        // Eliminar ingrediente
+        container.addEventListener('click', function(event) {
+            if (event.target && event.target.classList.contains('remove-ingredient')) {
+                let row = event.target.closest('.ingrediente-form');
+                row.remove();
+                // Actualizar los índices de los formularios restantes
+                let forms = container.querySelectorAll('.ingrediente-form');
+                forms.forEach((form, index) => {
+                    form.querySelectorAll('input, select').forEach(input => {
+                        input.name = input.name.replace(/-\d+-/, `-${index}-`);
+                    });
+                });
+                totalForms.value = forms.length;
             }
         });
-
-        // Eliminar ingrediente
-        function removeIngredientButtons() {
-            let removeButtons = document.querySelectorAll('.remove-ingredient');
-            removeButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    let row = event.target.closest('tr');
-                    row.remove();
-                });
-            });
-        }
-
-        removeIngredientButtons();  // Inicializamos el evento de eliminar al cargar
-
     });
+    
 </script>
 
 

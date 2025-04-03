@@ -10,7 +10,7 @@ class ListaPedidosView(TemplateView):
         context = super().get_context_data(**kwargs)
         
         carritos = CarritoCompras.objects.filter(
-            detalles__venta__estatus=True  # Filtra por detalles que tengan una venta confirmada
+            detalles__venta__estatus='1'  # Filtra por detalles que tengan una venta confirmada
         ).distinct().prefetch_related("detalles")
 
         context["carritos"] = carritos

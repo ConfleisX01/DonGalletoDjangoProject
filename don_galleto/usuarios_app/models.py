@@ -14,4 +14,5 @@ class Usuario(models.Model):
             ('view_user', 'Can view user'),
             ('add_user', 'Can add user'),
             ('change_user', 'Can change user'),
+            ('view_dashboard', 'Can view dash')
         ]

@@ -21,7 +21,7 @@
                 {% for item in lista %}
                     <tr>
                       <th scope="row">{{item.id}}</th>
-                      <td class="text-secondary fw-bold">{{item.insumo.nombre_insumo}}</td>
+                      <td class="fw-bold">{{item.insumo.nombre_insumo}}</td>
                       <td>{{item.insumo.unidad_base}}</td>
                       <td>
                         {{item.cantidad}} {% if item.cantidad <= 0 %}

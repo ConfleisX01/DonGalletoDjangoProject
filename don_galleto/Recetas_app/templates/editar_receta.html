@@ -65,13 +65,15 @@
                                 <tr>
                                     <th>Ingrediente</th>
                                     <th>Cantidad</th>
+                                    <th>Unidad</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for ingrediente in ingredientes %}
                                 <tr>
-                                    <td>{{ ingrediente.insumo }}</td>
+                                    <td>{{ ingrediente.insumo.nombre_insumo }}</td>
                                     <td>{{ ingrediente.cantidad_necesaria }}</td>
+                                    <td>{{ ingrediente.insumo.unidad_base }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

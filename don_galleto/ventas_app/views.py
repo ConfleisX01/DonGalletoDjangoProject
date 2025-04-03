@@ -12,19 +12,14 @@ from Recetas_app.models import Receta
 from django.contrib import messages
 from .forms import VentaForm, VentaDetalleForm
 from django.views.generic.edit import FormView
-from django.urls import reverse_lazy
 from django.db import transaction
-from django.shortcuts import get_object_or_404
 from django.contrib import messages
-from .forms import VentaForm, VentaDetalleFormSet
+from .forms import VentaForm
 from django.shortcuts import render, redirect
 from django.views.generic.edit import FormView
 from django.db import transaction
 from .models import Venta, VentaDetalle
-from .forms import VentaForm, VentaDetalleFormSet
-from django.http import HttpResponseRedirect
 from django.forms import inlineformset_factory
-
 from . import forms
 from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras
 
@@ -249,66 +244,6 @@ class VentaCreateView(FormView):
 
         # Si llegamos aquí, hubo un error en el formset
         return self.form_invalid(form)
-    
-def dashboard(request):
-    # Obtener todas las ventas sin filtrar por fecha
-    ventas_query = Venta.objects.all()
-    
-
-    # Agrupar ventas por fecha y calcular el total vendido por día
-    ventas_diarias = (
-        ventas_query
-        .values('fecha')  # Agrupación por fecha
-        .annotate(total_vendido=Sum(F('VentaDetalle__cantidad') * F('VentaDetalle__precio_unitario')))  # Sumar totales
-        .order_by('fecha')  # Ordenar por fecha
-    )
-    
-    print(ventas_diarias)
-    fecha_hoy = now().date()
-    print(fecha_hoy)
-    
-    total_hoy = ventas_diarias.filter(fecha__date='2025-03-27').aggregate(total=Sum('total_vendido'))['total'] or 0
-    num_pedidos = ventas_query.filter(fecha__date='2025-03-27').count()
-
-    # Obtener la receta más pedida
-    receta_mas_pedida = (
-        VentaDetalle.objects
-        .filter(id_venta__in=ventas_query)
-        .values('id_receta__nombre')
-        .annotate(total_cantidad=Sum('cantidad'))
-        .order_by('-total_cantidad')
-        .first()
-    )
-    receta_mas_pedida = receta_mas_pedida['id_receta__nombre'] if receta_mas_pedida else "No hay datos"
-
-    objetivo_ventas = 100
-    progreso_ventas = (total_hoy / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
-
-    # Extraer fechas y totales para la gráfica
-    fechas = [venta['fecha'] for venta in ventas_diarias]
-    totales = [venta['total_vendido'] for venta in ventas_diarias]
-
-    df = pd.DataFrame({'Fecha': fechas, 'Total Vendido': totales})
-
-    # Crear la gráfica con una sola línea que represente los totales por día
-    fig = px.line(df, x='Fecha', y='Total Vendido', labels={'x': 'Fecha', 'y': 'Total Vendido'}, title='Ventas Diarias')
-    graph_html = fig.to_html(full_html=False)
-    
-    print(total_hoy)
-    print(num_pedidos)
-    print(receta_mas_pedida)
-    print(progreso_ventas)
-
-
-    return render(request, 'dashboard.html', {
-        'graph_html': graph_html,
-        'total_hoy': total_hoy,
-        'num_pedidos': num_pedidos,
-        'receta_mas_pedida': receta_mas_pedida,
-        'objetivo_ventas': objetivo_ventas,
-        'progreso_ventas': progreso_ventas
-    }) 
-    
     
 def dashboard_view(request):
     return render(request, 'dashboardProductos.html')

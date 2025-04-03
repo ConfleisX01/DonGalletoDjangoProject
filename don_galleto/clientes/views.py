@@ -9,7 +9,16 @@ from clientes.models import Cliente
 from django.contrib.auth.models import User
 from ventas_app.models import CarritoCompras
 from ventas_app.models import Venta, VentaDetalle
+from inventarios.models import InventarioProducto
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+def convertir_unidades(cantidad, tipo_unidad, peso_galleta):
+    if tipo_unidad == 'ud':
+        return cantidad
+    elif tipo_unidad == 'pq':
+        return cantidad * 12
+    elif tipo_unidad == 'g':
+        return cantidad / peso_galleta
 
 class ConfirmarCarritoView(LoginRequiredMixin, FormView):
     template_name = 'confirmar_pedido.html'
@@ -27,24 +36,40 @@ class ConfirmarCarritoView(LoginRequiredMixin, FormView):
         carrito_id = self.kwargs['carrito_id']
         carrito = get_object_or_404(CarritoCompras, id=carrito_id)
 
-        venta = Venta.objects.create(estatus='0')
-
-        venta.fecha_recoleccion = form.cleaned_data['fecha_recoleccion']
-
-        venta.confirmar_pedido()
-
-        carrito.estatus = '1'
-        carrito.save()
-
         detalles = carrito.detalles.all()
-        for detalle in detalles:
-            detalle.venta = venta
-            detalle.save()
 
-        venta.save()
+        try:
+            for detalle in detalles:
+                inventario = get_object_or_404(InventarioProducto, galleta=detalle.receta)
+                cantidad_requerida = convertir_unidades(detalle.cantidad, detalle.tipo_unidad, detalle.receta.peso_individual)
 
-        return super().form_valid(form)
+                if not inventario.verificar_stock(cantidad_requerida):
+                    form.add_error(None, f"No hay suficiente stock para {detalle.receta.nombre}.")
+                    return self.form_invalid(form)
+                
+            # Si paso el desmadre de arriba pues crea la compra.
+            venta = Venta.objects.create(estatus='0')
+            venta.fecha_recoleccion = form.cleaned_data['fecha_recoleccion']
+            venta.confirmar_pedido()
 
+            for detalle in detalles:
+                inventario = get_object_or_404(InventarioProducto, galleta=detalle.receta)
+                cantidad_requerida = convertir_unidades(detalle.cantidad, detalle.tipo_unidad, detalle.receta.peso_individual)
+
+                inventario.disminuir_cantidad(cantidad_requerida)
+
+                detalle.venta = venta
+                detalle.save()
+
+            carrito.estatus = '1'
+            carrito.save()
+            venta.save()
+
+            return super().form_valid(form)
+        except Exception as e:
+            print(f"Error al confirmar el pedido: {e}")
+            form.add_error(None, "Hubo un error al agregar confirmar el pedido")
+            return self.form_invalid(form)
 
 class ListaCarritoComprasView(LoginRequiredMixin, TemplateView):
     template_name = 'lista_carrito_compras.html'

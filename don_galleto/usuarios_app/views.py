@@ -7,16 +7,16 @@ from usuarios_app.forms import UsuarioForm, EditarUsuarioForm
 from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
 from .models import Usuario
-
-# vistas admin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # ver usuarios
-class listaUsuariosAdmin(PermissionRequiredMixin, TemplateView):
+class listaUsuariosAdmin(LoginRequiredMixin, TemplateView):
     template_name = 'lista_usuarios.html'
     permission_required = 'usuarios_app.view_user'
     
     def handle_no_permission(self):
         return redirect('home')
+    
     def get_context_data(self):
         users = User.objects.filter(is_staff=False, is_active=True)
         user_off = User.objects.filter(is_active=False)
@@ -26,7 +26,7 @@ class listaUsuariosAdmin(PermissionRequiredMixin, TemplateView):
                 'usuarios_off': user_off}
 
 # crear usuarios
-class CrearUsuario(PermissionRequiredMixin, FormView):
+class CrearUsuario(LoginRequiredMixin, FormView):
     template_name = "crear_usuarios.html"
     form_class = UsuarioForm
     success_url = reverse_lazy("lista_usuarios")
@@ -34,6 +34,7 @@ class CrearUsuario(PermissionRequiredMixin, FormView):
     
     def handle_no_permission(self):
         return redirect('home')
+
     
     def form_valid(self, form):
         form.save()
@@ -42,7 +43,7 @@ class CrearUsuario(PermissionRequiredMixin, FormView):
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
 
-class editarUsuario(PermissionRequiredMixin, FormView):
+class editarUsuario(LoginRequiredMixin, FormView):
     template_name = "editar_usuarios.html"
     form_class = EditarUsuarioForm
     success_url = reverse_lazy("lista_usuarios")

@@ -1,14 +1,99 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.base import TemplateView
+from django.views.generic import ListView
 from django.views.generic.base import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 from . import forms
 from clientes.models import Cliente
 from django.contrib.auth.models import User
+from ventas_app.models import CarritoCompras
+from ventas_app.models import Venta, VentaDetalle
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-# Create your views here.
-class ClientesList(TemplateView):
+
+class ConfirmarCarritoView(LoginRequiredMixin, FormView):
+    template_name = 'confirmar_pedido.html'
+    form_class = forms.ConfirmarCarritoForm
+    success_url = reverse_lazy('lista_productos')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        carrito_id = self.kwargs['carrito_id']
+        carrito = get_object_or_404(CarritoCompras, id=carrito_id)
+        context['carrito'] = carrito
+        return context
+
+    def form_valid(self, form):
+        carrito_id = self.kwargs['carrito_id']
+        carrito = get_object_or_404(CarritoCompras, id=carrito_id)
+
+        venta = Venta.objects.create(estatus=0)
+
+        venta.fecha_recoleccion = form.cleaned_data['fecha_recoleccion']
+
+        venta.confirmar_pedido()
+
+        carrito.venta = venta
+        carrito.estatus = True
+        carrito.save()
+
+        detalles = carrito.detalles.all()
+        for detalle in detalles:
+            detalle.venta = venta
+            detalle.save()
+
+        venta.save()
+
+        nuevo_carrito = CarritoCompras.objects.create(usuario=self.request.user)
+
+        return super().form_valid(form)
+
+
+class ListaCarritoComprasView(LoginRequiredMixin, TemplateView):
+    template_name = 'lista_carrito_compras.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user).order_by('-id').first()
+
+        if not carrito:
+            context['carrito_vacio'] = True
+            context['carrito'] = None
+        else:
+            detalles = carrito.detalles.all()
+            
+            if detalles.exists():
+                context['carrito_vacio'] = False
+                context['carrito'] = carrito
+                context['detalles'] = detalles
+                context['numero_productos'] = detalles.count()
+            else:
+                context['carrito_vacio'] = True
+                context['carrito'] = carrito
+                context['detalles'] = []
+        return context
+
+class VaciarCarritoView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        carrito = CarritoCompras.objects.filter(usuario=request.user, estatus=False).first()
+
+        if carrito:
+            carrito.detalles.all().delete()
+            
+        return redirect('lista_productos')
+
+class EliminarProductoCarritoView(LoginRequiredMixin, View):
+    def get(self, request, detalle_id, *args, **kwargs):
+        detalle_venta = get_object_or_404(VentaDetalle, id=detalle_id)
+
+        detalle_venta.delete()
+
+        return redirect('lista_productos')
+
+
+class ClientesList(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard_clientes.html'
 
     def get_context_data(self, **kwargs):
@@ -17,7 +102,7 @@ class ClientesList(TemplateView):
         context['lista']=lista
         return context
 
-class ClientesRegistrarView(FormView):
+class ClientesRegistrarView(LoginRequiredMixin, FormView):
     template_name = 'crear_cliente.html'
     form_class = forms.ClienteCrearForm
     success_url = reverse_lazy('clientes_crud')
@@ -26,7 +111,7 @@ class ClientesRegistrarView(FormView):
         form.save()
         return super().form_valid(form)
     
-class ClienteEditarView(FormView):
+class ClienteEditarView(LoginRequiredMixin, FormView):
     template_name = 'editar_cliente.html'
     form_class = forms.ClienteEditarForm
     success_url = reverse_lazy('clientes_crud')
@@ -42,7 +127,7 @@ class ClienteEditarView(FormView):
         form.save()
         return super().form_valid(form)
     
-class ClienteEliminarView(View):
+class ClienteEliminarView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user = get_object_or_404(User, id=self.kwargs['id'])
 
@@ -51,7 +136,7 @@ class ClienteEliminarView(View):
         
         return redirect('clientes_crud')
 
-class ClienteActivarView(View):
+class ClienteActivarView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user = get_object_or_404(User, id=self.kwargs['id'])
 

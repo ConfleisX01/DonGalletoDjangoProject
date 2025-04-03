@@ -21,18 +21,6 @@ html {
     color: #3a3a3a;
   }
   
-  a {
-    color: #fff;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-  
-  a:focus,
-  a:hover {
-    color: #ff9966;
-    text-decoration: underline;
-  }
-  
   body.login {
     background-size: 200px;
     background-blend-mode: overlay;
@@ -152,6 +140,23 @@ html {
 .login-form input.is-invalid {
   border: 2px solid #ffcccc;
   background-color: rgba(255, 204, 204, 0.1);
+}
+
+#id_username, #id_password {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Efecto al enfocar los inputs */
+.input-field:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
 }
 
 .btn-cute {

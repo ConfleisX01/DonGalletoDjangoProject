@@ -247,3 +247,26 @@ class VentaCreateView(FormView):
     
 def dashboard_view(request):
     return render(request, 'dashboardProductos.html')
+
+
+
+class ListaVentasView(ListView):
+    model = Venta
+    template_name = "lista_ventas.html"
+    context_object_name = "ventas"
+
+    def get_queryset(self):
+        # Obtener las ventas con los detalles
+        ventas = Venta.objects.all().prefetch_related('detalles').annotate(
+            total_venta=Sum('detalles__total')
+        ).order_by('-fecha_venta')
+
+        # Calcular el precio unitario y pasarlo al contexto de la plantilla
+        for venta in ventas:
+            for detalle in venta.detalles.all():
+                if detalle.cantidad > 0:
+                    detalle.precio_unitario = detalle.total / detalle.cantidad
+                else:
+                    detalle.precio_unitario = 0
+        return ventas
+

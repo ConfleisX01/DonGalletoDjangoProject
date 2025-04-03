@@ -133,8 +133,8 @@ class DetallesProductoView(LoginRequiredMixin, FormView): #Literalmente agregar 
         return kwargs
     
     def form_valid(self, form):
-        carrito, _ = CarritoCompras.objects.get_or_create(usuario=self.request.user)
-        venta, _ = Venta.objects.get_or_create(id=carrito.id, defaults={"estatus": False})
+        carrito, created = CarritoCompras.objects.get_or_create(usuario=self.request.user, estatus=0)
+        venta, created = Venta.objects.get_or_create(id=carrito.id, defaults={"estatus": False})
         
         if venta.estatus:
             carrito = CarritoCompras.objects.create(usuario=self.request.user)

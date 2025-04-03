@@ -110,10 +110,12 @@ class VentaCreateView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Contar cuántas recetas hay en la base de datos
+        # Obtener recetas disponibles
         recetas = Receta.objects.all()
         num_galletas = recetas.count()
         messages.info(self.request, f"Se están generando {num_galletas} formularios para las recetas disponibles.")
+        
+        # Crear formset
         VentaDetalleFormSet = get_venta_detalle_formset(num_galletas)
 
         if self.request.POST:
@@ -122,49 +124,66 @@ class VentaCreateView(FormView):
             initial_data = [{"receta": receta} for receta in recetas] if num_galletas > 0 else []
             context["formset"] = VentaDetalleFormSet(queryset=VentaDetalle.objects.none(), initial=initial_data)
 
-        forms_and_recipes = zip(context["formset"].forms, recetas)
-        context["forms_and_recipes"] = forms_and_recipes
-
-        print(f"Formularios generados: {len(context['formset'].forms)}")
+        # Combinar formularios con recetas para mostrar en template
+        context["forms_and_recipes"] = zip(context["formset"].forms, recetas)
 
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context["formset"]
-        errores_stock = []  # Lista para errores de stock
+        errores_stock = []
 
         with transaction.atomic():
+            # Guardar la venta principal
             venta = form.save(commit=False)
+            venta.estatus = '0'  # Establecer estatus como 'hecho'
             venta.save()
 
             if formset.is_valid():
                 for detalle_form in formset:
-                    if not detalle_form.cleaned_data.get("receta") or not detalle_form.cleaned_data.get("cantidad"):
-                        continue  # Ignorar formularios vacíos
+                    detalle_data = detalle_form.cleaned_data
+                    
+                    # Saltar formularios vacíos o sin cantidad
+                    if not detalle_data.get("receta") or not detalle_data.get("cantidad") or detalle_data["cantidad"] <= 0:
+                        continue
 
-                    detalle = detalle_form.save(commit=False)
-                    detalle.venta = venta  
-
+                    # Verificar inventario antes de procesar
                     try:
-                        inventario = InventarioProducto.objects.get(galleta=detalle.receta)
-                        if inventario.cantidad >= detalle.cantidad:
-                            inventario.disminuir_cantidad(detalle.cantidad)
-                            detalle.save()
-                        else:
-                            errores_stock.append(f"Stock insuficiente para {detalle.receta.nombre}.")
+                        inventario = InventarioProducto.objects.get(galleta=detalle_data["receta"])
+                        if inventario.cantidad < detalle_data["cantidad"]:
+                            errores_stock.append(f"Stock insuficiente para {detalle_data['receta'].nombre}.")
+                            continue
                     except InventarioProducto.DoesNotExist:
-                        errores_stock.append(f"No hay inventario registrado para {detalle.receta.nombre}.")
+                        errores_stock.append(f"No hay inventario registrado para {detalle_data['receta'].nombre}.")
+                        continue
 
-                # Si hubo errores de stock, mostrar los mensajes pero seguir con la venta de los demás productos
-                if errores_stock:
-                    for error in errores_stock:
-                        messages.error(self.request, error)
-                    return redirect("/corteVenta")
+                    # Crear detalle de venta
+                    detalle = VentaDetalle(
+                        venta=venta,
+                        receta=detalle_data["receta"],
+                        cantidad=detalle_data["cantidad"],
+                        tipo_unidad=detalle_data.get("tipo_unidad", "ud"),
+                        # Calcula el total según tu lógica de negocio
+                        total=0  # Aquí deberías calcular el total basado en precio y cantidad
+                    )
+                    detalle.save()
 
-                messages.success(self.request, "Venta registrada con éxito.")
-                return redirect("/ventas/corteVenta/")
+                    # Actualizar inventario
+                    inventario.disminuir_cantidad(detalle.cantidad)
+                    inventario.save()
 
+            # Manejar errores de stock después del procesamiento
+            if errores_stock:
+                for error in errores_stock:
+                    messages.error(self.request, error)
+                # Aún así redirigimos porque algunos productos pudieron haberse vendido
+                return redirect("/corteVenta")
+
+            messages.success(self.request, "Venta registrada con éxito.")
+            return redirect("/ventas/corteVenta/")
+
+        # Si llegamos aquí, hubo un error en el formset
         return self.form_invalid(form)
     
 def dashboard(request):
@@ -224,4 +243,8 @@ def dashboard(request):
         'receta_mas_pedida': receta_mas_pedida,
         'objetivo_ventas': objetivo_ventas,
         'progreso_ventas': progreso_ventas
-    })
+    }) 
+    
+    
+def dashboard_view(request):
+    return render(request, 'dashboardProductos.html')

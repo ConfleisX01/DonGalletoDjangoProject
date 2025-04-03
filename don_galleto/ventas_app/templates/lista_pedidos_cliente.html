@@ -7,10 +7,11 @@
         <h2 class="mb-4">Mis Pedidos</h2>
         
         {% if pedidos %}
-            <div class="row row-cols-3 g-2">
+            <div class="row row-cols-3 g-5">
                 {% for carrito in pedidos %}
-                    <div class="col p-3 border rounded shadow-sm mb-3 bg-white">
-                        <h4>Pedido #{{ carrito.id }}</h4>
+                <div class="col d-flex">
+                    <div class="p-4 border rounded shadow-sm mb-3 bg-white">
+                        <h4>Información del pedido</h4>
                         <p><strong>Fecha:</strong> {{ carrito.detalles.first.venta.fecha_venta }}</p>
                         <p><strong>Fecha de recolección:</strong> {{ carrito.detalles.first.venta.fecha_recoleccion }}</p>
                         <p><strong>Estado:</strong> 
@@ -20,6 +21,7 @@
                                 <span class="text-warning">Pendiente</span>
                             {% endif %}
                         </p>
+                        <p><strong>Total:</strong> ${{ carrito.calcular_total }}</p>
                         <h5>Productos:</h5>
                         <ul>
                             {% for detalle in carrito.detalles.all %}
@@ -27,6 +29,7 @@
                             {% endfor %}
                         </ul>
                     </div>
+                </div>
                 {% endfor %}
             </div>
         {% else %}

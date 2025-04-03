@@ -18,19 +18,33 @@
             </div>
           </div>
           <div class="container-fluid">
-            <div class="mb-2">
+            <div class="mb-2 form-with-input">
               <label class="form-label m-0 text-secondary" for="id_username">Usuario</label>
               {{ form.username }}
+              {% if form.username.errors %}
+                <div class="text-danger">
+                  {% for error in form.username.errors %}
+                    <p>{{ error }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
-            <div class="">
+            <div class="mb-2">
               <label class="form-label m-0 text-secondary" for="id_password">Contraseña</label>
               {{ form.password }}
+              {% if form.password.errors %}
+                <div class="text-danger">
+                  {% for error in form.password.errors %}
+                    <p>{{ error }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
             <button class="btn btn-primary w-100 py-3" type="submit">Iniciar Sesión</button>
           </div>
           <div class="mt-2 container-fluid d-flex justify-content-between">
             <a class="text-decoration-none" href="{% url 'registro' %}">Registrarse</a>
-            <a class="text-decoration-none" href="{% url 'password_reset' %}">Olvide la contraseña</a>
+            <a class="text-decoration-none" href="{% url 'password_reset' %}">Olvidé la contraseña</a>
           </div>
         </form>
       </div>
@@ -40,47 +54,4 @@
     </div>
   </div>
 </div>
-  <!-- <form method="post" class="container mt-4" action="{% url 'login' %}">
-    {% csrf_token %}
-    <div class="container d-flex justify-content-center align-items-center">
-        <div class="login-container-wrapper clearfix">                     
-            <h1 class="text-center"><i class="bi bi-cookie"></i> Inicio de Sesión </h1>            
-            <div class="tab-content">
-                <div class="tab-pane active" id="login">
-                    <div class="login-form">
-                        <div class="mb-3">
-                            <label class="form-label">{{ form.username.label }}</label>
-                            <div class="input-container">
-                                  {{ form.username }}
-                            </div>
-                        </div>
-                                
-                        <div class="mb-3">
-                            <label class="form-label" required>{{ form.password.label }}</label>
-                            <div class="input-container">
-                                  {{ form.password }}
-                            </div>
-                        </div>
-                                
-                        <div class="d-flex justify-content-center">
-                            <input type="submit" class="btn btn-outline-success mt-3" value="Iniciar Sesión">
-                            <input type="hidden" name="next" value="{{ next }}">
-                            <a href="{% url 'registro' %}" class="btn btn-outline-danger mt-3">Registrarse</a>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                          <a href="{% url 'two_factor:setup' %}">Configurar 2FA</a>
-                          <a href="{% url 'two_factor:login' %}">Iniciar sesión con 2FA</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br>
-            <p class="mb-3">
-                <a href="{% url 'password_reset' %}">¿Olvidaste la contraseña mi amor?</a>
-            </p>
-        </div>
-    </div>
-  </form> -->
-</body>
-
 {% endblock %}

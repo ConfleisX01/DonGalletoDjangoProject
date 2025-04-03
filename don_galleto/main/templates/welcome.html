@@ -38,6 +38,32 @@
     </div>
   </div>
   <div class="container mt-4 p-2">
+    <small>Productos</small>
+    <h2 class="fw-bold">Revisa nuestros productos</h2>
+    <div class="row justify-content-center border-top py-2">
+      {% for item in productos %}
+        <div class="col-md-4">
+          <div class="card product-card border-0 rounded-4 shadow-sm">
+            <div class="position-relative">
+              <span class="badge bg-danger badge-custom">Galleta</span>
+              <div class="overflow-hidden">
+                <img src="{% static '/img/galletas.png' %}" class="card-img-top product-image" alt="Product Image">
+              </div>
+            </div>
+            <div class="card-body p-4">
+              <h5 class="card-title mb-3 fw-bold">{{item.nombre}}</h5>
+              <p class="card-text text-muted mb-4">Galleta con excelente sabor.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="price">${{item.precio_galleta}}</span>
+                <p class="m-0 fw-bold fs-5">Por unidad</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="container mt-4 p-2">
     <div class="row row-cols-1 row-cols-md-2 align-items-center">
         <div class="col">
             <h2 class="mb-4 text-primary fw-bold">Sobre Don Ricoche</h2>
@@ -53,30 +79,6 @@
         <div class="col">
             <img src="{% static 'img/fondo_galletas.jpg' %}" class="img-fluid rounded shadow" alt="Deliciosas galletas artesanales">
         </div>
-    </div>
-  </div>
-  <div class="container mt-4 p-2">
-    <small>Servicios</small>
-    <h2 class="fw-bold">Revisa nuestros servicios</h2>
-    <div class="row row-cols-3 gy-4">
-      <div class="col">
-        <div class="p-5 border shadow-sm text-center rounded">
-          <h5 class="fs-3 fw-bold">Galletas Clásicas</h5>
-          <p class="card-text">Receta tradicional de la abuela</p>
-        </div>
-      </div>
-      <div class="col">
-        <div class="p-5 border shadow-sm text-center rounded">
-          <h5 class="fs-3 fw-bold">Galletas Integrales</h5>
-          <p class="card-text">Saludables y deliciosas</p>
-        </div>
-      </div>
-      <div class="col">
-        <div class="p-5 border shadow-sm text-center rounded">
-          <h5 class="fs-3 fw-bold">Galletas Gourmet</h5>
-          <p class="card-text">Sabores únicos y sofisticados</p>
-        </div>
-      </div>
     </div>
   </div>
   <footer class="footer py-5 bg-dark text-white">

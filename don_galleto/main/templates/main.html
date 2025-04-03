@@ -44,6 +44,10 @@
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header small text-info">¡Hola, {{ user.username }}!</h6></li>
                                 <li><h6 class="dropdown-header">Menu</h6></li>
+                                {% if user.is_staff %}
+                                    <li><a class="dropdown-item" href="{% url 'panel' %}"><i class="bi bi-person-standing mx-1"></i>Administración</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'carrito_de_compras' %}"><i class="bi bi-cart4 mx-1"></i>Carrito de compras</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item " href="{% url 'lista_pedidos_cliente' %}"><i class="bi bi-box2-fill mx-1"></i>Lista de pedidos</a></li>

@@ -9,7 +9,9 @@ def calcularPrecioGalleta(tipo_compra, cantidad, precio_galleta, peso_galleta):
     precio_galleta = Decimal(precio_galleta)
     
     if tipo_compra == 'pq':  # Para paquetes (12 galletas)
-        return cantidad * 12 * precio_galleta
+        descuento = Decimal("0.10")  # 10% de descuento
+        precio_total = cantidad * 12 * precio_galleta
+        return precio_total * (1 - descuento)  # Aplicar descuento
     elif tipo_compra == 'g':  # Para gramos
         return (cantidad / Decimal(peso_galleta)) * precio_galleta
     elif tipo_compra == 'ud':  # Para unidades

@@ -37,12 +37,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for detalle in venta.detalles.all %}
+                                {% for detalle_venta in venta.detalles_venta.all %}
                                 <tr>
-                                    <td>{{ detalle.receta.nombre }}</td>
-                                    <td>{{ detalle.cantidad }}</td>
-                                    <td>${{ detalle.precio_unitario|floatformat:2 }}</td>
-                                    <td>${{ detalle.total|floatformat:2 }}</td>
+                                    <td>{{ detalle_venta.receta.nombre }}</td>
+                                    <td>{{ detalle_venta.cantidad }}</td>
+                                    <td>${{ detalle_venta.precio_unitario|floatformat:2 }}</td>
+                                    <td>${{ detalle_venta.total|floatformat:2 }}</td>
                                 </tr>
                                 {% empty %}
                                 <tr>

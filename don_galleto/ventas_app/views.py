@@ -271,14 +271,14 @@ class ListaVentasView(ListView):
     context_object_name = "ventas"
 
     def get_queryset(self):
-        # Obtener las ventas con los detalles
-        ventas = Venta.objects.all().prefetch_related('detalles').annotate(
-            total_venta=Sum('detalles__total')
+        # Usamos prefetch_related para cargar los detalles de cada venta con el nombre correcto
+        ventas = Venta.objects.all().prefetch_related('detalles_venta').annotate(
+            total_venta=Sum('detalles_venta__total')
         ).order_by('-fecha_venta')
 
         # Calcular el precio unitario y pasarlo al contexto de la plantilla
         for venta in ventas:
-            for detalle in venta.detalles.all():
+            for detalle in venta.detalles_venta.all():
                 if detalle.cantidad > 0:
                     detalle.precio_unitario = detalle.total / detalle.cantidad
                 else:

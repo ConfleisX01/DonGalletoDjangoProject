@@ -1,0 +1,36 @@
+{% extends 'panel.html' %}
+
+{% block content %}
+<header class="header mb-2">
+    <span class="header-brand mb-0 h1">Producción Activa</span>
+</header>
+<div class="container-fluid p-4">
+    <div class="row row-cols-2">
+        <div class="col row row-cols-2">
+        {% for item in solicitudes_abiertas %}
+                <div class="card overflow-hidden rounded shadow-sm p-0 mb-2">
+                    <div class="card-body p-0">
+                        <div class="bg-dark py-1 text-white text-center">
+                            <p class="m-0 fw-bold fs-4">Galleta de chocolate</p>
+                        </div>
+                        <div class="p-2">
+                            <p><i class="bi bi-gear-wide mx-2"></i>Solicitud: {{item.id}}</p>
+                            <p><i class="bi bi-cookie mx-2"></i>{{item.galleta.nombre}}</p>
+                            <p><i class="bi bi-box-seam-fill mx-2"></i>Cantidad: {{item.galleta.cantidad_galletas_producidas}}</p>
+                            <p><i class="bi bi-calendar2-week mx-2"></i>Fecha: {{item.fecha_solicitud}}</p>
+                        </div>
+                        <div class="d-grid gap-2 p-2">
+                            <a class="btn btn-outline-primary">Aceptar solicitud</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col">
+            <div class="container-fluid bg-primary p-2">
+                <p>Aqui agregar el lote perron</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

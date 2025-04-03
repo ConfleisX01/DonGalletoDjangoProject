@@ -26,7 +26,13 @@ def registro(request):
         form = RegistroForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
+            #se verifica primero si es admin o solo usuario:
+            if user.is_superuser:
+                return redirect("panel")
+            else:
+                return redirect("welcome")
             return redirect("welcome")
     else:
         form = RegistroForm()

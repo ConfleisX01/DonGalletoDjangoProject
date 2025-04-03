@@ -44,13 +44,13 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="{% url 'creacion_produccion' %}">
                       <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Producción
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Solicitud de producción
+                    <a class="nav-link" href="{% url 'lista_solicitudes' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet" ></span></span> Solicitud de producción
                     </a>
                   </li>
                 </ul>
@@ -181,6 +181,15 @@
                     </a>
                     <ul class="dropdown-menu">
                       <li><h6 class="dropdown-header">Ajustes</h6></li>
+                      <li>
+                          <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
+                              {% csrf_token %}
+                              <button type="submit" class="dropdown-item btn btn-link border-0 text-danger">
+                                  Cerrar Sesión
+                              </button>
+                          </form>
+                      </li>
+                    </ul>
                       <li><a class="dropdown-item" href="{% url 'welcome' %}">Salir</a></li>
                     </ul>
                   </li>

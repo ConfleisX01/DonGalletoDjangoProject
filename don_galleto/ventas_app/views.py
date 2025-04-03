@@ -181,6 +181,16 @@ class DetallesProductoView(LoginRequiredMixin, FormView): #Literalmente agregar 
         
         return super().form_valid(form)
 
+def calcularGalletas(cantidad, tipo_compra, peso_galleta):
+    if tipo_compra == 'ud':
+        return cantidad
+    elif tipo_compra == 'gr':
+        return peso_galleta / cantidad
+    elif tipo_compra == 'pq':
+        return cantidad * 12
+    else: return False
+    
+
 def get_venta_detalle_formset(num_galletas):
     return inlineformset_factory(
         Venta,

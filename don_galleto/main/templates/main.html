@@ -23,6 +23,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'principal' %}">Inicio</a>
+                </li>
                     <a class="nav-link active" aria-current="page" href="{% url 'welcome' %}">Inicio</a>
                 </li>
                 {% if user.is_authenticated %}
@@ -32,6 +34,45 @@
                 {% endif %}
             </ul>
             <div class="d-flex">
+                {% if user.is_staff or user.is_superuser %}
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item me-3">
+                        <a class="nav-link d-flex align-items-center" href="{% url 'panel' %}">
+                            <span class="me-2">Administración</span>
+                            <i class="bi bi-person-fill-gear"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-cute btn-cute-danger btn-sm mx-2">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                    <li class="nav-item me-3">
+                        <span class="navbar-text">Bienvenid@ {{ user.username }}</span>
+                    </li>
+                </ul>
+            {% elif user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'lista_productos' %}">Comprar</a>
+            </li>
+            <li class="nav-item me-3">
+                <span class="navbar-text">Bienvenid@ {{ user.username }}</span>
+            </li>
+                <li class="nav-item">
+                    <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-cute btn-cute-danger btn-sm mx-2">Cerrar Sesión</button>
+                    </form>
+                </li>
+                
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-cute btn-cute-success">Iniciar sesión</a>
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+                <a class="btn btn-outline-dark rounded-pill" href="{% url 'carrito_de_compras' %}"><i class="bi bi-cart4"></i></a>
+            {% endif %}
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav align-items-center">
                         <li class="nav-item dropdown dropstart">

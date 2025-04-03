@@ -18,7 +18,7 @@
                             <select name="nuevo_insumo" class="form-control">
                                 <option value="">Seleccionar insumo</option>
                                 {% for insumo in insumos %}
-                                    <option value="{{ insumo.id }}">{{ insumo.nombre_insumo }}</option>
+                                    <option value="{{ insumo.id }}">{{ insumo.nombre_insumo }} ({{insumo.unidad_base}})</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -43,6 +43,7 @@
                             <tr>
                                 <th>Ingrediente</th>
                                 <th>Cantidad</th>
+                                <th>Unidad</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -56,6 +57,7 @@
                                             placeholder="{{ ingrediente.cantidad_necesaria }}" 
                                             step="any">
                                     </td>
+                                    <td>{{ingrediente.insumo.unidad_base}} </td>
                                     <td>
                                         <!-- Botón para eliminar ingrediente -->
                                         <button type="submit" name="eliminar_ingrediente" value="{{ ingrediente.id }}" class="btn btn-danger">

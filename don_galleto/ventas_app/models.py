@@ -98,6 +98,6 @@ class VentaDetalle(models.Model):
         choices=UNIDADES_DE_COMPRA,
         default='ud'
     )
-    receta = models.ForeignKey(Receta, on_delete=models.CASCADE)
-    venta = models.ForeignKey(Venta, on_delete=models.CASCADE, null=True, blank=True)
-    carrito = models.ForeignKey(CarritoCompras, on_delete=models.CASCADE, related_name="detalles", null=True, blank=True)
+    receta = models.ForeignKey(Receta, on_delete=models.CASCADE, null=False)
+    venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True, related_name="detalles_venta")
+    carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=True, blank=False)

@@ -19,4 +19,4 @@ class MateriaPrima(models.Model):
     )
 
     def __str__(self):
-        return self.nombre_insumo
+        return f"{self.nombre_insumo} - {self.unidad_base}" 

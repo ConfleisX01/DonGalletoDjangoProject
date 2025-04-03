@@ -23,6 +23,7 @@ class CrearReceta( FormView):
             context["ingrediente_formset"] = IngredienteRecetaFormSet()
         return context
 
+
     def form_valid(self, form):
         context = self.get_context_data()
         ingrediente_formset = context["ingrediente_formset"]
@@ -31,7 +32,7 @@ class CrearReceta( FormView):
             receta = form.save()
             ingredientes = ingrediente_formset.save(commit=False)
             InventarioProducto.objects.create(galleta=receta, cantidad=0);
-
+            
             for ingrediente in ingredientes:
                 ingrediente.receta = receta
                 ingrediente.save()

@@ -1,12 +1,12 @@
 from django import forms
 from .models import Receta, IngredienteReceta
 from django.forms import inlineformset_factory
-from materia_prima.models import MateriaPrima  # Si es necesario para los ingredientes
+from materia_prima.models import MateriaPrima 
 
 
 class AgregarIngredienteForm(forms.Form):
     nuevo_insumo = forms.ModelChoiceField(
-        queryset=MateriaPrima.objects.all(),  # Todos los insumos disponibles
+        queryset=MateriaPrima.objects.all(), 
         label="Insumo",
         empty_label="Seleccione un insumo",
         widget=forms.Select(attrs={'class': 'form-control'})

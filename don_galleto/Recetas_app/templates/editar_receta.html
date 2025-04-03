@@ -9,35 +9,29 @@
         <div class="card-body">
             <form method="post" enctype="multipart/form-data" class="row">
                 {% csrf_token %}
-
                 <!-- Formulario de edición de receta -->
                 <div class="col-md-6 mb-4">
                     <h5 class="mb-3">Detalles de la Receta</h5>
-
                     <!-- Campo: Nombre -->
                     <div class="mb-3">
                         <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
                         {{ form.nombre }}
                     </div>
-
                     <!-- Campo: Cantidad de galletas producidas -->
                     <div class="mb-3">
                         <label for="{{ form.cantidad_galletas_producidas.id_for_label }}" class="form-label">Cantidad de galletas producidas</label>
                         {{ form.cantidad_galletas_producidas }}
                     </div>
-
                     <!-- Campo: Peso individual -->
                     <div class="mb-3">
                         <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Peso individual</label>
                         {{ form.peso_individual }}
                     </div>
-
                     <!-- Campo: Precio galleta -->
                     <div class="mb-3">
                         <label for="{{ form.precio_galleta.id_for_label }}" class="form-label">Precio de galleta</label>
                         {{ form.precio_galleta }}
                     </div>
-
                     <!-- Botones -->
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button type="submit" class="btn btn-primary">
@@ -48,16 +42,13 @@
                         </a>
                     </div>
                 </div>
-
                 <!-- Tabla de ingredientes en la segunda columna -->
                 <div class="col-md-6 mb-4">
                     <h5 class="mb-3">Ingredientes</h5>
-
                     <!-- Botón para redirigir a la pantalla de insumos -->
                     <a href="{% url 'definir_insumos' pk=receta.id %}" class="btn btn-success mb-3">
                         <i class="fas fa-edit"></i> Editar insumos
                     </a>
-                    
                     <!-- Tabla de ingredientes -->
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -65,13 +56,15 @@
                                 <tr>
                                     <th>Ingrediente</th>
                                     <th>Cantidad</th>
+                                    <th>Unidad</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for ingrediente in ingredientes %}
                                 <tr>
-                                    <td>{{ ingrediente.insumo }}</td>
+                                    <td>{{ ingrediente.insumo.nombre_insumo }}</td>
                                     <td>{{ ingrediente.cantidad_necesaria }}</td>
+                                    <td>{{ ingrediente.insumo.unidad_base }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -21,8 +21,6 @@ class DetallesProductoForm(forms.ModelForm):
             'tipo_unidad': forms.Select(attrs={"class": "form-select"})
         }
         
-        
-
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta

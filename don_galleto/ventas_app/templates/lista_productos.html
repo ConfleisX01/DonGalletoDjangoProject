@@ -14,14 +14,15 @@
                 <div class="col d-flex">
                     <div class="card shadow-sm">
                         <div class="p-3 position-relative">
-                            <div class="position-absolute top-0 end-0 p-2">
-                                <span class="badge bg-primary"><i class="bi bi-cookie"></i></span>
-                            </div>
                             <img src="{% static 'img/galletas.png' %}" class="card-img-top" alt="..." style="height: 200px;">
                         </div>
                         <div class="card-body">
                             <div class="mb-2" style="height: 80px;">
                                 <h5 class="fs-4 m-0">{{ item.galleta.nombre }}</h5>
+                                <small class="text-secondary">12pzs por paquete.</small>
+                            </div>
+                            <div class="text-dark">
+                                <small class="fs-6">Precio por unidad: ${{item.galleta.precio_galleta}}</small>
                             </div>
                             <div class="text-dark">
                                 <small>Peso individual: {{item.galleta.peso_individual}}g</small>

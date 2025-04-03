@@ -114,7 +114,7 @@ class VerListaPedidosView(ListView):
     template_name = 'lista_pedidos_cliente.html'
     context_object_name = 'pedidos'
     def get_queryset(self):
-        return CarritoCompras.objects.filter(usuario=self.request.user, detalles__venta__estatus=True).distinct()
+        return CarritoCompras.objects.filter(usuario=self.request.user, detalles__venta__estatus='1').distinct()
 
 class ListaProductosView(LoginRequiredMixin, ListView):
     model = InventarioProducto
@@ -133,30 +133,44 @@ class DetallesProductoView(LoginRequiredMixin, FormView): #Literalmente agregar 
         return kwargs
     
     def form_valid(self, form):
-        carrito, created = CarritoCompras.objects.get_or_create(usuario=self.request.user, estatus=0)
-        venta, created = Venta.objects.get_or_create(id=carrito.id, defaults={"estatus": False})
-        
-        if venta.estatus:
-            carrito = CarritoCompras.objects.create(usuario=self.request.user)
-            venta = Venta.objects.create()
-        
-        detalle_venta = form.save(commit=False)
-        detalle_venta.carrito = carrito
-        detalle_venta.venta = venta
-        
-        inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
-        precio_total_calculado = calcularPrecioGalleta(detalle_venta.tipo_unidad, detalle_venta.cantidad, inventario.galleta.precio_galleta, inventario.galleta.peso_individual)
-        
-        if precio_total_calculado is False:
-            form.add_error(None, "No se pudo calcular el precio")
+        try:
+            carrito, created = CarritoCompras.objects.get_or_create(
+                usuario=self.request.user,
+                estatus='0'
+            )
+
+            if carrito:
+                detalle_venta = form.save(commit=False)
+                detalle_venta.carrito = carrito
+                detalle_venta.venta = None
+
+                inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
+
+                precio_total_calculado = calcularPrecioGalleta(
+                    detalle_venta.tipo_unidad, 
+                    detalle_venta.cantidad, 
+                    inventario.galleta.precio_galleta, 
+                    inventario.galleta.peso_individual
+                )
+                
+                if precio_total_calculado is False:
+                    form.add_error(None, "No se pudo calcular el precio")
+                    return self.form_invalid(form)
+                
+                detalle_venta.total = precio_total_calculado
+                detalle_venta.save()
+            elif created:
+                print('Se creo un nuevo carrito')
+            else:
+                form.add_error(None, "Hubo un error en el producto")
+                return self.form_invalid(form)
+            
+        except Exception as e:
+            print(f"Error al manejar el carrito: {e}")
+            form.add_error(None, "Hubo un error al agregar el producto al carrito")
             return self.form_invalid(form)
         
-        detalle_venta.total = precio_total_calculado
-        detalle_venta.save()
-        
         return super().form_valid(form)
-    
-recetas = Receta.objects.all()
 
 def get_venta_detalle_formset(num_galletas):
     return inlineformset_factory(
@@ -168,6 +182,7 @@ def get_venta_detalle_formset(num_galletas):
     )
 
 class VentaCreateView(FormView):
+    recetas = Receta.objects.all()
     template_name = "crear_venta.html"
     form_class = VentaForm
 

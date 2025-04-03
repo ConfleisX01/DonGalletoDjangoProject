@@ -11,7 +11,6 @@ from ventas_app.models import CarritoCompras
 from ventas_app.models import Venta, VentaDetalle
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-
 class ConfirmarCarritoView(LoginRequiredMixin, FormView):
     template_name = 'confirmar_pedido.html'
     form_class = forms.ConfirmarCarritoForm
@@ -28,14 +27,13 @@ class ConfirmarCarritoView(LoginRequiredMixin, FormView):
         carrito_id = self.kwargs['carrito_id']
         carrito = get_object_or_404(CarritoCompras, id=carrito_id)
 
-        venta = Venta.objects.create(estatus=0)
+        venta = Venta.objects.create(estatus='0')
 
         venta.fecha_recoleccion = form.cleaned_data['fecha_recoleccion']
 
         venta.confirmar_pedido()
 
-        carrito.venta = venta
-        carrito.estatus = True
+        carrito.estatus = '1'
         carrito.save()
 
         detalles = carrito.detalles.all()
@@ -44,8 +42,6 @@ class ConfirmarCarritoView(LoginRequiredMixin, FormView):
             detalle.save()
 
         venta.save()
-
-        nuevo_carrito = CarritoCompras.objects.create(usuario=self.request.user)
 
         return super().form_valid(form)
 
@@ -56,7 +52,7 @@ class ListaCarritoComprasView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        carrito = CarritoCompras.objects.filter(usuario=self.request.user).order_by('-id').first()
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus='0').order_by('-id').first()
 
         if not carrito:
             context['carrito_vacio'] = True
@@ -80,7 +76,7 @@ class VaciarCarritoView(LoginRequiredMixin, View):
         carrito = CarritoCompras.objects.filter(usuario=request.user, estatus=False).first()
 
         if carrito:
-            carrito.detalles.all().delete()
+            carrito.vaciar_carrito()
             
         return redirect('lista_productos')
 

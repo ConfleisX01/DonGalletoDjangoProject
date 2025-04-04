@@ -9,7 +9,7 @@ class InventarioProducto(models.Model):
     ultima_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.galleta.nombre_galleta} - {self.cantidad} unidades"
+        return f"{self.galleta.nombre} - {self.cantidad} unidades"
     
     def calcular_stock(self):
         lotes_validos = self.galleta.lotes.filter(fecha_caducidad__gte=now().date())
@@ -21,6 +21,10 @@ class InventarioProducto(models.Model):
     
     def disminuir_cantidad(self, cantidad_solicitada):
         self.cantidad -= cantidad_solicitada
+        self.save()
+
+    def agregar_cantidad(self, cantidad_agregada):
+        self.cantidad += cantidad_agregada
         self.save()
 
 class InventarioMaterial(models.Model):

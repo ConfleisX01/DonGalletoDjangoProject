@@ -27,7 +27,7 @@ class LoteGalletas(models.Model):
     def esta_caducado(self):
         return now().date() > self.fecha_caducidad
     
-    def _str_(self):
+    def __str__(self):
         return f"Lote {self.id} - {self.galleta.nombre_galleta} ({self.cantidad} unidades) - Vence el {self.fecha_caducidad}"
 
 class SolicitudProduccion(models.Model):
@@ -54,5 +54,5 @@ class SolicitudProduccion(models.Model):
             self.estado = 'APROBADA'
             self.save()
 
-    def _str_(self):
+    def __str__(self):
         return f"Solicitud {self.id} - {self.galleta.nombre_galleta} ({self.cantidad_solicitada} unidades) - Estado: {self.estado}"

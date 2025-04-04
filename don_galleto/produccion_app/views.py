@@ -6,6 +6,7 @@ from . import forms
 from django.utils.timezone import now
 from datetime import timedelta
 from django.http import JsonResponse
+from inventarios.models import InventarioProducto
 
 class ListaLotesProduccionView(ListView):
     model = LoteGalletas
@@ -63,8 +64,14 @@ def actualizar_estado(request, lote_id):
         
         # Si el lote se marca como 'TERMINADO', podemos hacer más cosas si es necesario
         if lote.estado == 'TERMINADO':
-            # Realiza alguna acción si es necesario, como marcar que se ha completado el ciclo
-            pass
+            print("Entrando a la funcion")
+            inventario = InventarioProducto.objects.get(galleta=lote.galleta_id)
+            print(inventario)
+            if inventario:
+                inventario.agregar_cantidad(lote.galleta.cantidad_galletas_producidas)
+                print("Se agregaron las galletas al inventario")
+            else:
+                print(f"Error al agregar las cantidades al inventario")
         
         lote.save()
 
@@ -85,10 +92,6 @@ class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solici
 class CreacionProduccionGalletasView(TemplateView): ##solo para para mostrarla en la zona de
     template_name = 'produccion_activa.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['solicitudes_abiertas'] = SolicitudProduccion.objects.filter(estado='PENDIENTE')
-        return context
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['solicitudes_abiertas'] = SolicitudProduccion.objects.filter(estado='PENDIENTE')

@@ -54,5 +54,6 @@ class SolicitudProduccion(models.Model):
             self.estado = 'APROBADA'
             self.save()
 
+
     def __str__(self):
         return f"Solicitud {self.id} - {self.galleta.nombre_galleta} ({self.cantidad_solicitada} unidades) - Estado: {self.estado}"

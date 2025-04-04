@@ -5,7 +5,7 @@ from produccion_app.models import LoteGalletas, SolicitudProduccion
 from . import forms
 from django.utils.timezone import now
 from datetime import timedelta
-from django.http import JsonResponse
+
 
 class ListaLotesProduccionView(ListView):
     model = LoteGalletas
@@ -17,6 +17,8 @@ class ListaLotesProduccionView(ListView):
         # Excluir los lotes que ya están terminados
         context['solicitudes_lote'] = LoteGalletas.objects.exclude(estado='TERMINADO')
         return context
+
+
 
 class ListaSolicitudesProduccionView(ListView):
     model = SolicitudProduccion
@@ -64,6 +66,8 @@ def actualizar_estado(request, lote_id):
         # Si el lote se marca como 'TERMINADO', podemos hacer más cosas si es necesario
         if lote.estado == 'TERMINADO':
             # Realiza alguna acción si es necesario, como marcar que se ha completado el ciclo
+
+
             pass
         
         lote.save()

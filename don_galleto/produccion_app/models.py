@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from Recetas_app.models import Receta
 from datetime import timedelta
 
-
 class LoteGalletas(models.Model):
     ESTADOS = [
         ('CREADO', 'Creado'),

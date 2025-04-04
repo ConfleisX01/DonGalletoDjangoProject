@@ -8,7 +8,7 @@
   <div class="container border p-4 rounded">
     <div class="container-fluid text-center">
       <h2>Formulario de registro</h2>
-      <p class="text-secondary">Ingrese los datos para crear un proveedor</p>
+      <p class="">Ingrese los datos para crear un proveedor</p>
     </div>
     <form method="post">
       {% csrf_token %}
@@ -18,7 +18,7 @@
           {% for field in form %}
             {% if forloop.counter <= 4 %}
               <div class="form-group mb-3">
-                <label class="text-white">{{ field.label }}</label>
+                <label class="text-dark">{{ field.label }}</label>
                 <div class="input-group">
                   <span class="input-group-text">
                     {% if field.name == "provedor_nombre" %}
@@ -59,7 +59,7 @@
           {% for field in form %}
             {% if forloop.counter > 4 %}
               <div class="form-group mb-3">
-                <label class="text-white">{{ field.label }}</label>
+                <label class="text-dark">{{ field.label }}</label>
                 <div class="input-group">
                   <span class="input-group-text">
                     {% if field.name == "provedor_nombre" %}

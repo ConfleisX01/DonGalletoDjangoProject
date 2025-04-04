@@ -5,6 +5,7 @@ from django.utils.timezone import now
 
 class InventarioProducto(models.Model):
     galleta = models.OneToOneField(Receta, on_delete=models.CASCADE)
+    cantidad = models.DecimalField(max_digits=10, decimal_places=1)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -14,6 +15,9 @@ class InventarioProducto(models.Model):
         lotes_validos = self.galleta.lotes.filter(fecha_caducidad__gte=now().date())
         stock_total = sum(lote.cantidad for lote in lotes_validos)
         return stock_total
+
+    def verificar_stock(self, cantidad):
+        return self.cantidad >= cantidad
 
 class InventarioMaterial(models.Model):
     insumo = models.OneToOneField(MateriaPrima, on_delete=models.CASCADE)

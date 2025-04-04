@@ -75,6 +75,7 @@ def actualizar_estado(request, lote_id):
 class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solicitud para luego pedir ser aceptada
     template_name = 'agregar_solicitud_produccion.html'
     form_class = forms.AgregarSolicitudForm
+    form_class = forms.AgregarSolicitudForm
     success_url = reverse_lazy('lista_solicitudes')
 
     def form_valid(self, form):
@@ -84,6 +85,10 @@ class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solici
 class CreacionProduccionGalletasView(TemplateView): ##solo para para mostrarla en la zona de
     template_name = 'produccion_activa.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['solicitudes_abiertas'] = SolicitudProduccion.objects.filter(estado='PENDIENTE')
+        return context
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['solicitudes_abiertas'] = SolicitudProduccion.objects.filter(estado='PENDIENTE')

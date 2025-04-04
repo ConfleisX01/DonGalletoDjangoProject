@@ -7,14 +7,12 @@ from usuarios_app.forms import UsuarioForm, EditarUsuarioForm
 from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
 from .models import Usuario
-
-# vistas admin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # ver usuarios
-class listaUsuariosAdmin( TemplateView):
+class listaUsuariosAdmin(LoginRequiredMixin, TemplateView):
     template_name = 'lista_usuarios.html'
     permission_required = 'usuarios_app.view_user'
-    
     
     def handle_no_permission(self):
         return redirect('home')
@@ -28,7 +26,7 @@ class listaUsuariosAdmin( TemplateView):
                 'usuarios_off': user_off}
 
 # crear usuarios
-class CrearUsuario( FormView):
+class CrearUsuario(LoginRequiredMixin, FormView):
     template_name = "crear_usuarios.html"
     form_class = UsuarioForm
     success_url = reverse_lazy("lista_usuarios")
@@ -45,17 +43,14 @@ class CrearUsuario( FormView):
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
 
-class editarUsuario( FormView):
+class editarUsuario(LoginRequiredMixin, FormView):
     template_name = "editar_usuarios.html"
     form_class = EditarUsuarioForm
     success_url = reverse_lazy("lista_usuarios")
     permission_required = 'usuarios_app.change_user'
     
-    
     def handle_no_permission(self):
         return redirect('home')
-    
-
     
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

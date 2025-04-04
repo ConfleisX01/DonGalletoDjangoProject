@@ -18,6 +18,10 @@ class InventarioProducto(models.Model):
 
     def verificar_stock(self, cantidad):
         return self.cantidad >= cantidad
+    
+    def disminuir_cantidad(self, cantidad_solicitada):
+        self.cantidad -= cantidad_solicitada
+        self.save()
 
 class InventarioMaterial(models.Model):
     insumo = models.OneToOneField(MateriaPrima, on_delete=models.CASCADE)

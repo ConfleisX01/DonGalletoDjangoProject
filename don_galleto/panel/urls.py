@@ -11,6 +11,7 @@ urlpatterns = [
         path('recetas/', include('Recetas_app.urls')),
         path('materia_prima/', include('materia_prima.urls')),
         path('ventas/', include('ventas_panel_app.urls')),
+        path('ventas/', include('ventas_app.urls')),
         path('produccion/', include('produccion_app.urls')),
     ])),
     path('inventarios/', include('inventarios.urls')),

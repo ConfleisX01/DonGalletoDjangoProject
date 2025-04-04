@@ -14,7 +14,7 @@ class LoteGalletas(models.Model):
     ]
 
     galleta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='lotes')
-    cantidad = models.PositiveIntegerField(default=1)
+    cantidad_lotes = models.PositiveIntegerField(default=1)
     fecha_produccion = models.DateField()
     fecha_caducidad = models.DateField()
     estado = models.CharField(max_length=20, choices=ESTADOS, default='CREADO')
@@ -26,6 +26,7 @@ class LoteGalletas(models.Model):
 
     def esta_caducado(self):
         return now().date() > self.fecha_caducidad
+    
     
     def __str__(self):
         return f"Lote {self.id} - {self.galleta.nombre_galleta} ({self.cantidad} unidades) - Vence el {self.fecha_caducidad}"
@@ -40,6 +41,7 @@ class SolicitudProduccion(models.Model):
     galleta = models.ForeignKey(Receta, on_delete=models.CASCADE)
     estado = models.CharField(max_length=20, choices=ESTADOS_SOLICITUD, default='PENDIENTE')
     fecha_solicitud = models.DateTimeField(auto_now=True)
+    fecha_solicitud = models.DateTimeField(auto_now=True)
     lote_generado = models.OneToOneField(LoteGalletas, on_delete=models.SET_NULL, null=True, blank=True)
 
     def aprobar_solicitud(self):
@@ -53,7 +55,6 @@ class SolicitudProduccion(models.Model):
             self.lote_generado = lote
             self.estado = 'APROBADA'
             self.save()
-
 
     def __str__(self):
         return f"Solicitud {self.id} - {self.galleta.nombre_galleta} ({self.cantidad_solicitada} unidades) - Estado: {self.estado}"

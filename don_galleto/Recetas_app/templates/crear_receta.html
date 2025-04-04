@@ -1,7 +1,8 @@
 {% extends 'panel.html' %}
 {% load static %}
+
 {% block content %}
-<div class="container mt-5 border rounded w-50 p-4">
+<div class="container mt-5 border rounded p-4">
     <div class="text-center">
         <h2>Crear Nueva Receta</h2>
         <p class="text-secondary">Ingresa los datos para crear una nueva receta</p>
@@ -9,48 +10,117 @@
     
     <form method="POST" class="form-container">
         {% csrf_token %}
-        
-        <!-- Campo: Nombre de la Receta -->
-        <div class="mb-3">
-            <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre de la Receta</label>
-            {{ form.nombre }}
-            <small class="form-text">Ingresa el nombre de la receta.</small>
-        </div>
+        <div class="row">
+            <!-- Columna izquierda: Datos de la receta -->
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre de la Receta</label>
+                    {{ form.nombre }}
+                    <small class="form-text">Ingresa el nombre de la receta.</small>
+                </div>
 
-        <!-- Campo: Cantidad de Galletas -->
-        <div class="mb-3">
-            <label for="{{ form.cantidad_galletas_producidas.id_for_label }}" class="form-label">Cantidad de Galletas</label>
-            {{ form.cantidad_galletas_producidas }}
-            <small class="form-text">Ingresa la cantidad de galletas que producirá esta receta.</small>
-        </div>
+                <div class="mb-3">
+                    <label for="{{ form.cantidad_galletas_producidas.id_for_label }}" class="form-label">Cantidad de Galletas</label>
+                    {{ form.cantidad_galletas_producidas }}
+                    <small class="form-text">Cantidad total de galletas producidas.</small>
+                </div>
 
-        <!-- Campo: Peso Individual -->
-        <div class="mb-3">
-            <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Peso Individual (en gramos)</label>
-            {{ form.peso_individual }}
-            <small class="form-text">Ingresa el peso individual de cada galleta.</small>
-        </div>
+                <div class="mb-3">
+                    <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Peso Individual (g)</label>
+                    {{ form.peso_individual }}
+                    <small class="form-text">Peso en gramos por galleta.</small>
+                </div>
 
-        <!-- Campo: Precio galleta -->
-        <div class="mb-3">
-            <label for="{{ form.peso_individual.id_for_label }}" class="form-label">Precio de galleta (Unidades)</label>
-            {{ form.precio_galleta }}
-            <small class="form-text">Ingresa el peso de la galleta.</small>
-        </div>
+                <div class="mb-3">
+                    <label for="{{ form.precio_galleta.id_for_label }}" class="form-label">Precio de Galleta (Unidades)</label>
+                    {{ form.precio_galleta }}
+                    <small class="form-text">Costo unitario de cada galleta.</small>
+                </div>
+            </div>
 
-        <!-- Campo: Ingredientes -->
-        <div class="mb-4">
-            <label class="form-label">Ingredientes</label>
-            {{ form.ingredientes }}
-            <small class="form-text">Selecciona los ingredientes necesarios para esta receta.</small>
+            <!-- Columna derecha: Ingredientes -->
+            <div class="col-lg-6">
+                <h4>Ingredientes</h4>
+                <p class="text-secondary">Selecciona ingredientes y especifica la cantidad.</p>
+                
+                {{ ingrediente_formset.management_form }}
+                <div id="ingredientes-container" class="border p-2 rounded" style="max-height: 300px; overflow-y: auto;">
+                    {% for form in ingrediente_formset %}
+                        <div class="ingrediente-form border p-2 rounded mb-2 position-relative" data-form-id="{{ forloop.counter }}">
+                            <div class="form-group">
+                                <label for="{{ form.insumo.id_for_label }}">Ingrediente</label>
+                                {{ form.insumo }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.cantidad_necesaria.id_for_label }}">Cantidad</label>
+                                {{ form.cantidad_necesaria }}
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm remove-ingredient mt-3">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Botón para agregar más ingredientes -->
+                <button type="button" id="add-ingredient" class="btn btn-success btn-sm mt-2">
+                    <i class="fas fa-plus"></i> Agregar Ingrediente
+                </button>
+            </div>
         </div>
 
         <!-- Botón de Guardar -->
-        <div class="text-center">
+        <div class="text-center mt-4">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i>Guardar Receta
+                <i class="fas fa-save"></i> Guardar Receta
             </button>
         </div>
     </form>
 </div>
+
+<!-- Script para manejar ingredientes dinámicamente -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let totalForms = document.querySelector('#id_ingredientes-TOTAL_FORMS');
+        let container = document.querySelector('#ingredientes-container'); // Usar el contenedor correcto
+        let addButton = document.querySelector('#add-ingredient');
+    
+        // Agregar nuevo ingrediente
+        addButton.addEventListener('click', function() {
+            let formNum = Number(totalForms.value);
+            let newForm = container.querySelector('.ingrediente-form').cloneNode(true); // Clonar el primer formulario
+    
+            // Reemplazar índices en los nombres de los campos
+            newForm.innerHTML = newForm.innerHTML.replace(/-0-/g, `-${formNum}-`).replace(/_0-/g, `_${formNum}-`);
+    
+            // Reemplazar valores de los campos para que estén vacíos en el nuevo formulario
+            newForm.querySelector('select').value = '';  // Limpiar el campo de insumo
+            newForm.querySelector('input').value = '';   // Limpiar el campo de cantidad
+    
+            // Agregar el nuevo formulario al contenedor
+            container.appendChild(newForm);
+    
+            // Actualizar el valor del totalForms
+            totalForms.value = formNum + 1;
+        });
+    
+        // Eliminar ingrediente
+        container.addEventListener('click', function(event) {
+            if (event.target && event.target.classList.contains('remove-ingredient')) {
+                let row = event.target.closest('.ingrediente-form');
+                row.remove();
+                // Actualizar los índices de los formularios restantes
+                let forms = container.querySelectorAll('.ingrediente-form');
+                forms.forEach((form, index) => {
+                    form.querySelectorAll('input, select').forEach(input => {
+                        input.name = input.name.replace(/-\d+-/, `-${index}-`);
+                    });
+                });
+                totalForms.value = forms.length;
+            }
+        });
+    });
+    
+</script>
+
 {% endblock %}

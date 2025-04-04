@@ -1,0 +1,54 @@
+/* Tarjetas de métricas */
+.card-metric {
+    flex: 1;
+    min-width: 250px;
+    max-width: 400px;
+    padding: 1px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #007bff; /* Azul por defecto */
+    transition: border-color 0.3s ease;
+    margin-bottom: 1rem; /* Espacio inferior para separar las tarjetas */
+}
+
+.card-metric:hover {
+    border-color: #dc3545; /* Rojo al pasar el ratón */
+}
+
+.metric-title {
+    font-size: 1rem;         /* Reducido para mayor sutileza */
+    font-weight: normal;   /* Normal en lugar de bold para que sea más suave */
+    color: #6c757d;          /* Gris más suave para el título */
+    margin-bottom: 0.25rem;   /* Reducido para acercar el título al valor */
+}
+
+.metric-value {
+    font-size: 1.5rem;       /* Un poco más pequeño que antes */
+    font-weight: bold;
+    color: #495057;          /* Un gris oscuro para el valor, en lugar de azul brillante */
+}
+
+.metric-target {
+    font-size: 0.875rem;      /* Tamaño de fuente más pequeño para el objetivo */
+    color: #adb5bd;          /* Gris más claro para el objetivo */
+}
+
+/* Iconos dentro de las tarjetas */
+.icon-sm {
+    font-size: 1.75rem;      /* Ligeramente más pequeño que antes */
+    color: #007bff;          /* Manteniendo el color azul */
+}
+
+/* Estilos para la barra de progreso */
+.progress {
+    height: 8px;            /* Barra de progreso un poco más delgada */
+    background-color: #e9ecef; /* Fondo gris claro */
+    border-radius: 0.25rem;  /* Bordes redondeados */
+    margin-top: 0.5rem;     /* Espacio superior para separar la barra del texto */
+}
+
+.progress-bar {
+    background-color: #28a745; /* Verde éxito para la barra */
+    border-radius: 0.25rem;
+}

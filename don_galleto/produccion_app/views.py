@@ -5,6 +5,7 @@ from produccion_app.models import LoteGalletas, SolicitudProduccion
 from . import forms
 from django.utils.timezone import now
 from datetime import timedelta
+from inventarios.models import  InventarioProducto
 
 
 class ListaLotesProduccionView(ListView):
@@ -17,8 +18,6 @@ class ListaLotesProduccionView(ListView):
         # Excluir los lotes que ya están terminados
         context['solicitudes_lote'] = LoteGalletas.objects.exclude(estado='TERMINADO')
         return context
-
-
 
 class ListaSolicitudesProduccionView(ListView):
     model = SolicitudProduccion
@@ -48,6 +47,7 @@ def aprobar_solicitud(request, solicitud_id):
 
     return redirect('lotes_produccion')
 
+
 def rechazar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(SolicitudProduccion, id=solicitud_id)
 
@@ -55,6 +55,7 @@ def rechazar_solicitud(request, solicitud_id):
         solicitud.estado = 'RECHAZADA'
         solicitud.save()
     return redirect('lotes_produccion')
+
 
 def actualizar_estado(request, lote_id):
     lote = get_object_or_404(LoteGalletas, id=lote_id)
@@ -65,10 +66,14 @@ def actualizar_estado(request, lote_id):
         
         # Si el lote se marca como 'TERMINADO', podemos hacer más cosas si es necesario
         if lote.estado == 'TERMINADO':
-            # Realiza alguna acción si es necesario, como marcar que se ha completado el ciclo
+            inventario_producto, creado = InventarioProducto.objects.get_or_create(
+                galleta=lote.galleta,
+                defaults={'cantidad': 0}
+        )
+            inventario_producto.cantidad += lote.cantidad  # sumamos lo producido
+            inventario_producto.save()
 
-
-            pass
+        pass
         
         lote.save()
 

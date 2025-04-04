@@ -13,12 +13,12 @@
                     <div class="w-100 rounded shadow-sm border p-1 d-flex flex-column">
                         <div class="container-fluid d-flex justify-content-between align-items-center border-bottom mb-2">
                             <h4 class="fw-medium text-primary">Pedido de {{ carrito.usuario.username }}</h4>
-                            <small class="text-secondary">ID del pedido: #{{ carrito.id }}</small>
+                            <small class="">ID del pedido: #{{ carrito.id }}</small>
                         </div>
                         <div class="container-fluid flex-grow-1 border-bottom">
                             <div class="d-flex justify-content-between">
                                 <h5 class="fw-medium">Detalles del Pedido</h5>
-                                <p class="fw-medium text-secondary">{{ carrito.detalles.first.venta.fecha_recoleccion }}</p>
+                                <p class="fw-medium text-dark">{{ carrito.detalles.first.venta.fecha_recoleccion }}</p>
                             </div>
                             <div class="row">
                                 {% for detalle in carrito.detalles.all %}
@@ -32,7 +32,7 @@
                                                     <p class="fw-bold">{{ detalle.cantidad }} {{ detalle.tipo_unidad }}</p>
                                                 </div>
                                                 <div class="col-12">
-                                                    <p class="text-secondary">Subtotal: ${{ detalle.total }}</p>
+                                                    <p class="text-dark">Subtotal: ${{ detalle.total }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -44,9 +44,9 @@
                             <p class="m-0">Número productos: {{ carrito.contar_productos }}</p>
                             <p class="m-0 fw-bold">Total: ${{ carrito.calcular_total }}</p>
                         </div>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary" type="button">Confirmar Pedido</button>
-                        </div>
+                        <!-- <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="button">Confirmar pedido</button>
+                        </div> -->
                     </div>
                 </div>
             {% empty %}

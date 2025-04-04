@@ -1,11 +1,8 @@
 {% extends 'panel.html' %}
 
 {% block content %}
-<header class="header mb-2">
-    <span class="header-brand mb-0 h1">Detalles de receta</span>
-</header>
-<div class="container w-75 p-4">
-    <div class="card">
+<div class="container w-75">
+    <div class="card mt-5">
         <div class="card-header bg-primary text-white">
             <h1 class="card-title text-center">Detalles de la Receta: {{ receta.nombre }}</h1>
         </div>
@@ -14,13 +11,13 @@
                 <h4 class="text-primary">Información de la Receta</h4>
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <strong>Nombre:</strong> <span class="text-secondary fw-bold">{{ receta.nombre }}</span>
+                        <strong>Nombre:</strong> <span class="fw-bold">{{ receta.nombre }}</span>
                     </li>
                     <li class="list-group-item">
-                        <strong>Cantidad de galletas producidas:</strong> <span class="text-secondary fw-bold">{{ receta.cantidad_galletas_producidas }}ud.</span>
+                        <strong>Cantidad de galletas producidas:</strong> <span class="fw-bold">{{ receta.cantidad_galletas_producidas }}ud.</span>
                     </li>
                     <li class="list-group-item">
-                        <strong>Peso individual:</strong> <span class="text-secondary fw-bold">{{ receta.peso_individual }}g.</span>
+                        <strong>Peso individual:</strong> <span class="fw-bold">{{ receta.peso_individual }}g.</span>
                     </li>
                 </ul>
             </div>

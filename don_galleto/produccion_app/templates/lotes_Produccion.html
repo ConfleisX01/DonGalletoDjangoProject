@@ -1,0 +1,45 @@
+{% extends "panel.html" %}
+
+{% load static %}
+
+{% block content %}
+{% for item in solicitudes_lote %}
+    <div class="card overflow-hidden rounded shadow-sm p-0 mb-2">
+        <div class="card-body p-0">
+            <div class="bg-dark py-1 text-white text-center">
+                <p class="m-0 fw-bold fs-4">Información de Lote</p>
+            </div>
+            <div class="p-3">
+                <div class="bg-light p-3 rounded mb-3">
+                    <h5 class="fw-bold">Datos del Lote Activo</h5>
+                    <p><i class="bi bi-boxes mx-2"></i>Lote: {{ item.id }}</p>
+                    <p><i class="bi bi-cookie mx-2"></i>Tipo Galleta: {{ item.galleta.nombre }}</p>
+                    <p><i class="bi bi-calendar-check mx-2"></i>Fecha Inicio: {{ item.fecha_produccion }}</p>
+                </div>
+
+                <div class="bg-light p-3 rounded">
+                    <h5 class="fw-bold">Estado de Producción</h5>
+                    <p><i class="bi bi-reception-4 mx-2"></i>Progreso: {{ item.estado }}</p>
+                    
+                    <!-- Formulario para cambiar el estado -->
+                    <form method="POST" action="{% url 'actualizar_estado' item.id %}" class="estado-form">
+                        {% csrf_token %}
+                        <select name="estado" class="form-select" onchange="this.form.submit()">
+                            {% for valor, etiqueta in item.ESTADOS %}
+                                <option value="{{ valor }}" {% if item.estado == valor %}selected{% endif %}>
+                                    {{ etiqueta }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% empty %}
+    <p>No hay lotes en producción.</p>
+{% endfor %}
+
+
+{% endblock content %}

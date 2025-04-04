@@ -5,6 +5,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from main.views import registro 
 
+from django.views.generic import TemplateView
+
 from main import views
 
 urlpatterns = [

@@ -38,8 +38,13 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_solicitudes' %}">
+                    <a class="nav-link" href="{% url 'agregar_solicitud' %}">
                       <span class="nav-icon"><span class="nav-icon-bullet" ></span></span> Solicitud de producción
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lotes_produccion' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet" ></span></span> Lotes en Proceso
                     </a>
                   </li>
                 </ul>
@@ -190,5 +195,7 @@
 </body>
 
 <script src="{% static 'js/admin_panel/panel_base.js' %}" defer></script>
+<script src="{% static 'js/produccion.js' %}"></script>
+
 
 </html>

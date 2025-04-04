@@ -5,6 +5,7 @@ from django.utils.timezone import now
 
 class InventarioProducto(models.Model):
     galleta = models.OneToOneField(Receta, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=0)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):

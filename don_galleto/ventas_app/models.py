@@ -26,7 +26,6 @@ class Venta(models.Model):  # Modelo de ventas
     ]
     fecha_venta = models.DateTimeField(auto_now=True)
     estatus = models.IntegerField(
-        max_length=50,
         choices=ESTATUS_PEDIDO,
         default='0'
     )

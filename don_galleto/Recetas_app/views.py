@@ -34,7 +34,8 @@ class CrearReceta(FormView):
                 cantidad_necesaria=1  # Puedes personalizar esto si el formulario lo permite
             )
 
-        InventarioProducto.objects.create(galleta=receta, cantidad=0);
+        # Crear InventarioProducto asociado con la receta
+        InventarioProducto.objects.create(galleta=receta, cantidad=0)
 
         return super().form_valid(form)
 

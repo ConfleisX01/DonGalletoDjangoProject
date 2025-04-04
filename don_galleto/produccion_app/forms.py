@@ -4,6 +4,7 @@ from materia_prima.models import MateriaPrima
 from Recetas_app.models import Receta
 from produccion_app.models import LoteGalletas, SolicitudProduccion
 
+
 class SeleccionarReceta(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return obj.nombre

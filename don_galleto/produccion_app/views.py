@@ -5,8 +5,13 @@ from produccion_app.models import LoteGalletas, SolicitudProduccion
 from . import forms
 from django.utils.timezone import now
 from datetime import timedelta
+<<<<<<< HEAD
 from inventarios.models import  InventarioProducto
 
+=======
+from django.http import JsonResponse
+from inventarios.models import InventarioProducto
+>>>>>>> dbe1769c46235201b08c444271476005dd0056a8
 
 class ListaLotesProduccionView(ListView):
     model = LoteGalletas
@@ -66,6 +71,7 @@ def actualizar_estado(request, lote_id):
         
         # Si el lote se marca como 'TERMINADO', podemos hacer más cosas si es necesario
         if lote.estado == 'TERMINADO':
+<<<<<<< HEAD
             inventario_producto, creado = InventarioProducto.objects.get_or_create(
                 galleta=lote.galleta,
                 defaults={'cantidad': 0}
@@ -74,11 +80,20 @@ def actualizar_estado(request, lote_id):
             inventario_producto.save()
 
         pass
+=======
+            print("Entrando a la funcion")
+            inventario = InventarioProducto.objects.get(galleta=lote.galleta_id)
+            print(inventario)
+            if inventario:
+                inventario.agregar_cantidad(lote.galleta.cantidad_galletas_producidas)
+                print("Se agregaron las galletas al inventario")
+            else:
+                print(f"Error al agregar las cantidades al inventario")
+>>>>>>> dbe1769c46235201b08c444271476005dd0056a8
         
         lote.save()
 
     return redirect('lotes_produccion')  # Redirige a la lista de lotes de producción
-
 
 
 class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solicitud para luego pedir ser aceptada

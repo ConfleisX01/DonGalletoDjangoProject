@@ -7,7 +7,6 @@ from inventarios.models import InventarioProducto, InventarioMaterial
 from django.contrib.auth.mixins import LoginRequiredMixin
 from produccion_app.models import LoteGalletas
 from Recetas_app.models import IngredienteReceta
-from django.contrib import messages
 from django.views.generic import ListView
 from .models import Merma
 
@@ -43,8 +42,8 @@ class RegistrarMermaView(View):
 
         if errores:
             for error in errores:
-                messages.error(request, error)
-            return redirect('inventario_materia')
+                #
+                return redirect('inventario_materia')
 
         # Descontar inventario
         for ingrediente in ingredientes:
@@ -60,7 +59,7 @@ class RegistrarMermaView(View):
             justificacion=justificacion
         )
 
-        messages.success(request, "Merma registrada correctamente.")
+        #
         return redirect('inventario_materia')
 
 class inventarioProductoView(LoginRequiredMixin, TemplateView):

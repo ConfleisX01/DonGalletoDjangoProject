@@ -1,0 +1,21 @@
+{% extends "panel.html" %}
+
+{% load static %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+        <div class="container w-50 p-4 border mt-5 rounded shadow-sm">
+            <div class="text-center">
+                <h2>Comprar materia prima</h2>
+                <p class="">Ingrese los datos para comprar materia prima</p>
+            </div>
+            <hr/>
+            {% csrf_token %}
+            {{form.as_p}}
+            {% for error in field.error%}
+                <li>{{error}}</li>
+            {% endfor %}
+            <button class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+{% endblock content %}

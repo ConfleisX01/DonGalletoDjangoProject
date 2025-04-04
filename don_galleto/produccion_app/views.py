@@ -78,7 +78,6 @@ def actualizar_estado(request, lote_id):
     return redirect('lotes_produccion')  # Redirige a la lista de lotes de producción
 
 
-
 class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solicitud para luego pedir ser aceptada
     template_name = 'agregar_solicitud_produccion.html'
     form_class = forms.AgregarSolicitudForm

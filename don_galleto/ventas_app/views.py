@@ -37,7 +37,7 @@ class DashboardVentasView(TemplateView):
         ventas_diarias = (
             VentaDetalle.objects
             .values('venta__fecha_venta')
-            .annotate(total_vendido=Sum(F('cantidad') * F('total')))
+            .annotate(total_vendido=Sum(F('total')))
             .order_by('venta__fecha_venta')
         )
         
@@ -273,16 +273,14 @@ class VentaCreateView(FormView):
 def dashboard_view(request):
     return render(request, 'dashboardProductos.html')
 
-
-
 class ListaVentasView(ListView):
     model = Venta
     template_name = "lista_ventas.html"
     context_object_name = "ventas"
 
     def get_queryset(self):
-        # Usamos prefetch_related para cargar los detalles de cada venta con el nombre correcto
-        ventas = Venta.objects.all().prefetch_related('detalles_venta').annotate(
+        # Filtrar las ventas por el estatus que sea igual a '1'
+        ventas = Venta.objects.filter(estatus='1').prefetch_related('detalles_venta').annotate(
             total_venta=Sum('detalles_venta__total')
         ).order_by('-fecha_venta')
 

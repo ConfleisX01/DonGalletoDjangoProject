@@ -33,13 +33,18 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="">
+                    <a class="nav-link" href="{% url 'creacion_produccion' %}">
                       <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Producción
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_solicitudes' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet" ></span></span> Solicitud de producción
+                    <a class="nav-link" href="{% url 'agregar_solicitud' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Solicitud de producción
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lotes_produccion' %}">
+                      <span class="nav-icon"><span class="nav-icon-bullet" ></span></span> Lotes en proceso
                     </a>
                   </li>
                 </ul>

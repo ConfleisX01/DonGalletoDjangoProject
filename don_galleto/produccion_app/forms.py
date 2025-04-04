@@ -2,51 +2,26 @@
 from django import forms
 from materia_prima.models import MateriaPrima
 from Recetas_app.models import Receta
-from produccion_app.models import LoteGalletas
+from produccion_app.models import LoteGalletas, SolicitudProduccion
 
 
-class CrearProductoRegistrarForm(forms.ModelForm):
+class SeleccionarReceta(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return obj.nombre
+
+class AgregarSolicitudForm(forms.ModelForm):
+    galleta = forms.ModelChoiceField(
+        queryset=Receta.objects.all(),
+        label='Seleccionar galleta a solicitar',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
     class Meta:
-        model = LoteGalletas
-        fields = ['galleta', 'cantidad', 'fecha_produccion', 'fecha_caducidad']
-        widgets = {
-            'galleta': forms.Select(attrs={"class": "form-select"}),
-            'cantidad': forms.NumberInput(attrs={"class": "form-control", "type": "number"}),
-            'fecha_produccion': forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            'fecha_caducidad': forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-        }
+        model = SolicitudProduccion
+        fields = ['galleta']
 
-class EditarProductoForm(forms.ModelForm):
-    class Meta:
-        model = LoteGalletas
-        fields = ['galleta', 'cantidad', 'fecha_produccion', 'fecha_caducidad']
-        widgets = {
-            'galleta': forms.Select(attrs={"class": "form-select"}),
-            'cantidad': forms.NumberInput(attrs={"class": "form-control", "type": "number"}),
-            'fecha_produccion': forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            'fecha_caducidad': forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-        }
-        def save(self):
-            insumo = self.instance 
-            insumo.galleta = self.cleaned_data['galleta']
-            insumo.cantidad = self.cleaned_data['cantidad']
-            insumo.fecha_produccion = self.cleaned_data['fecha_produccion']
-            insumo.fecha_caducidad = self.cleaned_data['fecha_caducidad']
-            insumo.save()
-
-
-class CrearSolicitudProduccionForm(forms.ModelForm):
-    class Meta:
-        model = LoteGalletas
-        fields = ['galleta',]
-        widgets = {
-            'usuario': forms.Select(attrs={"class": "form-select"}),
-            'galleta': forms.Select(attrs={"class": "form-select"}),
-            'fecha_solicitud': forms.DateInput(attrs={"class": "form-control", "type": "date"}),      
-        }
-    def save(self):
-        insumo = self.instance 
-        insumo.galleta = self.cleaned_data['galleta']
-        insumo.usuario = self.cleaned_data['usuario']
-        insumo.fecha_solicitud = self.cleaned_data['fecha_solicitud']
-        insumo.save()
+    def save(self, commit=True):
+        solicitud = super().save(commit=False)
+        if commit:
+            solicitud.save() 
+        return solicitud

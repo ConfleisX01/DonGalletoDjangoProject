@@ -112,7 +112,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dongalleto',
         'USER': 'root',
-        'PASSWORD': 'Antonioleos1',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -169,8 +169,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/welcome/'
-LOGOUT_REDIRECT_URL = '/welcome/'
+LOGIN_REDIRECT_URL = '/welcome'
+LOGOUT_REDIRECT_URL = '/welcome'
 
 AUTHENTICATION_BACKENDS = (
     'axes.backends.AxesBackend',  # Habilita el control de accesos

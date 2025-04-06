@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
+from clientes.models import Cliente
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from usuarios_app.forms import UsuarioForm, EditarUsuarioForm
@@ -18,12 +19,12 @@ class listaUsuariosAdmin(LoginRequiredMixin, TemplateView):
         return redirect('home')
     
     def get_context_data(self):
-        users = User.objects.filter(is_staff=False, is_active=True)
-        user_off = User.objects.filter(is_active=False)
-        admin = User.objects.filter(is_staff=True, is_active=True)
+        users = Usuario.objects.filter(user_type='user')
+        clientes = Cliente.objects.filter(user_type='cliente')
+        admin = Usuario.objects.filter(user_type='admin')            
         return {'usuarios': users,
-                'admin': admin,
-                'usuarios_off': user_off}
+                'admins': admin,
+                'clientes': clientes,}
 
 # crear usuarios
 class CrearUsuario(LoginRequiredMixin, FormView):

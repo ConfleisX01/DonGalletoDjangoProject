@@ -82,7 +82,7 @@ class ClienteEditarForm(forms.ModelForm):
 
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}),
-        required=False  # La contraseña es opcional en la edición
+        required=False 
     )
 
     class Meta:

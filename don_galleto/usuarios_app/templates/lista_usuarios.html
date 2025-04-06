@@ -1,9 +1,10 @@
 {% extends "panel.html" %}
 {% block content %}
-<header class="header mb-3">
-    <span class="header-brand mb-0 h1">Lista de usuarios</span>
-    <a href="{% url 'crear_usuarios' %}" class="btn btn-success text-white">Crear Usuario</a>
-</header>
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock styles %}
 
 <div class="container-fluid">
     <!-- Nav tabs -->
@@ -19,6 +20,8 @@
         </li>
     </ul>
 
+    <a href="{% url 'crear_usuarios' %}" id="btnCrearUsuario" class="btn btn-success text-white mb-4">Crear Usuario</a>
+
     <!-- Tab panes -->
     <div class="tab-content">
 
@@ -29,6 +32,7 @@
                     <h2 class="mb-0">Lista de Administradores</h2>
                 </div>
                 <div class="card-body">
+
                     <input type="text" id="searchAdmin" class="form-control mb-3" placeholder="Buscar en administradores...">
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -127,6 +131,7 @@
                     <h2 class="mb-0">Lista de Clientes</h2>
                 </div>
                 <div class="card-body">
+                    <a href="{% url 'crear_cliente' %}" id="btnCrearCliente" class="btn btn-success text-white mb-4">Crear cliente</a>
                     <input type="text" id="searchUser_off" class="form-control mb-3" placeholder="Buscar en usuarios...">
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -172,30 +177,6 @@
 
     </div>
 </div>
-
-<!-- Font Awesome & Bootstrap JS (si no está incluido ya) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Buscadores -->
-<script>
-    const addSearch = (inputId, tableId) => {
-        document.getElementById(inputId).addEventListener('keyup', function() {
-            const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll(`#${tableId} tr`);
-            rows.forEach(row => {
-                const [firstName, lastName, email] = [...row.cells].map(cell => cell.textContent.toLowerCase());
-                row.style.display = (
-                    firstName.includes(searchValue) || 
-                    lastName.includes(searchValue) || 
-                    email.includes(searchValue)
-                ) ? '' : 'none';
-            });
-        });
-    }
-
-    addSearch('searchAdmin', 'adminTable');
-    addSearch('searchUser', 'userTable');
-    addSearch('searchUser_off', 'userOffTable');
-</script>
+<script src="{% static 'js/usuarios.js' %}"></script>
 {% endblock content %}

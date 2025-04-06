@@ -150,7 +150,7 @@ class EditarUsuarioForm(forms.ModelForm):
     )
     rol = forms.ChoiceField(
         label="Rol", 
-        choices=[("admin", "Administrador"), ("user", "Usuario")],
+        choices=[("admin", "Administrador"), ("user", "admin")],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     

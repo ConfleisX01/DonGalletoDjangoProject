@@ -22,7 +22,7 @@ from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, Carrit
 from django.utils import timezone
 from datetime import datetime
 from django.utils.dateparse import parse_date
-
+from . import forms  
 class DashboardVentasView(TemplateView):
     template_name = 'dashboard_ventas.html'
 
@@ -51,7 +51,7 @@ class DashboardVentasView(TemplateView):
         )
         
         # Sumar todos los costos totales de los inventarios
-        total_costo_inventario = inventarios.aggregate(total_costo=Sum('costo_total'))['total_costo'] or 0
+        total_costo_inventario = inventarios.aggregate(total_costo=Sum('costo_total'))['total_costo'] or DetallesProductoView
             
         # Ventas diarias filtradas por el rango de fechas
         ventas_diarias = (
@@ -144,7 +144,6 @@ class DashboardVentasView(TemplateView):
 
         return context
 
-class VerListaPedidosView(ListView):
 
 from django.shortcuts import get_object_or_404
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras

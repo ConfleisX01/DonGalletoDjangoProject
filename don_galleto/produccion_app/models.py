@@ -26,10 +26,6 @@ class LoteGalletas(models.Model):
     def esta_caducado(self):
         return now().date() > self.fecha_caducidad
     
-<<<<<<< HEAD
-    
-=======
->>>>>>> dbe1769c46235201b08c444271476005dd0056a8
     def __str__(self):
         return f"Lote {self.id} - {self.galleta.nombre_galleta} ({self.cantidad} unidades) - Vence el {self.fecha_caducidad}"
 

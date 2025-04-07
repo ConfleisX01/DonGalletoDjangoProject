@@ -5,13 +5,9 @@ from produccion_app.models import LoteGalletas, SolicitudProduccion
 from . import forms
 from django.utils.timezone import now
 from datetime import timedelta
-<<<<<<< HEAD
 from inventarios.models import  InventarioProducto
 
-=======
-from django.http import JsonResponse
 from inventarios.models import InventarioProducto
->>>>>>> dbe1769c46235201b08c444271476005dd0056a8
 
 class ListaLotesProduccionView(ListView):
     model = LoteGalletas
@@ -20,7 +16,7 @@ class ListaLotesProduccionView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Excluir los lotes que ya están terminados
+        # excluyo los lotes que ya tan terminados
         context['solicitudes_lote'] = LoteGalletas.objects.exclude(estado='TERMINADO')
         return context
 
@@ -71,16 +67,6 @@ def actualizar_estado(request, lote_id):
         
         # Si el lote se marca como 'TERMINADO', podemos hacer más cosas si es necesario
         if lote.estado == 'TERMINADO':
-<<<<<<< HEAD
-            inventario_producto, creado = InventarioProducto.objects.get_or_create(
-                galleta=lote.galleta,
-                defaults={'cantidad': 0}
-        )
-            inventario_producto.cantidad += lote.cantidad  # sumamos lo producido
-            inventario_producto.save()
-
-        pass
-=======
             print("Entrando a la funcion")
             inventario = InventarioProducto.objects.get(galleta=lote.galleta_id)
             print(inventario)
@@ -89,8 +75,6 @@ def actualizar_estado(request, lote_id):
                 print("Se agregaron las galletas al inventario")
             else:
                 print(f"Error al agregar las cantidades al inventario")
->>>>>>> dbe1769c46235201b08c444271476005dd0056a8
-        
         lote.save()
 
     return redirect('lotes_produccion')  # Redirige a la lista de lotes de producción

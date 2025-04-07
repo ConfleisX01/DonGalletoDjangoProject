@@ -28,7 +28,9 @@ class ListaMateriaPrimaView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         lista = MateriaPrima.objects.all()
+        
         context['lista']=lista
+        print('hola')
         return context
     
 class CrearMateriaPrimaView(LoginRequiredMixin, FormView):

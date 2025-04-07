@@ -1,6 +1,7 @@
 {% extends 'panel.html' %}
 
 {% block content %}
+
 <h1 class="mb-4">Lista de Mermas</h1>
 <table class="table table-striped">
   <thead>
@@ -17,7 +18,7 @@
     <tr>
       <td>{{ merma.id }}</td>
       <td>{{ merma.lote.id }}</td>
-      <td>{{ merma.lote.galleta.nombre }}</td>
+      <td>{{ merma.lote.galleta.nombre}}</td>
       <td>{{ merma.fecha|date:"d/m/Y H:i" }}</td>
       <td>{{ merma.justificacion }}</td>
     </tr>

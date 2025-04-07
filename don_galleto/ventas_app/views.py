@@ -259,16 +259,18 @@ class VerListaPedidosView(ListView):
             "Content-Disposition": f'attachment; filename="ticket_venta_{venta.id}.pdf"'
         })
 
-class VerListaPedidosView(LoginRequiredMixin, ListView):
+class VerListaPedidosClientesView(LoginRequiredMixin, ListView):
     model = CarritoCompras
     template_name = 'lista_pedidos_cliente.html'
     context_object_name = 'pedidos'
 
     def get_queryset(self):
-        return CarritoCompras.objects.filter(
+        lista = CarritoCompras.objects.filter(
             usuario=self.request.user,
-            detalles__venta__estatus=True
+            estatus='1'
         ).distinct()
+        print(lista)
+        return lista
 
 class ListaProductosView(LoginRequiredMixin, ListView):
     model = InventarioProducto
@@ -288,12 +290,12 @@ class DetallesProductoView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus=False).first()
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus='0').first()
 
         if not carrito:
             carrito = CarritoCompras.objects.create(usuario=self.request.user)
 
-        if carrito.estatus:
+        if carrito.estatus == '1':
                 form.add_error(None, "Este carrito está cerrado. No puedes agregar más productos.")
                 return self.form_invalid(form)
         

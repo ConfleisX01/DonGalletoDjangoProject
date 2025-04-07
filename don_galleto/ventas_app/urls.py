@@ -1,6 +1,6 @@
 from django.urls import path
 from django.urls import path, include
-from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView, dashboard_view,DashboardVentasView, ListaVentasView
+from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView, dashboard_view,DashboardVentasView, ListaVentasView,descargar_ticket_pdf
 
 urlpatterns = [
     path('dashvoardventas/',DashboardVentasView.as_view(), name='dashboard_ventas'),
@@ -10,5 +10,7 @@ urlpatterns = [
     path('corteVenta/', VentaCreateView.as_view(), name='corteVenta'),
     path('lista_pedidos_cliente/', VerListaPedidosView.as_view(), name='lista_pedidos_cliente'),
     path('dashboardProductos/', dashboard_view, name='dashboardProductos'),
+    path('ventas/ticket/<int:venta_id>/', descargar_ticket_pdf, name='descargar_ticket_pdf'),
+
 
 ]

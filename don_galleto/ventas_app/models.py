@@ -101,3 +101,12 @@ class VentaDetalle(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, null=False)
     venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True, related_name="detalles")
     carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=True, blank=False)
+
+    #PARA GUARDAR EL TICKET SIN AFECTAR VENTA   
+class TicketVenta(models.Model):
+    venta = models.ForeignKey('Venta', related_name='tickets', on_delete=models.CASCADE)
+    ticket_pdf = models.BinaryField(null=True, blank=True)  # Campo para almacenar el PDF en binario
+    fecha_generacion = models.DateTimeField(auto_now_add=True)  # Fecha de generación del ticket
+
+    def __str__(self):
+        return f"Ticket de venta #{self.venta.id}"

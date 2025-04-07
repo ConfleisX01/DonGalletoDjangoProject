@@ -3,7 +3,15 @@
 {% load static %}
 
 {% block content %}
-    <div class="container mt-5">
+<div class="mt-5">
+    <div class="container py-5">
+        <div class="container-fluid d-flex">
+            <a class="mx-2 btn" href="{% url 'welcome' %}"><i class="bi bi-arrow-left"></i></a>
+            <h2>Mis Pedidos</h2>
+        </div>
+    </div>
+</div>
+    <!-- <div class="container mt-5">
         <h2 class="mb-4">Mis Pedidos</h2>
         
         {% if pedidos %}
@@ -35,5 +43,5 @@
         {% else %}
             <p class="text-center text-secondary">Aún no tienes pedidos realizados.</p>
         {% endif %}
-    </div>
+    </div> -->
 {% endblock %}

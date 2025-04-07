@@ -19,7 +19,7 @@
           data-coreui-target="#flush-collapse{{ forloop.counter }}"
           aria-expanded="false"
           aria-controls="flush-collapse{{ forloop.counter }}">
-            {{item.insumo.nombre_insumo}} ({{ item.insumo.unidad_base }}) <span class="badge text-bg-secondary mx-2">{{ item.calcular_stock }}{{ item.insumo.unidad_base }}</span>
+            {{item.insumo.nombre_insumo}} ({{ item.insumo.unidad_base }}) <span class="badge text-bg-secondary mx-2">{{ item.cantidad }}{{ item.insumo.unidad_base }}</span>
           </button>
         </h2>
         <div id="flush-collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-coreui-parent="#accordionFlushExample">

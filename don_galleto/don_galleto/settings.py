@@ -169,9 +169,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = '/welcome'
-LOGOUT_REDIRECT_URL = '/welcome'
+LOGIN_URL = '/cuentas/login/'
+LOGIN_REDIRECT_URL = '/welcome/'
+LOGOUT_REDIRECT_URL = '/welcome/'
 
 AUTHENTICATION_BACKENDS = (
     'axes.backends.AxesBackend',  # Habilita el control de accesos

@@ -1,0 +1,63 @@
+{% extends "main.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+<div class="vh-100 d-flex align-items-center justify-content-center flex-column">
+    <div class="border rounded-2 shadow-lg overflow-hidden w-25">
+        <div class="">
+            <img src="{% static '/img/login_cookies.jpeg' %}" class="object-fit-cover" style="height: 4rem; width: 100%;">
+        </div>
+        <div class="container-fluid p-4">
+            <div class="mb-5">
+                <h2>Iniciar Sesión</h2>
+                <small class="text-secondary">Por favor. Ingrese sus credenciales para iniciar sesión</small>
+            </div>
+            <div>
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{ wizard.management_form }} 
+                    {% for field in wizard.form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {% render_field field class="form-control" %}
+                            {% if field.errors %}
+                            <div class="text-danger">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary mt-3">Iniciar Sesión</button>
+                    </div>
+                    <hr/>
+                </form>
+                <div class="d-grid text-center">
+                    <small>No tienes cuenta?, crea una ahora</small>
+                    <button type="submit" class="btn btn-outline-primary mt-3">Crear una cuenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <h2 class="mb-4">Inicio de sesión</h2>
+    <form method="post">
+      {% csrf_token %}
+        {{ wizard.management_form }} 
+        {% for field in wizard.form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {% render_field field class="form-control" %}
+            {% if field.errors %}
+            <div class="text-danger">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+      <button class="btn btn-primary" type="submit">Siguiente</button>
+    </form>
+    <ul>
+        {% for field in wizard.form %}
+          <li>{{ field.label }} - {{ field.name }}</li>
+        {% endfor %}
+    </ul> -->
+</div>
+{% endblock %}

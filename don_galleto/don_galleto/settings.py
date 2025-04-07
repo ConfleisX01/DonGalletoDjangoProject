@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',  # OTP basado en tiempo (como Google Authenticator)
     'django_otp.plugins.otp_static',  # Códigos de respaldo (opcional)
     'two_factor',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -168,7 +169,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = '/welcome'
 LOGOUT_REDIRECT_URL = '/welcome'
 

@@ -33,6 +33,14 @@ class InventarioMaterial(models.Model):
     insumo = models.OneToOneField(MateriaPrima, on_delete=models.CASCADE)
     cantidad = models.PositiveBigIntegerField(default=500, null=False, blank=False)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
+    
+    def disminuir_cantidad(self, cantidad_solicitada):
+        self.cantidad -= cantidad_solicitada
+        self.save()
+
+    def agregar_cantidad(self, cantidad_agregada):
+        self.cantidad += cantidad_agregada
+        self.save()
 
     def agregar_cantidad(self, cantidad):
         self.cantidad += cantidad

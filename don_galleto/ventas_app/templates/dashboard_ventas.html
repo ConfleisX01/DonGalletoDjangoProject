@@ -70,7 +70,7 @@
                             <div class="card-body">
                                 <h5 class="metric-title">Ganancia máxima de stock</h5>
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <span class="metric-value">${{ gagancia_maxima_galletas|floatformat:2 }}</span>
+                                    <span class="metric-value">${{gagancia_maxima_galletas|floatformat:2}}</span>
                                     <i class="bi bi-star icon-sm"></i>
                                 </div>
                             </div>
@@ -91,6 +91,24 @@
                                         style="width: {{ progreso_ventas }}%;">
                                         {{ progreso_ventas|floatformat:2 }}%
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-metric shadow-sm">
+                            <div class="card-body">
+                                <h5 class="metric-title">Costo del inventario</h5>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="metric-value">${{ total_costo_inventario|floatformat:2 }}</span>
+                                    <i class="bi bi-star icon-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-metric shadow-sm">
+                            <div class="card-body">
+                                <h5 class="metric-title">Galleta más vendida</h5>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="metric-value">{{ receta_mas_pedida}}</span>
+                                    <i class="bi bi-star icon-sm"></i>
                                 </div>
                             </div>
                         </div>

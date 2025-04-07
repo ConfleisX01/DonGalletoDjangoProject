@@ -1,5 +1,5 @@
 import pandas as pd
-from django.db.models import F, Sum, Count, ExpressionWrapper, DecimalField
+from django.db.models import F, Sum, Count, ExpressionWrapper, DecimalField, Subquery
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now, localtime
 import plotly.express as px
@@ -7,7 +7,8 @@ from datetime import datetime
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin,LoginRequiredMixin
-from inventarios.models import InventarioProducto
+from inventarios.models import InventarioProducto, InventarioMaterial
+from materia_prima.models import LoteMateriaPrima
 from Recetas_app.models import Receta
 from django.contrib import messages
 from .forms import VentaForm, VentaDetalleForm
@@ -47,7 +48,15 @@ class DashboardVentasView(TemplateView):
         # Calcular el inicio y fin del rango de fechas
         inicio_dia = datetime.combine(fecha_inicio, datetime.min.time())
         fin_dia = datetime.combine(fecha_fin, datetime.max.time())
+        inventarios = InventarioMaterial.objects.annotate(
+            costo_total=Sum(
+                F('insumo__lotes__costo_uniario') * F('cantidad')
+            )
+        )
         
+        # Sumar todos los costos totales de los inventarios
+        total_costo_inventario = inventarios.aggregate(total_costo=Sum('costo_total'))['total_costo'] or 0
+            
         # Ventas diarias filtradas por el rango de fechas
         ventas_diarias = (
             VentaDetalle.objects
@@ -78,18 +87,23 @@ class DashboardVentasView(TemplateView):
             .count()
         )
         
-        # Calcular la ganancia máxima total del inventario
-        ganancia_maxima_total = (
-            InventarioProducto.objects
-            .values()  # No necesitas especificar campos si solo quieres la suma total
-            .annotate(
-                ganancia_maxima=ExpressionWrapper(
-                    F('galleta__precio_galleta') * F('cantidad'),
-                    output_field=DecimalField(decimal_places=2)
-                )
+        # Consulta para calcular el costo de los ingredientes por receta
+        inventarios_productos = InventarioProducto.objects.annotate(
+            costo_produccion=Sum(
+                (F('galleta__ingredientes__cantidad_necesaria') / 1000) * F('galleta__ingredientes__insumo__lotes__costo_uniario'),
+                output_field=DecimalField(decimal_places=2)
             )
-            .aggregate(total_ganancia_maxima=Sum('ganancia_maxima'))
+        ).annotate(
+            ganancia_total=F('galleta__precio_galleta') * F('cantidad') - F('costo_produccion')
         )
+
+        # Ahora obtenemos la ganancia máxima total sumando las ganancias individuales
+        ganancia_maxima_total = inventarios_productos.aggregate(
+            total_ganancia_maxima=Sum('ganancia_total')
+        )
+
+        print(ganancia_maxima_total)
+        
         # Receta más pedida en el rango de fechas
         receta_mas_pedida = (
             VentaDetalle.objects
@@ -123,6 +137,7 @@ class DashboardVentasView(TemplateView):
             'graph_html_pie': graph_html_pie,
             'total_vendido': total_vendido,
             "gagancia_maxima_galletas": ganancia_maxima_total['total_ganancia_maxima'],
+            'total_costo_inventario': total_costo_inventario,
             'num_pedidos': num_pedidos,
             'receta_mas_pedida': receta_mas_pedida,
             'objetivo_ventas': objetivo_ventas,

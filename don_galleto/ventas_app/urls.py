@@ -1,8 +1,10 @@
 from django.urls import path
 from django.urls import path, include
-from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView, dashboard_view
+from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView, dashboard_view,DashboardVentasView, ListaVentasView
 
 urlpatterns = [
+    path('dashvoardventas/',DashboardVentasView.as_view(), name='dashboard_ventas'),
+    path('lista_ventas/', ListaVentasView.as_view(), name='lista_ventas'),
     path('lista_productos/', ListaProductosView.as_view(), name='lista_productos'),
     path('detalle_producto/<int:id>', DetallesProductoView.as_view(), name='detalle_producto'),
     path('corteVenta/', VentaCreateView.as_view(), name='corteVenta'),

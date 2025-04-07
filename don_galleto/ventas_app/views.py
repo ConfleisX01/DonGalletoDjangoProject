@@ -1,5 +1,5 @@
 import pandas as pd
-from django.db.models import F, Sum, Count
+from django.db.models import F, Sum, Count, ExpressionWrapper, DecimalField
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now, localtime
 import plotly.express as px
@@ -24,6 +24,7 @@ from . import forms
 from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras
 from django.utils import timezone
 from datetime import datetime
+from django.utils.dateparse import parse_date
 
 class DashboardVentasView(TemplateView):
     template_name = 'dashboard_ventas.html'
@@ -31,53 +32,68 @@ class DashboardVentasView(TemplateView):
     def get_context_data(self, **kwargs):
         # Obtener la fecha de hoy
         fecha_hoy = localtime(now()).date()
-        inicio_dia = datetime.combine(fecha_hoy, datetime.min.time())
-        fin_dia  = datetime.combine(fecha_hoy, datetime.max.time())
-        objetivo_ventas = 1000
-        
-
 
         
-        # Suponiendo que 'datetime_local' es la fecha y hora que quieres registrar
-        datetime_local = datetime(2025, 4, 3, 2, 41)
-        datetime_utc = timezone.make_aware(datetime_local, timezone.get_current_timezone())
-        print(datetime_local)
-        print(datetime_utc)
+        # Obtener las fechas desde los parámetros GET
+        fecha_inicio = self.request.GET.get('fecha_inicio', fecha_hoy)
+        fecha_fin = self.request.GET.get('fecha_fin', fecha_hoy)
+
+        # Si las fechas son cadenas de texto, las convertimos en objetos datetime.date
+        if isinstance(fecha_inicio, str):
+            fecha_inicio = parse_date(fecha_inicio) or fecha_hoy
+        if isinstance(fecha_fin, str):
+            fecha_fin = parse_date(fecha_fin) or fecha_hoy
         
+        # Calcular el inicio y fin del rango de fechas
+        inicio_dia = datetime.combine(fecha_inicio, datetime.min.time())
+        fin_dia = datetime.combine(fecha_fin, datetime.max.time())
         
-        
-        # Ventas diarias
+        # Ventas diarias filtradas por el rango de fechas
         ventas_diarias = (
             VentaDetalle.objects
+            .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
             .values('venta__fecha_venta')
             .annotate(total_vendido=Sum(F('total')))
             .order_by('venta__fecha_venta')
         )
-        print(ventas_diarias)
         
-        
+        # Recetas agrupadas filtradas por el rango de fechas
         recetas_agrupadas = (
             VentaDetalle.objects
+            .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
             .values('receta__nombre')
             .annotate(total_vendidas=Count('id'))
             .order_by('-total_vendidas')
         )
 
-        # Total vendido hoy
-        total_hoy = sum(
-            venta['total_vendido'] or 0 for venta in ventas_diarias if venta['venta__fecha_venta'].date() == fecha_hoy
+        # Total vendido en el rango de fechas
+        total_vendido = sum(
+            venta['total_vendido'] or 0 for venta in ventas_diarias
         )
 
-        # Número de pedidos con estatus True
+        # Número de pedidos realizados en el rango de fechas
         num_pedidos = (
             Venta.objects
             .filter(estatus=True, fecha_venta__range=[inicio_dia, fin_dia])
             .count()
         )
-
-        # Receta más pedida
+        
+        # Calcular la ganancia máxima total del inventario
+        ganancia_maxima_total = (
+            InventarioProducto.objects
+            .values()  # No necesitas especificar campos si solo quieres la suma total
+            .annotate(
+                ganancia_maxima=ExpressionWrapper(
+                    F('galleta__precio_galleta') * F('cantidad'),
+                    output_field=DecimalField(decimal_places=2)
+                )
+            )
+            .aggregate(total_ganancia_maxima=Sum('ganancia_maxima'))
+        )
+        # Receta más pedida en el rango de fechas
         receta_mas_pedida = (
             VentaDetalle.objects
+            .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
             .values('receta__nombre')
             .annotate(total_cantidad=Sum('cantidad'))
             .order_by('-total_cantidad')
@@ -85,39 +101,38 @@ class DashboardVentasView(TemplateView):
         )
         receta_mas_pedida = receta_mas_pedida['receta__nombre'] if receta_mas_pedida else "No hay datos"
 
+        objetivo_ventas = ganancia_maxima_total['total_ganancia_maxima']
         # Progreso de ventas
-        progreso_ventas = (total_hoy / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
+        progreso_ventas = (total_vendido / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
 
-        # Datos para el gráfico de barras
+        # Datos para los gráficos
         fechas = [venta['venta__fecha_venta'] for venta in ventas_diarias]
         totales = [venta['total_vendido'] for venta in ventas_diarias]
         df_barras = pd.DataFrame({'Fecha': fechas, 'Total Vendido': totales})
 
-        # Crear el gráfico de barras con Plotly
-        fig_barras = px.bar(df_barras, x='Fecha', y='Total Vendido', title='Ventas Diarias', color='Total Vendido')
+        fig_barras = px.bar(df_barras, x='Fecha', y='Total Vendido', title= f'Ventas Diarias: {fecha_inicio} - {fecha_fin}', color='Total Vendido')
         graph_html_barras = fig_barras.to_html(full_html=False)
-        
-        # Convertir el queryset en un DataFrame de Pandas
-        df_recetas_agrupadas = pd.DataFrame(list(recetas_agrupadas))
 
-        # Crear el gráfico de pie con Plotly
-        fig_pie = px.pie(df_recetas_agrupadas, names='receta__nombre', values='total_vendidas', title='Recetas Vendidas')
+        df_recetas_agrupadas = pd.DataFrame(list(recetas_agrupadas))
+        fig_pie = px.pie(df_recetas_agrupadas, names='receta__nombre', values='total_vendidas', title=f'Recetas vendidas en: {fecha_inicio} - {fecha_fin}')
         graph_html_pie = fig_pie.to_html(full_html=False)
 
-        # Pasar todos los datos al contexto
         context = super().get_context_data(**kwargs)
         context.update({
             'graph_html_barras': graph_html_barras,
             'graph_html_pie': graph_html_pie,
-            'total_hoy': total_hoy,
+            'total_vendido': total_vendido,
+            "gagancia_maxima_galletas": ganancia_maxima_total['total_ganancia_maxima'],
             'num_pedidos': num_pedidos,
             'receta_mas_pedida': receta_mas_pedida,
             'objetivo_ventas': objetivo_ventas,
-            'progreso_ventas': progreso_ventas
+            'progreso_ventas': progreso_ventas,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin
         })
 
         return context
-    
+
 class VerListaPedidosView(ListView):
     model = CarritoCompras
     template_name = 'lista_pedidos_cliente.html'
@@ -130,7 +145,7 @@ class ListaProductosView(LoginRequiredMixin, ListView):
     template_name = 'lista_productos.html'
     context_object_name = 'productos'
 
-class DetallesProductoView(LoginRequiredMixin, FormView): #Literalmente agregar el producto al carrito (no se que estaba pensando al nombrar esta vista :/)
+class DetallesProductoView(LoginRequiredMixin, FormView):
     template_name = 'detalles_producto.html'
     form_class = forms.DetallesProductoForm
     success_url = reverse_lazy('lista_productos')

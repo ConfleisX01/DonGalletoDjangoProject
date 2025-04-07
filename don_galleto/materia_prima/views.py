@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.base import TemplateView
+from django.views.generic import ListView
 from django.views.generic.base import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
@@ -9,6 +10,18 @@ from inventarios.models import InventarioMaterial
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
+class ComprarInsumoView(LoginRequiredMixin, FormView):
+    template_name = 'compra_insumo.html'
+    form_class = forms.ComprarInsumoForm
+    success_url = reverse_lazy('inventario_materia')
+
+    def form_valid(self, form):
+        lote = form.save()
+        inventraio = InventarioMaterial.objects.get(insumo=lote.insumo)
+        inventraio.agregar_cantidad(lote.cantidad)
+        inventraio.save()
+        return super().form_valid(form)
+
 class ListaMateriaPrimaView(LoginRequiredMixin, TemplateView):
     template_name = 'lista_materia_prima.html'
 

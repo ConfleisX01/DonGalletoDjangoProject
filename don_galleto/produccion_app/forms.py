@@ -25,3 +25,4 @@ class AgregarSolicitudForm(forms.ModelForm):
         if commit:
             solicitud.save() 
         return solicitud
+    

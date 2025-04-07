@@ -31,6 +31,10 @@
                                 </option>
                             {% endfor %}
                         </select>
+                        <div class="d-grid gap-2 p-2">
+                            <a class="btn btn-outline-danger" href="{% url 'registrar_merma' item.id %}">Agregar todo el lote a merma</a>
+                        </div>
+
                     </form>
                 </div>
             </div>
@@ -40,4 +44,6 @@
 {% empty %}
     <p>No hay lotes en producción.</p>
 {% endfor %}
+
 {% endblock content %}
+

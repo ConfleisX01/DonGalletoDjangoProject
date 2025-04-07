@@ -91,7 +91,7 @@ class VentaDetalle(models.Model):
         ('ud', 'Unidad'),
     ]
 
-    total = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    total = models.DecimalField(default=0, max_digits=10, decimal_places=2 )
     cantidad = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     tipo_unidad = models.CharField(
         max_length=2,

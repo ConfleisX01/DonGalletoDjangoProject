@@ -1,27 +1,23 @@
 import pandas as pd
-from django.db.models import F, Sum, Count, ExpressionWrapper, DecimalField, Subquery
-from django.shortcuts import get_object_or_404
 from django.utils.timezone import now, localtime
+from django.db.models import F, Sum
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Venta, VentaDetalle
 import plotly.express as px
-from datetime import datetime
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, TemplateView
-from django.contrib.auth.mixins import PermissionRequiredMixin,LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from inventarios.models import InventarioProducto, InventarioMaterial
 from materia_prima.models import LoteMateriaPrima
 from Recetas_app.models import Receta
 from django.contrib import messages
-from .forms import VentaForm, VentaDetalleForm
-from django.views.generic.edit import FormView
+from .forms import VentaForm, VentaDetalleForm, VentaDetalleFormSet
 from django.db import transaction
-from django.contrib import messages
-from .forms import VentaForm
-from django.shortcuts import render, redirect
-from django.views.generic.edit import FormView
-from django.db import transaction
-from .models import Venta, VentaDetalle
 from django.forms import inlineformset_factory
-from . import forms
+from django.http import HttpResponseRedirect, FileResponse, HttpResponse
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
 from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras
 from django.utils import timezone
 from datetime import datetime
@@ -149,11 +145,119 @@ class DashboardVentasView(TemplateView):
         return context
 
 class VerListaPedidosView(ListView):
+
+from django.shortcuts import get_object_or_404
+from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+#Generacion de ticket:
+from reportlab.lib import colors    
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from django.http import HttpResponse
+
+def generar_ticket_pdf(venta, detalles_guardados):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    margen_izq = 50
+    y = height - 50
+
+    # Encabezado
+    p.setFont("Helvetica-Bold", 18)
+    p.drawCentredString(width / 2, y, "🍪 Don Galleto - Ticket de Venta")
+    y -= 30
+
+    p.setFont("Helvetica", 10)
+    p.drawCentredString(width / 2, y, "¡Gracias por tu compra!")
+    y -= 30
+
+    # Información general
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Fecha: ")
+    p.setFont("Helvetica", 12)
+    p.drawString(margen_izq + 50, y, venta.fecha_venta.strftime('%d/%m/%Y %H:%M'))
+    y -= 20
+
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Número de venta:")
+    p.setFont("Helvetica", 12)
+    p.drawString(margen_izq + 110, y, str(venta.id))
+    y -= 30
+
+    # Línea separadora
+    p.line(margen_izq, y, width - margen_izq, y)
+    y -= 20
+
+    # Encabezados de tabla
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Producto")
+    p.drawString(margen_izq + 200, y, "Cantidad")
+    p.drawString(margen_izq + 300, y, "Precio Unit.")
+    p.drawString(margen_izq + 400, y, "Subtotal")
+    y -= 20
+
+    total_galletas = 0
+    total_precio = 0
+
+    p.setFont("Helvetica", 11)
+    for detalle in detalles_guardados:
+        # Obtenemos los datos específicos de cada detalle
+        receta = detalle.receta  # Accedemos a la receta relacionada
+        nombre = receta.nombre
+        cantidad = detalle.cantidad
+        precio_unitario = receta.precio_galleta  # Precio exacto de ESA receta
+        subtotal = cantidad * precio_unitario
+
+        # Mostramos los datos en columnas alineadas
+        p.drawString(margen_izq, y, f"{nombre}")
+        p.drawString(margen_izq + 200, y, f"{cantidad}")
+        p.drawString(margen_izq + 300, y, f"${precio_unitario:.2f}")
+        p.drawString(margen_izq + 400, y, f"${subtotal:.2f}")
+        y -= 20
+
+        total_galletas += cantidad
+        total_precio += subtotal
+
+        if y < 100:  # Salto de página si nos quedamos sin espacio
+            p.showPage()
+            y = height - 50
+            p.setFont("Helvetica", 11)  # Restablecemos la fuente después del salto
+
+    # Totales
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Total Galletas:")
+    p.drawString(margen_izq + 400, y, f"{total_galletas}")
+    y -= 20
+
+    p.drawString(margen_izq, y, "Total a Pagar:")
+    p.drawString(margen_izq + 400, y, f"${total_precio:.2f}")
+    y -= 30
+
+    # Pie de página
+    p.setFont("Helvetica-Oblique", 10)
+    p.drawCentredString(width / 2, y, "¡Vuelva pronto! 🍪")
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+
+    return HttpResponse(buffer, content_type="application/pdf", headers={
+        "Content-Disposition": f'attachment; filename="ticket_venta_{venta.id}.pdf"'
+    })
+
+class VerListaPedidosView(LoginRequiredMixin, ListView):
     model = CarritoCompras
     template_name = 'lista_pedidos_cliente.html'
     context_object_name = 'pedidos'
+
     def get_queryset(self):
-        return CarritoCompras.objects.filter(usuario=self.request.user, detalles__venta__estatus='1').distinct()
+        return CarritoCompras.objects.filter(
+            usuario=self.request.user,
+            detalles__venta__estatus=True
+        ).distinct()
 
 class ListaProductosView(LoginRequiredMixin, ListView):
     model = InventarioProducto
@@ -167,59 +271,45 @@ class DetallesProductoView(LoginRequiredMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        receta = get_object_or_404(Receta, id=self.kwargs.get('id'))
+        id = self.kwargs.get('id')
+        receta = get_object_or_404(Receta, id=id)
         kwargs['initial'] = {'receta': receta}
         return kwargs
-    
+
     def form_valid(self, form):
-        try:
-            carrito, created = CarritoCompras.objects.get_or_create(
-                usuario=self.request.user,
-                estatus='0'
-            )
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus=False).first()
 
-            if carrito:
-                detalle_venta = form.save(commit=False)
-                detalle_venta.carrito = carrito
-                detalle_venta.venta = None
+        if not carrito:
+            carrito = CarritoCompras.objects.create(usuario=self.request.user)
 
-                inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
-
-                precio_total_calculado = calcularPrecioGalleta(
-                    detalle_venta.tipo_unidad, 
-                    detalle_venta.cantidad, 
-                    inventario.galleta.precio_galleta, 
-                    inventario.galleta.peso_individual
-                )
-                
-                if precio_total_calculado is False:
-                    form.add_error(None, "No se pudo calcular el precio")
-                    return self.form_invalid(form)
-                
-                detalle_venta.total = precio_total_calculado
-                detalle_venta.save()
-            elif created:
-                print('Se creo un nuevo carrito')
-            else:
-                form.add_error(None, "Hubo un error en el producto")
+        if carrito.estatus:
+                form.add_error(None, "Este carrito está cerrado. No puedes agregar más productos.")
                 return self.form_invalid(form)
-            
-        except Exception as e:
-            print(f"Error al manejar el carrito: {e}")
-            form.add_error(None, "Hubo un error al agregar el producto al carrito")
+        
+        detalle_venta = form.save(commit=False)
+        detalle_venta.carrito = carrito
+
+        inventario = InventarioProducto.objects.get(galleta=detalle_venta.receta)
+        tipo_compra = detalle_venta.tipo_unidad
+        cantidad_galleta = detalle_venta.cantidad
+        precio_galleta = inventario.galleta.precio_galleta
+        peso_galleta = inventario.galleta.peso_individual
+
+        precio_total_calculado = calcularPrecioGalleta(tipo_compra, cantidad_galleta, precio_galleta, peso_galleta)
+
+        if not precio_total_calculado:
+            form.add_error(None, "No se pudo calcular el precio correctamente.")
             return self.form_invalid(form)
         
-        return super().form_valid(form)
+        detalle_venta.total = precio_total_calculado
+        detalle_venta.save()
 
-def calcularGalletas(cantidad, tipo_compra, peso_galleta):
-    if tipo_compra == 'ud':
-        return cantidad
-    elif tipo_compra == 'gr':
-        return peso_galleta / cantidad
-    elif tipo_compra == 'pq':
-        return cantidad * 12
-    else: return False
+        return super().form_valid(form)
     
+    
+    
+    
+recetas = Receta.objects.all()
 
 def get_venta_detalle_formset(num_galletas):
     return inlineformset_factory(
@@ -231,109 +321,76 @@ def get_venta_detalle_formset(num_galletas):
     )
 
 class VentaCreateView(FormView):
-    recetas = Receta.objects.all()
     template_name = "crear_venta.html"
     form_class = VentaForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Obtener recetas disponibles
+        # Obtener las recetas
         recetas = Receta.objects.all()
         num_galletas = recetas.count()
         messages.info(self.request, f"Se están generando {num_galletas} formularios para las recetas disponibles.")
         
-        # Crear formset
+        # Crear formset con el número adecuado de formularios
         VentaDetalleFormSet = get_venta_detalle_formset(num_galletas)
 
+        # Si hay un POST, usar los datos enviados, si no, crear formularios iniciales
         if self.request.POST:
             context["formset"] = VentaDetalleFormSet(self.request.POST)
         else:
             initial_data = [{"receta": receta} for receta in recetas] if num_galletas > 0 else []
             context["formset"] = VentaDetalleFormSet(queryset=VentaDetalle.objects.none(), initial=initial_data)
 
-        # Combinar formularios con recetas para mostrar en template
-        context["forms_and_recipes"] = zip(context["formset"].forms, recetas)
+        # Emparejar los formularios con las recetas
+        forms_and_recipes = zip(context["formset"].forms, recetas)
+        context["forms_and_recipes"] = forms_and_recipes
+
+        print(f"Formularios generados: {len(context['formset'].forms)}")
 
         return context
-
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context["formset"]
         errores_stock = []
 
         with transaction.atomic():
-            # Guardar la venta principal
             venta = form.save(commit=False)
-            venta.estatus = '0'  # Establecer estatus como 'hecho'
             venta.save()
 
             if formset.is_valid():
+                detalles_guardados = []
                 for detalle_form in formset:
-                    detalle_data = detalle_form.cleaned_data
-                    
-                    # Saltar formularios vacíos o sin cantidad
-                    if not detalle_data.get("receta") or not detalle_data.get("cantidad") or detalle_data["cantidad"] <= 0:
+                    if not detalle_form.cleaned_data.get("receta") or not detalle_form.cleaned_data.get("cantidad"):
                         continue
 
-                    # Verificar inventario antes de procesar
+                    detalle = detalle_form.save(commit=False)
+                    detalle.venta = venta
+
                     try:
-                        inventario = InventarioProducto.objects.get(galleta=detalle_data["receta"])
-                        if inventario.cantidad < detalle_data["cantidad"]:
-                            errores_stock.append(f"Stock insuficiente para {detalle_data['receta'].nombre}.")
-                            continue
+                        inventario = InventarioProducto.objects.get(galleta=detalle.receta)
+                        if inventario.cantidad >= detalle.cantidad:
+                            inventario.disminuir_cantidad(detalle.cantidad)
+                            detalle.save()
+                            detalles_guardados.append(detalle)
+                        else:
+                            errores_stock.append(f"Stock insuficiente para {detalle.receta.nombre}.")
                     except InventarioProducto.DoesNotExist:
-                        errores_stock.append(f"No hay inventario registrado para {detalle_data['receta'].nombre}.")
-                        continue
+                        errores_stock.append(f"No hay inventario registrado para {detalle.receta.nombre}.")
 
-                    # Crear detalle de venta
-                    detalle = VentaDetalle(
-                        venta=venta,
-                        receta=detalle_data["receta"],
-                        cantidad=detalle_data["cantidad"],
-                        tipo_unidad=detalle_data.get("tipo_unidad", "ud"),
-                        # Calcula el total según tu lógica de negocio
-                        total=0  # Aquí deberías calcular el total basado en precio y cantidad
-                    )
-                    detalle.save()
+                if errores_stock:
+                    for error in errores_stock:
+                        messages.error(self.request, error)
+                    return redirect("/corteVenta")
 
-                    # Actualizar inventario
-                    inventario.disminuir_cantidad(detalle.cantidad)
-                    inventario.save()
+                if self.request.POST.get("generar_pdf") == "true":
+                    return generar_ticket_pdf(venta, detalles_guardados)
 
-            # Manejar errores de stock después del procesamiento
-            if errores_stock:
-                for error in errores_stock:
-                    messages.error(self.request, error)
-                # Aún así redirigimos porque algunos productos pudieron haberse vendido
-                return redirect("/corteVenta")
+                messages.success(self.request, "Venta registrada con éxito.")
+                return redirect("/ventas/corteVenta/")
 
-            messages.success(self.request, "Venta registrada con éxito.")
-            return redirect("/ventas/corteVenta/")
-
-        # Si llegamos aquí, hubo un error en el formset
         return self.form_invalid(form)
     
 def dashboard_view(request):
     return render(request, 'dashboardProductos.html')
-
-class ListaVentasView(ListView):
-    model = Venta
-    template_name = "lista_ventas.html"
-    context_object_name = "ventas"
-
-    def get_queryset(self):
-        # Filtrar las ventas por el estatus que sea igual a '1'
-        ventas = Venta.objects.filter(estatus='1').prefetch_related('detalles_venta').annotate(
-            total_venta=Sum('detalles_venta__total')
-        ).order_by('-fecha_venta')
-
-        # Calcular el precio unitario y pasarlo al contexto de la plantilla
-        for venta in ventas:
-            for detalle in venta.detalles_venta.all():
-                if detalle.cantidad > 0:
-                    detalle.precio_unitario = detalle.total / detalle.cantidad
-                else:
-                    detalle.precio_unitario = 0
-        return ventas
 

@@ -99,5 +99,5 @@ class VentaDetalle(models.Model):
         default='ud'
     )
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, null=False)
-    venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True, related_name="detalles_venta")
+    venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True, related_name="detalles")
     carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=True, blank=False)

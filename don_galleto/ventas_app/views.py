@@ -167,6 +167,20 @@ class DashboardVentasView(TemplateView):
 
         return context
 
+class DetallesPedidoClienteView(LoginRequiredMixin, TemplateView):
+    template_name = 'detalles_pedido_cliente.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        id = context.get('id')
+        pedido = get_object_or_404(CarritoCompras, id=id)
+        if pedido:
+            messages.success(self.request, "Mostrando información del pedido")
+            context['pedido'] = pedido
+            return context
+        else:
+            messages.error(self.request, "Error al mostrar el pedido.")
+
 class DashboardPresentacionesView(TemplateView):
     template_name = 'dashboard_presentaciones.html'
 
@@ -443,9 +457,6 @@ class DetallesProductoView(LoginRequiredMixin, FormView):
         detalle_venta.save()
 
         return super().form_valid(form)
-    
-    
-    
     
     recetas = Receta.objects.all()
 

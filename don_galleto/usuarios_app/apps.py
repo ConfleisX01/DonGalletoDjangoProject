@@ -18,7 +18,23 @@ class UsuariosAppConfig(AppConfig):
         from usuarios_app.models import Usuario
 
         grupos_permisos = {
-            "administrador": ["add_usuario", "change_usuario", "view_usuario", "view_dashboard"],
+            "administrador": [
+                #Usuarios
+                "add_usuario",
+                "change_usuario",
+                "view_usuario",
+
+                #Dashboard
+                "view_dashboard",
+                
+                #recetas
+                'add_recetas',
+                'change_recetas',
+                'view_recetas',
+                
+                #inventario
+                ],
+            
             "usuario": ["view_usuario"],
             "cliente": ["view_carrito", "buy_galletas"]
         }

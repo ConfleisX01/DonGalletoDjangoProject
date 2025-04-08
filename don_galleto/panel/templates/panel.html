@@ -74,27 +74,50 @@
                   </li>
                 </ul>
               </li>
-              <!-- TERMINA LA SECCION INVENTARIO -->
+                <!-- SECCIÓN INVENTARIOS (correcta) -->
+                <li class="nav-item nav-group hide">
+                  <a class="nav-link nav-group-toggle" href="#">
+                      <i class="nav-icon bi bi-box-seam"></i> Inventarios
+                  </a>
+                  <ul class="nav-group-items">
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'inventario_materia' %}">
+                              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Materia Prima
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'inventario_productos' %}">
+                              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Productos
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'lista_mermas' %}">
+                              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Merma
+                          </a>
+                      </li>
+                  </ul>
+                </li>
+              <!-- SECCIÓN VENTAS (corregida) -->
               <li class="nav-item nav-group hide">
-                <a class="nav-link nav-group-toggle" href="#">
-                  <i class="nav-icon bi bi-graph-up-arrow"></i> Ventas
+                <a class="nav-link nav-group-toggle" href="#"> <!-- Eliminado el enlace a mermas aquí -->
+                    <i class="nav-icon bi bi-graph-up-arrow"></i> Ventas
                 </a>
                 <ul class="nav-group-items">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_ventas' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Lista de ventas
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'corteVenta' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Corte de ventas
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_pedidos' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Pedidos realizados
-                    </a>
-                  </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_ventas' %}">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Lista de ventas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'corteVenta' %}">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Corte de ventas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_pedidos' %}">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Pedidos realizados
+                        </a>
+                    </li>
                 </ul>
               </li>
               <!-- TERMINA LA SECCION VENTAS -->
@@ -107,11 +130,6 @@
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'dashboard_ventas' %}">
                       <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Ventas Diarias
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboardProductos' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Más vendidos
                     </a>
                   </li>
                   <li class="nav-item">

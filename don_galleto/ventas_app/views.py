@@ -22,6 +22,8 @@ from .models import Venta, VentaDetalle
 from django.forms import inlineformset_factory
 from . import forms
 from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras
+from django.utils import timezone
+from datetime import datetime
 
 class DashboardVentasView(TemplateView):
     template_name = 'dashboard_ventas.html'
@@ -33,13 +35,25 @@ class DashboardVentasView(TemplateView):
         fin_dia  = datetime.combine(fecha_hoy, datetime.max.time())
         objetivo_ventas = 1000
         
+
+
+        
+        # Suponiendo que 'datetime_local' es la fecha y hora que quieres registrar
+        datetime_local = datetime(2025, 4, 3, 2, 41)
+        datetime_utc = timezone.make_aware(datetime_local, timezone.get_current_timezone())
+        print(datetime_local)
+        print(datetime_utc)
+        
+        
+        
         # Ventas diarias
         ventas_diarias = (
             VentaDetalle.objects
             .values('venta__fecha_venta')
-            .annotate(total_vendido=Sum(F('cantidad') * F('total')))
+            .annotate(total_vendido=Sum(F('total')))
             .order_by('venta__fecha_venta')
         )
+        print(ventas_diarias)
         
         
         recetas_agrupadas = (
@@ -273,16 +287,14 @@ class VentaCreateView(FormView):
 def dashboard_view(request):
     return render(request, 'dashboardProductos.html')
 
-
-
 class ListaVentasView(ListView):
     model = Venta
     template_name = "lista_ventas.html"
     context_object_name = "ventas"
 
     def get_queryset(self):
-        # Usamos prefetch_related para cargar los detalles de cada venta con el nombre correcto
-        ventas = Venta.objects.all().prefetch_related('detalles_venta').annotate(
+        # Filtrar las ventas por el estatus que sea igual a '1'
+        ventas = Venta.objects.filter(estatus='1').prefetch_related('detalles_venta').annotate(
             total_venta=Sum('detalles_venta__total')
         ).order_by('-fecha_venta')
 

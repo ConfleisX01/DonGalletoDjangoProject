@@ -5,7 +5,9 @@ from produccion_app.models import LoteGalletas, SolicitudProduccion
 from . import forms
 from django.utils.timezone import now
 from datetime import timedelta
-from django.http import JsonResponse
+from inventarios.models import  InventarioProducto
+
+from inventarios.models import InventarioProducto
 
 class ListaLotesProduccionView(ListView):
     model = LoteGalletas
@@ -14,7 +16,7 @@ class ListaLotesProduccionView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Excluir los lotes que ya están terminados
+        # excluyo los lotes que ya tan terminados
         context['solicitudes_lote'] = LoteGalletas.objects.exclude(estado='TERMINADO')
         return context
 
@@ -46,6 +48,7 @@ def aprobar_solicitud(request, solicitud_id):
 
     return redirect('lotes_produccion')
 
+
 def rechazar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(SolicitudProduccion, id=solicitud_id)
 
@@ -53,6 +56,7 @@ def rechazar_solicitud(request, solicitud_id):
         solicitud.estado = 'RECHAZADA'
         solicitud.save()
     return redirect('lotes_produccion')
+
 
 def actualizar_estado(request, lote_id):
     lote = get_object_or_404(LoteGalletas, id=lote_id)
@@ -63,18 +67,21 @@ def actualizar_estado(request, lote_id):
         
         # Si el lote se marca como 'TERMINADO', podemos hacer más cosas si es necesario
         if lote.estado == 'TERMINADO':
-            # Realiza alguna acción si es necesario, como marcar que se ha completado el ciclo
-            pass
-        
+            print("Entrando a la funcion")
+            inventario = InventarioProducto.objects.get(galleta=lote.galleta_id)
+            print(inventario)
+            if inventario:
+                inventario.agregar_cantidad(lote.galleta.cantidad_galletas_producidas)
+                print("Se agregaron las galletas al inventario")
+            else:
+                print(f"Error al agregar las cantidades al inventario")
         lote.save()
 
     return redirect('lotes_produccion')  # Redirige a la lista de lotes de producción
 
 
-
 class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solicitud para luego pedir ser aceptada
     template_name = 'agregar_solicitud_produccion.html'
-    form_class = forms.AgregarSolicitudForm
     form_class = forms.AgregarSolicitudForm
     success_url = reverse_lazy('lista_solicitudes')
 
@@ -85,10 +92,6 @@ class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solici
 class CreacionProduccionGalletasView(TemplateView): ##solo para para mostrarla en la zona de
     template_name = 'produccion_activa.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['solicitudes_abiertas'] = SolicitudProduccion.objects.filter(estado='PENDIENTE')
-        return context
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['solicitudes_abiertas'] = SolicitudProduccion.objects.filter(estado='PENDIENTE')

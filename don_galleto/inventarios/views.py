@@ -5,7 +5,76 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 from inventarios.models import InventarioProducto, InventarioMaterial
 from django.contrib.auth.mixins import LoginRequiredMixin
+from produccion_app.models import LoteGalletas
+from Recetas_app.models import IngredienteReceta
+from django.db import transaction
 
+from django.views.generic import ListView
+from .models import Merma
+
+
+class RegistrarMermaView(View):
+    template_name = 'merma_formulario.html'
+
+    def get(self, request, lote_id):
+        lote = get_object_or_404(LoteGalletas, id=lote_id)
+        receta = lote.galleta
+        ingredientes = IngredienteReceta.objects.filter(receta=receta)
+
+        return render(request, self.template_name, {
+            'lote': lote,
+            'ingredientes': ingredientes
+        })
+
+    def post(self, request, lote_id):
+        lote = get_object_or_404(LoteGalletas, id=lote_id)
+        receta = lote.galleta
+        ingredientes = IngredienteReceta.objects.filter(receta=receta)
+        justificacion = request.POST.get("justificacion")
+
+        # Primero verificamos que hay suficiente inventario para todos los ingredientes
+        inventario_insuficiente = False
+        mensajes_error = []
+    
+        for ingrediente in ingredientes:
+            total_necesario = ingrediente.cantidad_necesaria * lote.cantidad_lotes
+            try:
+                inventario = InventarioMaterial.objects.get(insumo=ingrediente.insumo)
+                if inventario.cantidad < total_necesario:
+                    inventario_insuficiente = True
+                    #mensajes_error.append(f"No hay suficiente {ingrediente.insumo.nombre}. Disponible: {inventario.cantidad}, Necesario: {total_necesario}")
+            except InventarioMaterial.DoesNotExist:
+                inventario_insuficiente = True
+                #   mensajes_error.append(f"No existe inventario para {ingrediente.insumo.nombre}")
+    
+            if inventario_insuficiente:
+            # Si hay mensaje de error, mostramos y volvemos al formulario
+                return render(request, self.template_name, {
+                'lote': lote,
+                'ingredientes': ingredientes,
+                'errores': mensajes_error
+        })
+    
+         # Si todo está bien, procedemos a actualizar el inventario
+        try:
+            with transaction.atomic():
+                for ingrediente in ingredientes:
+                    total_necesario = ingrediente.cantidad_necesaria * lote.cantidad_lotes
+                    inventario = InventarioMaterial.objects.get(insumo=ingrediente.insumo)
+                    inventario.cantidad -= total_necesario
+                    inventario.save()
+            
+            # Aquí puedes añadir código para registrar la merma si es necesario
+            
+            return redirect('inventario_materia')
+        except Exception as e:
+            return render(request, self.template_name, {
+                'lote': lote,
+                'ingredientes': ingredientes,
+                'error': f"Error al procesar la merma: {str(e)}"
+        })
+
+        
 class inventarioProductoView(LoginRequiredMixin, TemplateView):
     template_name = 'inventario_productos.html'
 
@@ -23,3 +92,9 @@ class inventrioMateriaView(LoginRequiredMixin, TemplateView):
         listaInsumos = InventarioMaterial.objects.all()
         context['lista']=listaInsumos
         return context
+    
+class ListaMermaView(ListView):
+    model = Merma
+    template_name = 'merma_lista.html'
+    context_object_name = 'mermas'
+    ordering = ['-fecha']

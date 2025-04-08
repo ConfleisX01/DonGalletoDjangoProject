@@ -64,7 +64,47 @@ class DashboardVentasView(TemplateView):
 
             # Costo inventario
             inventarios = InventarioMaterial.objects.annotate(
+                costo_total=Sum(F('insumo__lotes__costo_unitario') * F('cantidad')))
+            # Conversión segura de fechas
+            fecha_inicio = parse_date(str(fecha_inicio)) or fecha_hoy
+            fecha_fin = parse_date(str(fecha_fin)) or fecha_hoy
+
+            inicio_dia = datetime.combine(fecha_inicio, datetime.min.time())
+            fin_dia = datetime.combine(fecha_fin, datetime.max.time())
+
+            # Costo inventario
+            inventarios = InventarioMaterial.objects.annotate(
                 costo_total=Sum(F('insumo__lotes__costo_unitario') * F('cantidad'))
+            )
+            total_costo_inventario = inventarios.aggregate(total_costo=Sum('costo_total')).get('total_costo') or 0
+
+            # Ventas diarias
+            ventas_diarias = list(VentaDetalle.objects
+                .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
+                .values('venta__fecha_venta')
+                .annotate(total_vendido=Sum('total'))
+                .order_by('venta__fecha_venta'))
+
+            total_vendido = sum(v.get('total_vendido') or 0 for v in ventas_diarias)
+
+            # Recetas más vendidas
+            recetas_agrupadas = list(VentaDetalle.objects
+                .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
+                .values('receta__nombre')
+                .annotate(total_vendidas=Count('id'))
+                .order_by('-total_vendidas'))
+
+            # Número de pedidos
+            num_pedidos = Venta.objects.filter(estatus=True, fecha_venta__range=[inicio_dia, fin_dia]).count()
+
+            # Ganancia máxima esperada
+            inventarios_productos = InventarioProducto.objects.annotate(
+                costo_produccion=Sum(
+                    (F('galleta__ingredientes__cantidad_necesaria') / 1000) * F('galleta__ingredientes__insumo__lotes__costo_unitario'),
+                    output_field=DecimalField(decimal_places=2)
+                )
+            ).annotate(
+                ganancia_total=F('galleta__precio_galleta') * F('cantidad') - F('costo_produccion')
             )
             total_costo_inventario = inventarios.aggregate(total_costo=Sum('costo_total')).get('total_costo') or 0
 
@@ -560,7 +600,6 @@ def descargar_ticket_pdf(request, venta_id):
     except TicketVenta.DoesNotExist:
         # Si no existe el ticket, devolver un error 404
         return HttpResponse("Ticket no encontrado", status=404)
-
     # Crear la respuesta HTTP para la descarga del archivo PDF
     response = HttpResponse(ticket_venta.ticket_pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="ticket_venta_{venta_id}.pdf"'

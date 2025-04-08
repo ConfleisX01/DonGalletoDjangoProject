@@ -10,6 +10,8 @@ from inventarios.models import  InventarioProducto, InventarioMaterial
 from Recetas_app.models import IngredienteReceta
 from django.db import transaction
 
+#hola
+
 class ListaLotesProduccionView(ListView):
     model = LoteGalletas
     template_name = 'lotes_Produccion.html'

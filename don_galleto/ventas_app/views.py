@@ -25,7 +25,26 @@ from django.utils.dateparse import parse_date
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 from django.contrib.auth.mixins import LoginRequiredMixin
 
- 
+
+class ListaVentasView(ListView):
+    model = Venta
+    template_name = "lista_ventas.html"
+    context_object_name = "ventas"
+
+    def get_queryset(self):
+        # Obtener las ventas con los detalles
+        ventas = Venta.objects.all().prefetch_related('detalles').annotate(
+            total_venta=Sum('detalles__total')
+        ).order_by('-fecha_venta')
+
+        # Calcular el precio unitario y pasarlo al contexto de la plantilla
+        for venta in ventas:
+            for detalle in venta.detalles.all():
+                if detalle.cantidad > 0:
+                    detalle.precio_unitario = detalle.total / detalle.cantidad
+                else:
+                    detalle.precio_unitario = 0
+        return ventas
 
 class DashboardVentasView(TemplateView):
     template_name = 'dashboard_ventas.html'
@@ -148,9 +167,132 @@ class DashboardVentasView(TemplateView):
 
         return context
 
+class DashboardPresentacionesView(TemplateView):
+    template_name = 'dashboard_presentaciones.html'
+
+    def get_context_data(self, **kwargs):
+        fecha_hoy = localtime(now()).date()
+        inicio_dia = datetime.combine(fecha_hoy, datetime.min.time())
+        fin_dia = datetime.combine(fecha_hoy, datetime.max.time())
+        objetivo_ventas = 1000
+
+        # Consulta corregida - solo ventas confirmadas (estatus='1')
+        ventas_por_presentacion = (
+            VentaDetalle.objects
+            .filter(
+                venta__fecha_venta__range=[inicio_dia, fin_dia],
+                venta__estatus='1'  # Solo ventas pagadas/confirmadas
+            )
+            .values('tipo_unidad')
+            .annotate(
+                total_vendido=Sum('total'),
+                cantidad_vendida=Count('id')
+            )
+            .order_by('tipo_unidad')
+        )
+
+        # Detalle corregido
+        detalle_por_presentacion = (
+            VentaDetalle.objects
+            .filter(
+                venta__fecha_venta__range=[inicio_dia, fin_dia],
+                venta__estatus='1'
+            )
+            .values('tipo_unidad', 'receta__nombre')
+            .annotate(total_vendidas=Count('id'))
+            .order_by('tipo_unidad', '-total_vendidas')
+        )
+
+        # Total hoy corregido
+        total_hoy = (
+            VentaDetalle.objects
+            .filter(
+                venta__fecha_venta__range=[inicio_dia, fin_dia],
+                venta__estatus='1'
+            )
+            .aggregate(total=Sum('total'))['total'] or 0
+        )
+
+        # Número de pedidos corregido (solo confirmados)
+        num_pedidos = (
+            Venta.objects
+            .filter(
+                estatus='1',  # Solo pedidos confirmados
+                fecha_venta__range=[inicio_dia, fin_dia]
+            )
+            .count()
+        )
+
+        progreso_ventas = (total_hoy / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
+
+        # Preparar datos para gráficos
+        presentaciones_map = {'pq': 'Paquete', 'g': 'Gramos', 'ud': 'Unidad'}
+        
+        # Gráfico de barras
+        df_barras = pd.DataFrame(list(ventas_por_presentacion))
+        if not df_barras.empty:
+            df_barras['tipo_unidad'] = df_barras['tipo_unidad'].map(presentaciones_map)
+            fig_barras = px.bar(
+                df_barras, 
+                x='tipo_unidad', 
+                y='total_vendido',
+                title='Ventas por Presentación',
+                labels={'tipo_unidad': 'Presentación', 'total_vendido': 'Total Vendido ($)'},
+                color='tipo_unidad',
+                text='total_vendido'
+            )
+            fig_barras.update_traces(texttemplate='$%{text:.2f}', textposition='outside')
+            graph_html_barras = fig_barras.to_html(full_html=False)
+        else:
+            graph_html_barras = self.get_empty_chart_html('Ventas por Presentación')
+
+        # Gráficos de pastel
+        graficas_pie = {}
+        for tipo, nombre in presentaciones_map.items():
+            datos = [d for d in detalle_por_presentacion if d['tipo_unidad'] == tipo]
+            if datos:
+                df_pie = pd.DataFrame(datos)
+                paletas = {
+                    'g': ['#FF6B6B', '#FFA07A', '#FF8C69', '#FF7256', '#FF6347'],  # Rojos/Naranjas
+                    'ud': ['#4CAF50', '#81C784', '#66BB6A', '#43A047', '#2E7D32'],  # Verdes
+                    'pq': ['#FFA500', '#FFB74D', '#FF9800', '#FB8C00', '#F57C00']   # Naranjas
+                }
+
+                fig_pie = px.pie(
+                    df_pie,
+                    names='receta__nombre',
+                    values='total_vendidas',
+                    title=f'Ventas en {nombre}',
+                    hole=0.4,
+                    color_discrete_sequence=paletas[tipo]
+                )
+                graficas_pie[tipo] = fig_pie.to_html(full_html=False)
+            else:
+                graficas_pie[tipo] = self.get_empty_chart_html(f'Ventas en {nombre}')
+
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'graph_html_barras': graph_html_barras,
+            'graficas_pie': graficas_pie,
+            'total_hoy': total_hoy,
+            'num_pedidos': num_pedidos,
+            'objetivo_ventas': objetivo_ventas,
+            'progreso_ventas': round(progreso_ventas, 2),
+            'fecha_hoy': fecha_hoy,
+            'ventas_por_presentacion': ventas_por_presentacion,
+            'presentaciones_map': presentaciones_map
+        })
+
+        return context
+
+    def get_empty_chart_html(self, title):
+        return f"""
+        <div class="empty-chart alert alert-info">
+            <i class="fas fa-info-circle"></i> No hay datos de {title}
+        </div>
+        """
+    
 class VerListaPedidosView(ListView):
-
-
     def generar_ticket_pdf(venta, detalles_guardados):
         buffer = BytesIO()
         p = canvas.Canvas(buffer, pagesize=letter)
@@ -242,16 +384,18 @@ class VerListaPedidosView(ListView):
             "Content-Disposition": f'attachment; filename="ticket_venta_{venta.id}.pdf"'
         })
 
-class VerListaPedidosView(LoginRequiredMixin, ListView):
+class VerListaPedidosClientesView(LoginRequiredMixin, ListView):
     model = CarritoCompras
     template_name = 'lista_pedidos_cliente.html'
     context_object_name = 'pedidos'
 
     def get_queryset(self):
-        return CarritoCompras.objects.filter(
+        lista = CarritoCompras.objects.filter(
             usuario=self.request.user,
-            detalles__venta__estatus=True
+            estatus='1'
         ).distinct()
+        print(lista)
+        return lista
 
 class ListaProductosView(LoginRequiredMixin, ListView):
     model = InventarioProducto
@@ -271,12 +415,12 @@ class DetallesProductoView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus=False).first()
+        carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus='0').first()
 
         if not carrito:
             carrito = CarritoCompras.objects.create(usuario=self.request.user)
 
-        if carrito.estatus:
+        if carrito.estatus == '1':
                 form.add_error(None, "Este carrito está cerrado. No puedes agregar más productos.")
                 return self.form_invalid(form)
         
@@ -303,7 +447,7 @@ class DetallesProductoView(LoginRequiredMixin, FormView):
     
     
     
-recetas = Receta.objects.all()
+    recetas = Receta.objects.all()
 
 def get_venta_detalle_formset(num_galletas):
     return inlineformset_factory(
@@ -388,3 +532,93 @@ class VentaCreateView(FormView):
 def dashboard_view(request):
     return render(request, 'dashboardProductos.html')
 
+def generar_ticket_pdf(venta, detalles_guardados):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    margen_izq = 50
+    y = height - 50
+
+    # Encabezado
+    p.setFont("Helvetica-Bold", 18)
+    p.drawCentredString(width / 2, y, "🍪 Don Galleto - Ticket de Venta")
+    y -= 30
+
+    p.setFont("Helvetica", 10)
+    p.drawCentredString(width / 2, y, "¡Gracias por tu compra!")
+    y -= 30
+
+    # Información general
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Fecha: ")
+    p.setFont("Helvetica", 12)
+    p.drawString(margen_izq + 50, y, venta.fecha_venta.strftime('%d/%m/%Y %H:%M'))
+    y -= 20
+
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Número de venta:")
+    p.setFont("Helvetica", 12)
+    p.drawString(margen_izq + 110, y, str(venta.id))
+    y -= 30
+
+    # Línea separadora
+    p.line(margen_izq, y, width - margen_izq, y)
+    y -= 20
+
+    # Encabezados de tabla
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Producto")
+    p.drawString(margen_izq + 200, y, "Cantidad")
+    p.drawString(margen_izq + 300, y, "Precio Unit.")
+    p.drawString(margen_izq + 400, y, "Subtotal")
+    y -= 20
+
+    total_galletas = 0
+    total_precio = 0
+
+    p.setFont("Helvetica", 11)
+    for detalle in detalles_guardados:
+        # Obtenemos los datos específicos de cada detalle
+        receta = detalle.receta  # Accedemos a la receta relacionada
+        nombre = receta.nombre
+        cantidad = detalle.cantidad
+        precio_unitario = receta.precio_galleta  # Precio exacto de ESA receta
+        subtotal = cantidad * precio_unitario
+
+        # Mostramos los datos en columnas alineadas
+        p.drawString(margen_izq, y, f"{nombre}")
+        p.drawString(margen_izq + 200, y, f"{cantidad}")
+        p.drawString(margen_izq + 300, y, f"${precio_unitario:.2f}")
+        p.drawString(margen_izq + 400, y, f"${subtotal:.2f}")
+        y -= 20
+
+        total_galletas += cantidad
+        total_precio += subtotal
+
+        if y < 100:  # Salto de página si nos quedamos sin espacio
+            p.showPage()
+            y = height - 50
+            p.setFont("Helvetica", 11)  # Restablecemos la fuente después del salto
+
+    # Totales
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(margen_izq, y, "Total Galletas:")
+    p.drawString(margen_izq + 400, y, f"{total_galletas}")
+    y -= 20
+
+    p.drawString(margen_izq, y, "Total a Pagar:")
+    p.drawString(margen_izq + 400, y, f"${total_precio:.2f}")
+    y -= 30
+
+    # Pie de página
+    p.setFont("Helvetica-Oblique", 10)
+    p.drawCentredString(width / 2, y, "¡Vuelva pronto! 🍪")
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+
+    return HttpResponse(buffer, content_type="application/pdf", headers={
+        "Content-Disposition": f'attachment; filename="ticket_venta_{venta.id}.pdf"'
+    })

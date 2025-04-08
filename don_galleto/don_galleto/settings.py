@@ -26,7 +26,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Expira al cerrar el navegador
 SESSION_SAVE_EVERY_REQUEST = True  # Reinicia el contador con cada acción del usuario
 
 AXES_FAILURE_LIMIT = 5  # Número máximo de intentos antes de bloquear
-AXES_LOCK_OUT_AT_FAILURE = False  # Bloquear tras alcanzar el límite
+AXES_LOCK_OUT_AT_FAILURE = True  # Bloquear tras alcanzar el límite
 AXES_RESET_ON_SUCCESS = True  # Reiniciar intentos fallidos después de un login exitoso
 
 
@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',  # OTP basado en tiempo (como Google Authenticator)
     'django_otp.plugins.otp_static',  # Códigos de respaldo (opcional)
     'two_factor',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -144,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'America/Mexico_City'
 
@@ -168,9 +169,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/welcome'
-LOGOUT_REDIRECT_URL = '/welcome'
+LOGIN_URL = '/cuentas/login/'
+LOGIN_REDIRECT_URL = 'welcome'
+LOGOUT_REDIRECT_URL = 'welcome'
 
 AUTHENTICATION_BACKENDS = (
     'axes.backends.AxesBackend',  # Habilita el control de accesos

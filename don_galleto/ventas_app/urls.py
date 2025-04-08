@@ -1,5 +1,5 @@
 from django.urls import path, include
-from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView,DashboardVentasView, dashboard_view, ListaVentasView
+from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView,DashboardVentasView, dashboard_view, DashboardPresentacionesView, ListaVentasView
 
 urlpatterns = [
     path('dashboard-ventas-diarias/', DashboardVentasView.as_view(), name='dashboard_ventas'),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('corteVenta/', VentaCreateView.as_view(), name='corteVenta'),
     path('lista_pedidos_cliente/', VerListaPedidosView.as_view(), name='lista_pedidos_cliente'),
     path('dashboardProductos/', dashboard_view, name='dashboardProductos'),
+    path('dashboardPresentaciones/', DashboardPresentacionesView.as_view(), name='dashboardPresentaciones'),
 ]

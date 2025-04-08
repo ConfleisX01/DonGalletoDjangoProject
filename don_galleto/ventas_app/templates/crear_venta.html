@@ -1,197 +1,194 @@
-  {% extends 'panel.html' %}
-  {% load static %}
-  {% block content %}
-    <div class="container mt-4">
-      <div class="card shadow-sm p-4" style="border-top: 4px solid #1d4774;">
-        <h2 class="text-center mb-4" style="color: #1d4774 ; border-bottom: 2px solid #1d4774; padding-bottom: 10px;">Registrar Venta</h2>
-        <div class="card p-4 mb-4" style="border-left: 4px solid #1d4774; background-color: #f8f9fa;">
-          <h5 class="mb-3" style="color: #1d4774; font-weight: 500;">
-            <i class="bi bi-list-check me-2"></i>Seleccionar Productos
-          </h5>
+{% extends 'panel.html' %}
+{% load static %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="card shadow-sm p-4" style="border-top: 4px solid #1d4774;">
+      <h2 class="text-center mb-4" style="color: #1d4774 ; border-bottom: 2px solid #1d4774; padding-bottom: 10px;">Registrar Venta</h2>
+      <div class="card p-4 mb-4" style="border-left: 4px solid #1d4774; background-color: #f8f9fa;">
+        <h5 class="mb-3" style="color: #1d4774; font-weight: 500;">
+          <i class="bi bi-list-check me-2"></i>Seleccionar Productos
+        </h5>
+
+        <div class="row g-3">
+          <!-- Selector de Receta -->
+          <div class="col-md-6">
+            <label for="recetaSelect" class="form-label fw-medium">Receta:</label>
+            <div class="input-group">
+              <span class="input-group-text bg-primary text-white">
+                <i class="bi bi-book"></i>
+              </span>
+              <select id="recetaSelect" class="form-select shadow-sm">
+                <option value="" selected disabled>Seleccione una receta...</option>
+              </select>
+            </div>
+          </div>
           
-          <div class="row g-3">
-            <!-- Selector de Receta -->
-            <div class="col-md-6">
-              <label for="recetaSelect" class="form-label fw-medium">Receta:</label>
-              <div class="input-group">
-                <span class="input-group-text bg-primary text-white">
-                  <i class="bi bi-book"></i>
-                </span>
-                <select id="recetaSelect" class="form-select shadow-sm">
-                  <option value="" selected disabled>Seleccione una receta...</option>
-                </select>
-              </div>
+          <!-- Cantidad -->
+          <div class="col-md-4">
+            <label for="cantidadSelect" class="form-label fw-medium">Cantidad:</label>
+            <div class="input-group">
+              <span class="input-group-text bg-primary text-white">
+                <i class="bi bi-123"></i>
+              </span>
+              <input type="number" id="cantidadSelect" class="form-control shadow-sm" min="1" placeholder="Ej. 5" style="border-radius: 0 !important;">
+              <select id="unidadSelect" class="form-select shadow-sm" style="max-width: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                <option value="pq">Paq.</option>
+                <option value="g">Gr.</option>
+                <option value="ud">Un.</option>
+              </select>
             </div>
-            
-            <!-- Cantidad -->
-            <div class="col-md-4">
-              <label for="cantidadSelect" class="form-label fw-medium">Cantidad:</label>
-              <div class="input-group">
-                <span class="input-group-text bg-primary text-white">
-                  <i class="bi bi-123"></i>
-                </span>
-                <input type="number" id="cantidadSelect" class="form-control shadow-sm" min="1" placeholder="Ej. 5" style="border-radius: 0 !important;">
-                <select id="unidadSelect" class="form-select shadow-sm" style="max-width: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-                  <option value="pq">Paq.</option>
-                  <option value="g">Gr.</option>
-                  <option value="ud">Un.</option>
-                </select>
-              </div>
-            </div>
-            
-            <!-- Botón -->
-            <div class="col-md-2 d-flex align-items-end">
-              <button id="btnBuscarReceta" class="btn btn-primary w-100 shadow-sm" style="height: calc(2.25rem + 12px);">
-                <i class="bi  me-2"></i>Agregar
-              </button>
-            </div>
+          </div>
+
+          <!-- Botón -->
+          <div class="col-md-2 d-flex align-items-end">
+            <button id="btnBuscarReceta" class="btn btn-primary w-100 shadow-sm" style="height: calc(2.25rem + 12px);">
+              <i class="bi  me-2"></i>Agregar
+            </button>
           </div>
         </div>
+      </div>
 
-        <!-- Tabla de Productos Seleccionados -->
-        <div class="card mb-4" id="tablaProductosContainer" style="display: none;">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="bi bi-table me-2"></i>Productos Seleccionados</h5>
-          </div>
-          <div class="card-body p-0">
-            <table class="table table-striped mb-0" id="tablaProductos">
-              <thead>
-                <tr>
-                  <th>Receta</th>
-                  <th>Cantidad</th>
-                  <th>Precio Unitario</th>
-                  <th>Total</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbodyProductos">
-                <!-- Aquí se agregarán las filas dinámicamente -->
-              </tbody>
-            </table>
-          </div>
+      <!-- Tabla de Productos Seleccionados -->
+      <div class="card mb-4" id="tablaProductosContainer" style="display: none;">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-table me-2"></i>Productos Seleccionados</h5>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped mb-0" id="tablaProductos">
+            <thead>
+              <tr>
+                <th>Receta</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyProductos">
+              <!-- Aquí se agregarán las filas dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <form method="post" id="ventaForm">
+        {% csrf_token %}
+        <div id="totalGeneralContainer" class="text-end mt-2 fw-bold" style="display: none;">
+          Total general: $<span id="totalGeneral">0.00</span>
         </div>
 
-        <form method="post" id="ventaForm">
-          {% csrf_token %}
-          <div id="totalGeneralContainer" class="text-end mt-2 fw-bold" style="display: none;">
-            Total general: $<span id="totalGeneral">0.00</span>
-          </div>
+        <!-- Información de los productos (oculta visualmente) -->
+        <div class="mb-4">
+          {{ formset.management_form }}
+          <div class="row g-3" id="productos-container">
+            {% for form in formset %}
+              {% for form, receta in forms_and_recipes %}
+                <div class="col-md-6">
+                  <div class="card mb-3 producto-form" data-id="{{ receta.id }}"  data-precio="{{ receta.precio_galleta }} " style="border-top: 3px solid #1d4774;display: none !important; ">
 
-          <!-- Información de los productos (oculta visualmente) -->
-          <div class="mb-4">
-            {{ formset.management_form }}
-            <div class="row g-3" id="productos-container">
-              {% for form in formset %}
-                {% for form, receta in forms_and_recipes %}
-                  <div class="col-md-6">
-                    <div class="card mb-3 producto-form" data-id="{{ receta.id }}"  data-precio="{{ receta.precio_galleta }} " style="border-top: 3px solid #1d4774;display: none !important; ">
-                      <div class="card-header bg-white">
-                        <h5 class="mb-0">
-                          <button class="btn btn-link w-100 text-start p-0 text-decoration-none collapsed" 
-                                  type="button" 
-                                  data-coreui-toggle="collapse" 
-                                  data-coreui-target="#collapseProducto{{ forloop.counter }}" 
-                                  aria-expanded="false"
-                                  style="color: #1d4774; font-weight: 500;">
-                            <i class="bi bi-caret-right-fill me-2"></i>
-                            {{ receta.nombre }} {{ receta.id }} {{ receta.id }}{{ receta.precio_galleta }}
-                          </button>
-                        </h5>precio_galleta
-                      </div>
-                      <div id="collapseProducto{{ forloop.counter }}" class="collapse" data-coreui-parent="#productos-container">
-                        <div class="card-body pt-2">
-                          {{ form.as_p }}
-                        </div>
+                    <div class="card-header bg-white">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link w-100 text-start p-0 text-decoration-none collapsed" 
+                                type="button" 
+                                data-coreui-toggle="collapse" 
+                                data-coreui-target="#collapseProducto{{ forloop.counter }}" 
+                                aria-expanded="false"
+                                style="color: #1d4774; font-weight: 500;">
+                          <i class="bi bi-caret-right-fill me-2"></i>
+                          {{ receta.nombre }} {{ receta.id }} {{ receta.id }}{{ receta.precio_galleta }}
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="collapseProducto{{ forloop.counter }}" class="collapse" data-coreui-parent="#productos-container">
+                      <div class="card-body pt-2">
+                        {{ form.as_p }}
                       </div>
                     </div>
                   </div>
-                {% endfor %}
+                </div>
               {% endfor %}
-            </div>  
-          </div>
-        
-          <button type="submit" class="btn btn-lg mt-3 flex-grow-1" 
-          style="background-color: #0d6efd; color: white; border: none; font-weight: 500;"
-          name="generar_pdf" value="true">
-    <i class="bi bi-file-earmark-pdf-fill me-2"></i> Confirmar Venta / Ticket
-  </button>
+            {% endfor %}
+          </div>  
+        </div>
+      
+      
 
-            <button type="button" class="btn btn-lg mt-3 flex-grow-1" 
-                    style="background-color: #6f42c1; color: white; border: none; font-weight: 500;"
-                    id="btnResumen">
-              <i class="bi bi-eye-fill me-2"></i> Ver Resumen
-            </button>
-            
-            <button type="submit" class="btn btn-lg mt-3 flex-grow-1" 
-                    style="background-color: #198754; color: white; border: none; font-weight: 500;">
-              <i class="bi bi-check-circle-fill me-2"></i> Confirmar Venta
-            </button>
-          </div>
-        </form>
+       
+
+        <button type="submit" class="btn btn-lg mt-3 flex-grow-1" 
+                style="background-color: #198754; color: white; border: none; font-weight: 500;"
+                onclick="setTimeout(() => location.reload(), 3000);"
+                id="btnConfirmarVenta">
+          <i class="bi bi-check-circle-fill me-2"></i> Confirmar Venta
+        </button>
+   
       </div>
-    </div>
+    </form>
+  </div>
+</div>
 
-    <style>
-      .form-control {
-          border: 1px solid #007BFF;
-          border-radius: 5px;
-          padding: 8px;
-          margin-bottom: 10px;
-      }
-      .form-control:focus {
-          box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-          outline: none;
-      }
-      label {
-          display: block;
-          margin-bottom: 5px;
-          font-weight: 500;
-      }
-      .producto-form {
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-      }
-      .producto-form:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      }
-      .form-control:focus {
-        border-color: #6f42c1;
-        box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
-      }
-      .card-header {
-        border-bottom: 1px solid rgba(13, 110, 253, 0.2);
-      }
-      .btn-link:hover {
-        color: #6f42c1 !important;
-      }
-      [data-coreui-toggle="collapse"] .bi-caret-right-fill {
-        transition: transform 0.3s ease;
-      }
-      [data-coreui-toggle="collapse"].collapsed .bi-caret-right-fill {
-        transform: rotate(0);
-      }
-      [data-coreui-toggle="collapse"]:not(.collapsed) .bi-caret-right-fill {
-        transform: rotate(90deg);
-      }
-      .resumen-venta {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 15px;
-        margin-top: 15px;
-      }
-      /* Estilos para la tabla de productos */
-      #tablaProductos {
-        font-size: 0.9rem;
-      }
-      #tablaProductos th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-      }
-      .btnEliminarProducto {
-        padding: 0.15rem 0.5rem;
-      }
-    </style>
+<style>
+  /* Estilos para formularios y botones */
+  .form-control {
+    border: 1px solid #007BFF;
+    border-radius: 5px;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+  .form-control:focus {
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    outline: none;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .producto-form {
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+  }
+  .producto-form:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .form-control:focus {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+  }
+  .card-header {
+    border-bottom: 1px solid rgba(13, 110, 253, 0.2);
+  }
+  .btn-link:hover {
+    color: #6f42c1 !important;
+  }
+  [data-coreui-toggle="collapse"] .bi-caret-right-fill {
+    transition: transform 0.3s ease;
+  }
+  [data-coreui-toggle="collapse"].collapsed .bi-caret-right-fill {
+    transform: rotate(0);
+  }
+  [data-coreui-toggle="collapse"]:not(.collapsed) .bi-caret-right-fill {
+    transform: rotate(90deg);
+  }
+  .resumen-venta {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+  }
+  /* Estilos para la tabla de productos */
+  #tablaProductos {
+    font-size: 0.9rem;
+  }
+  #tablaProductos th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+  .btnEliminarProducto {
+    padding: 0.15rem 0.5rem;
+  }
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -314,96 +311,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Botón de Ticket (ahora limpia todo)
-  document.getElementById('btnTicket').addEventListener('click', function () {
-    Swal.fire({
-      title: 'Venta confirmada',
-      text: 'Gracias por tu compra. Se ha limpiado el formulario.',
-      icon: 'success',
-      confirmButtonColor: '#6f42c1'
-    }).then(() => {
-      limpiarTodo();
+
+
+  // Función de actualizar total general
+  function actualizarTotalGeneral() {
+    let total = 0;
+    document.querySelectorAll("#tbodyProductos tr").forEach(row => {
+      total += parseFloat(row.querySelector('td:nth-child(4)').textContent.replace('$', '')) || 0;
     });
-  });
+    document.getElementById('totalGeneral').textContent = total.toFixed(2);
+    document.getElementById('totalGeneralContainer').style.display = total > 0 ? 'block' : 'none';
+  }
 
-  // Botón de Resumen
-  document.getElementById('btnResumen').addEventListener('click', function () {
-    const fechaActual = new Date().toLocaleDateString('es-MX');
-    let total = parseFloat(document.getElementById('totalGeneral').textContent) || 0;
-
-    Swal.fire({
-      title: 'Resumen de Venta',
-      html: `
-        <div class="resumen-venta">
-          <p><strong>Fecha de Venta:</strong> ${fechaActual}</p>
-          <p><strong>Total a Pagar:</strong> $${total.toFixed(2)}</p>
-          <hr>
-          <p class="small text-muted">* Los datos reales se calcularán al confirmar la venta</p>
-        </div>
-      `,
-      icon: 'info',
-      confirmButtonColor: '#6f42c1',
-      confirmButtonText: 'Entendido'
-    });
-  });
-
-  // Delegación para botón eliminar producto
-  document.getElementById('tbodyProductos').addEventListener('click', function (e) {
-    if (e.target.closest('.btnEliminarProducto')) {
-      const fila = e.target.closest('tr');
-      const recetaId = fila.getAttribute('data-id');
-
-      // Limpiar card
-      const card = document.querySelector(`.producto-form[data-id="${recetaId}"]`);
-      if (card) {
-        card.querySelector('[name$="receta"]').value = '';
-        card.querySelector('[name$="cantidad"]').value = '';
-        card.querySelector('[name$="unidad"]').value = 'ud';
-      }
-
-      fila.remove();
+  // Eliminar productos de la tabla
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.classList.contains('btnEliminarProducto')) {
+      e.preventDefault();
+      const row = e.target.closest('tr');
+      row.remove();
       actualizarTotalGeneral();
     }
   });
 
-  // Total general
-  function actualizarTotalGeneral() {
-    let total = 0;
-    document.querySelectorAll('#tbodyProductos tr').forEach(fila => {
-      const totalCelda = fila.querySelector('td:nth-child(4)');
-      if (totalCelda) {
-        const valor = parseFloat(totalCelda.textContent.replace('$', '')) || 0;
-        total += valor;
-      }
+  // Manejar el evento de confirmar venta
+  document.getElementById('btnConfirmarVenta').addEventListener('click', function(e) {
+    e.preventDefault(); 
+    Swal.fire({
+      title: 'Venta registrada',
+      text: 'Generando ticket',
+      icon: 'success',
+      timer: 2000, 
+      timerProgressBar: true,
+      showConfirmButton: false
+    }).then(() => {
+      document.getElementById('ventaForm').submit();
     });
-
-    const totalContainer = document.getElementById('totalGeneralContainer');
-    const totalSpan = document.getElementById('totalGeneral');
-
-    if (total > 0) {
-      totalContainer.style.display = 'block';
-      totalSpan.textContent = total.toFixed(2);
-    } else {
-      totalContainer.style.display = 'none';
-      totalSpan.textContent = '0.00';
-    }
-  }
-
-  // Función para limpiar cards y tabla
-  function limpiarTodo() {
-    document.querySelectorAll('#tbodyProductos tr').forEach(fila => fila.remove());
-
-    document.querySelectorAll('.producto-form').forEach(card => {
-      card.querySelector('[name$="receta"]').value = '';
-      card.querySelector('[name$="cantidad"]').value = '';
-      card.querySelector('[name$="unidad"]').value = 'ud';
-    });
-
-    document.getElementById('tablaProductosContainer').style.display = 'none';
-    document.getElementById('totalGeneralContainer').style.display = 'none';
-    document.getElementById('totalGeneral').textContent = '0.00';
-  }
+  });
 });
 </script>
-
-  {% endblock %}
+{% endblock %}

@@ -167,6 +167,131 @@ class DashboardVentasView(TemplateView):
 
         return context
 
+class DashboardPresentacionesView(TemplateView):
+    template_name = 'dashboard_presentaciones.html'
+
+    def get_context_data(self, **kwargs):
+        fecha_hoy = localtime(now()).date()
+        inicio_dia = datetime.combine(fecha_hoy, datetime.min.time())
+        fin_dia = datetime.combine(fecha_hoy, datetime.max.time())
+        objetivo_ventas = 1000
+
+        # Consulta corregida - solo ventas confirmadas (estatus='1')
+        ventas_por_presentacion = (
+            VentaDetalle.objects
+            .filter(
+                venta__fecha_venta__range=[inicio_dia, fin_dia],
+                venta__estatus='1'  # Solo ventas pagadas/confirmadas
+            )
+            .values('tipo_unidad')
+            .annotate(
+                total_vendido=Sum('total'),
+                cantidad_vendida=Count('id')
+            )
+            .order_by('tipo_unidad')
+        )
+
+        # Detalle corregido
+        detalle_por_presentacion = (
+            VentaDetalle.objects
+            .filter(
+                venta__fecha_venta__range=[inicio_dia, fin_dia],
+                venta__estatus='1'
+            )
+            .values('tipo_unidad', 'receta__nombre')
+            .annotate(total_vendidas=Count('id'))
+            .order_by('tipo_unidad', '-total_vendidas')
+        )
+
+        # Total hoy corregido
+        total_hoy = (
+            VentaDetalle.objects
+            .filter(
+                venta__fecha_venta__range=[inicio_dia, fin_dia],
+                venta__estatus='1'
+            )
+            .aggregate(total=Sum('total'))['total'] or 0
+        )
+
+        # Número de pedidos corregido (solo confirmados)
+        num_pedidos = (
+            Venta.objects
+            .filter(
+                estatus='1',  # Solo pedidos confirmados
+                fecha_venta__range=[inicio_dia, fin_dia]
+            )
+            .count()
+        )
+
+        progreso_ventas = (total_hoy / objetivo_ventas) * 100 if objetivo_ventas > 0 else 0
+
+        # Preparar datos para gráficos
+        presentaciones_map = {'pq': 'Paquete', 'g': 'Gramos', 'ud': 'Unidad'}
+        
+        # Gráfico de barras
+        df_barras = pd.DataFrame(list(ventas_por_presentacion))
+        if not df_barras.empty:
+            df_barras['tipo_unidad'] = df_barras['tipo_unidad'].map(presentaciones_map)
+            fig_barras = px.bar(
+                df_barras, 
+                x='tipo_unidad', 
+                y='total_vendido',
+                title='Ventas por Presentación',
+                labels={'tipo_unidad': 'Presentación', 'total_vendido': 'Total Vendido ($)'},
+                color='tipo_unidad',
+                text='total_vendido'
+            )
+            fig_barras.update_traces(texttemplate='$%{text:.2f}', textposition='outside')
+            graph_html_barras = fig_barras.to_html(full_html=False)
+        else:
+            graph_html_barras = self.get_empty_chart_html('Ventas por Presentación')
+
+        # Gráficos de pastel
+        graficas_pie = {}
+        for tipo, nombre in presentaciones_map.items():
+            datos = [d for d in detalle_por_presentacion if d['tipo_unidad'] == tipo]
+            if datos:
+                df_pie = pd.DataFrame(datos)
+                paletas = {
+                    'g': ['#FF6B6B', '#FFA07A', '#FF8C69', '#FF7256', '#FF6347'],  # Rojos/Naranjas
+                    'ud': ['#4CAF50', '#81C784', '#66BB6A', '#43A047', '#2E7D32'],  # Verdes
+                    'pq': ['#FFA500', '#FFB74D', '#FF9800', '#FB8C00', '#F57C00']   # Naranjas
+                }
+
+                fig_pie = px.pie(
+                    df_pie,
+                    names='receta__nombre',
+                    values='total_vendidas',
+                    title=f'Ventas en {nombre}',
+                    hole=0.4,
+                    color_discrete_sequence=paletas[tipo]
+                )
+                graficas_pie[tipo] = fig_pie.to_html(full_html=False)
+            else:
+                graficas_pie[tipo] = self.get_empty_chart_html(f'Ventas en {nombre}')
+
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'graph_html_barras': graph_html_barras,
+            'graficas_pie': graficas_pie,
+            'total_hoy': total_hoy,
+            'num_pedidos': num_pedidos,
+            'objetivo_ventas': objetivo_ventas,
+            'progreso_ventas': round(progreso_ventas, 2),
+            'fecha_hoy': fecha_hoy,
+            'ventas_por_presentacion': ventas_por_presentacion,
+            'presentaciones_map': presentaciones_map
+        })
+
+        return context
+
+    def get_empty_chart_html(self, title):
+        return f"""
+        <div class="empty-chart alert alert-info">
+            <i class="fas fa-info-circle"></i> No hay datos de {title}
+        </div>
+        """
+    
 class VerListaPedidosView(ListView):
     def generar_ticket_pdf(venta, detalles_guardados):
         buffer = BytesIO()

@@ -1,6 +1,6 @@
 from django.urls import path
 from django.urls import path, include
-from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView, dashboard_view,DashboardVentasView, ListaVentasView 
+from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView, dashboard_view,DashboardVentasView,DashboardPresentacionesView,  ListaVentasView 
 from ventas_app.views import VerListaPedidosClientesView
 
 urlpatterns = [
@@ -11,5 +11,6 @@ urlpatterns = [
     path('corteVenta/', VentaCreateView.as_view(), name='corteVenta'),
     path('lista_pedidos_cliente/', VerListaPedidosClientesView.as_view(), name='lista_pedidos_cliente'),
     path('dashboardProductos/', dashboard_view, name='dashboardProductos'),
+    path('dashboardPresentaciones/',DashboardPresentacionesView.as_view(), name='dashboardPresentaciones'),
 
 ]

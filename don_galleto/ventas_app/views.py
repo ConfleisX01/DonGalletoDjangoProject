@@ -24,10 +24,11 @@ from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.utils import timezone
 
-class ListaVentasView(LoginRequiredMixin, ListView):
+class ListaVentasView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Venta
     template_name = "lista_ventas.html"
     context_object_name = "ventas"
+    permission_required = 'usuarios_app.user_permissions'
     
     
     def get_queryset(self):
@@ -48,8 +49,9 @@ class ListaVentasView(LoginRequiredMixin, ListView):
                     detalle.precio_unitario = 0
         return ventas
     
-class DashboardVentasView(TemplateView):
+class DashboardVentasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'dashboard_ventas.html'
+    permission_required = 'usuarios_app.admin_permissions'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -196,7 +198,6 @@ class DashboardVentasView(TemplateView):
 
         return context
 
-
 class DetallesPedidoClienteView(LoginRequiredMixin, TemplateView):
     template_name = 'detalles_pedido_cliente.html'
 
@@ -211,8 +212,9 @@ class DetallesPedidoClienteView(LoginRequiredMixin, TemplateView):
         else:
             messages.error(self.request, "Error al mostrar el pedido.")
 
-class DashboardPresentacionesView(TemplateView):
+class DashboardPresentacionesView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'dashboard_presentaciones.html'
+    permission_required ='usuarios_app.admin_permissions'
 
     def get_context_data(self, **kwargs):
         fecha_hoy = localtime(now()).date()
@@ -335,7 +337,6 @@ class DashboardPresentacionesView(TemplateView):
             <i class="fas fa-info-circle"></i> No hay datos de {title}
         </div>
         """
-    
 
 class VerListaPedidosClientesView(LoginRequiredMixin, ListView):
     model = CarritoCompras
@@ -408,8 +409,9 @@ def get_venta_detalle_formset(num_galletas):
         can_delete=True
     )
 
-class VentaCreateView(FormView):
+class VentaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "crear_venta.html"
+    permission_required ='usuarios_app.user_permissions'
     form_class = VentaForm
 
     def get_context_data(self, **kwargs):

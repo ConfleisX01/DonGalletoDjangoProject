@@ -9,11 +9,14 @@ from .models import Receta, IngredienteReceta
 from materia_prima.models import MateriaPrima
 from django.views.generic import DetailView
 from inventarios.models import InventarioProducto
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 
-class CrearReceta( FormView):
+
+class CrearReceta(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'crear_receta.html'
     form_class = RecetaRegistrarForm
     success_url = reverse_lazy('lista_receta')
+    permission_required = 'usuarios_app.admin_permissions'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -47,18 +50,20 @@ class CrearReceta( FormView):
         return self.form_invalid(form)
 
 
-class ListaRecetasView( TemplateView):
+class ListaRecetasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'lista_receta.html'
+    permission_required = 'usuarios_app.admin_permissions'
     def get_context_data(self):
         lista = Receta.objects.all()
         return {'lista':lista}
 
-class EditarRecetaView(UpdateView):
+class EditarRecetaView(LoginRequiredMixin, PermissionRequiredMixin,UpdateView):
     model = Receta
     form_class = RecetaEditarForm
     template_name = 'editar_receta.html'
     context_object_name = 'form'
     success_url = reverse_lazy('lista_receta')  # Redirige a la lista de recetas después de guardar
+    permission_required = 'usuarios_app.admin_permissions'
 
     def get_object(self, queryset=None):
         
@@ -73,14 +78,16 @@ class EditarRecetaView(UpdateView):
         context['ingredientes'] = ingredientes
         return context
 
-class VerRecetaView(DetailView): #CHECAR SI NO HAY PROBLEMA EN USAR EL DETAILVIEW , YO CREO QUE NO
+class VerRecetaView(LoginRequiredMixin, PermissionRequiredMixin, DetailView): #CHECAR SI NO HAY PROBLEMA EN USAR EL DETAILVIEW , YO CREO QUE NO
     model = Receta
     template_name = 'ver_receta.html'
     context_object_name = 'receta'
+    permission_required = 'usuarios_app.admin_permissions'
     
-class DefinirInsumoView(FormView):
+class DefinirInsumoView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'definir_insumos.html'
     form_class = AgregarIngredienteForm
+    permission_required = 'usuarios_app.admin_permissions'
 
     def get_context_data(self, **kwargs):
         """Cargar la receta y sus ingredientes para mostrarlos en la plantilla."""

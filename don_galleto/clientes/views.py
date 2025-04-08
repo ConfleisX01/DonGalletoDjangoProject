@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from ventas_app.models import CarritoCompras
 from ventas_app.models import Venta, VentaDetalle
 from inventarios.models import InventarioProducto
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 def convertir_unidades(cantidad, tipo_unidad, peso_galleta):
     if tipo_unidad == 'ud':
@@ -114,8 +114,9 @@ class EliminarProductoCarritoView(LoginRequiredMixin, View):
         return redirect('lista_productos')
 
 
-class ClientesList(LoginRequiredMixin, TemplateView):
+class ClientesList(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'dashboard_clientes.html'
+    permission_required = 'usuarios_app.admin_permissions'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -123,19 +124,21 @@ class ClientesList(LoginRequiredMixin, TemplateView):
         context['lista']=lista
         return context
 
-class ClientesRegistrarView(LoginRequiredMixin, FormView):
+class ClientesRegistrarView(LoginRequiredMixin, PermissionRequiredMixin,  FormView):
     template_name = 'crear_cliente.html'
     form_class = forms.ClienteCrearForm
     success_url = reverse_lazy('clientes_crud')
+    permission_required = 'usuarios_app.admin_permissions'
 
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
     
-class ClienteEditarView(LoginRequiredMixin, FormView):
+class ClienteEditarView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'editar_cliente.html'
     form_class = forms.ClienteEditarForm
     success_url = reverse_lazy('clientes_crud')
+    permission_required = 'usuarios_app.admin_permissions'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

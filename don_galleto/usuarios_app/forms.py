@@ -157,7 +157,7 @@ class EditarUsuarioForm(forms.ModelForm):
     )
     rol = forms.ChoiceField(
         label="Rol", 
-        choices=[("admin", "Administrador"), ("user", "admin")],
+        choices=[("admin", "Administrador"), ("user", "Usuario")],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     
@@ -201,7 +201,8 @@ class EditarUsuarioForm(forms.ModelForm):
         user.email = self.cleaned_data["email"]
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
-        user.is_staff = self.cleaned_data["rol"] == "admin"
+        user.is_staff = self.cleaned_data["rol"] == "user"
+        user.is_superuser = self.cleaned_data["rol"] == 'admin'
         
         # Si el usuario ingresó una nueva contraseña, la encriptamos antes de guardarla
         password = self.cleaned_data.get("password")

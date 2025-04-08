@@ -21,15 +21,19 @@ from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, Carrit
 from datetime import datetime
 from django.utils.dateparse import parse_date
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.utils import timezone
 
-class ListaVentasView(ListView):
+class ListaVentasView(LoginRequiredMixin, ListView):
     model = Venta
     template_name = "lista_ventas.html"
     context_object_name = "ventas"
-
+    
+    
     def get_queryset(self):
+        
+        user_permissions = self.request.user.get_all_permissions()
+        print(f"Permisos del usuario: {user_permissions}")  # Esto imprimirá los permisos en la consola
         # Obtener las ventas con los detalles
         ventas = Venta.objects.all().prefetch_related('detalles').annotate(
             total_venta=Sum('detalles__total')

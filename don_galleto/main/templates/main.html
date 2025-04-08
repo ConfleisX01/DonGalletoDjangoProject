@@ -42,7 +42,7 @@
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header small text-info">¡Hola, {{ user.username }}!</h6></li>
                                 <li><h6 class="dropdown-header">Menu</h6></li>
-                                {% if user.is_staff %}
+                                {% if user.is_staff or user.is_superuser %}
                                     <li><a class="dropdown-item" href="{% url 'panel' %}"><i class="bi bi-person-standing mx-1"></i>Administración</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}

@@ -15,7 +15,7 @@ class AgregarIngredienteForm(forms.Form):
         label="Cantidad",
         decimal_places=2,
         max_digits=10,
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad'})
     )
 
 

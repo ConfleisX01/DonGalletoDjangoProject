@@ -19,7 +19,7 @@
                 {% for venta in ventas %}
                 <tr class="clickable" data-bs-toggle="collapse" data-bs-target="#detalle-{{ venta.id }}">
                     <td>{{ venta.id }}</td>
-                    <td>{{ venta.fecha_recoleccion }}</td>
+                    <td>{% if venta.fecha_recoleccion == None %}Entregado en punto de venta{% else %}{{ venta.fecha_recoleccion }}{% endif %}</td>
                     <td>{{ venta.fecha_venta }}</td>
                     <td>${{ venta.total_venta }}</td>
                     <td><button class="btn btn-info">Ver Detalles</button></td>

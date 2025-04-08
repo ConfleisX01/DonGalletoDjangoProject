@@ -28,6 +28,7 @@
               </div>
             </div>
             {% if user.is_authenticated %}
+            {% if user.is_superuser or user.is_staff %}
             <ul class="sidebar-nav">
               <li class="nav-item nav-group hide">
                 <a class="nav-link nav-group-toggle" href="#">
@@ -51,30 +52,9 @@
                   </li>
                 </ul>
               </li>
-              <!-- TERMINA LA SECCION PRINCIPAL -->
-              <li class="nav-item nav-group hide">
-                <a class="nav-link nav-group-toggle" href="#">
-                  <i class="nav-icon bi bi-box-seam"></i> Inventarios
-                </a>
-                <ul class="nav-group-items">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'inventario_materia' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Materia Prima
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'inventario_productos' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Productos
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_mermas' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Merma
-                    </a>
-                  </li>
-                </ul>
-              </li>
+              {% endif %}
                 <!-- SECCIÓN INVENTARIOS (correcta) -->
+                {% if user.is_superuser or user.is_staff %}
                 <li class="nav-item nav-group hide">
                   <a class="nav-link nav-group-toggle" href="#">
                       <i class="nav-icon bi bi-box-seam"></i> Inventarios
@@ -97,7 +77,9 @@
                       </li>
                   </ul>
                 </li>
+                {% endif %}
               <!-- SECCIÓN VENTAS (corregida) -->
+              {% if user.is_superuser or user.is_staff %}
               <li class="nav-item nav-group hide">
                 <a class="nav-link nav-group-toggle" href="#"> <!-- Eliminado el enlace a mermas aquí -->
                     <i class="nav-icon bi bi-graph-up-arrow"></i> Ventas
@@ -120,6 +102,7 @@
                     </li>
                 </ul>
               </li>
+              {% endif %}
               <!-- TERMINA LA SECCION VENTAS -->
               {% if user.is_superuser %}
               <li class="nav-item nav-group hide">
@@ -200,13 +183,16 @@
                     </a>
                     <ul class="dropdown-menu">
                       <li><h6 class="dropdown-header">Ajustes</h6></li>
+                      <li class="nav-item">
+                        <a class="dropdown-item text-primary" href="{% url 'welcome' %}">Regresar</a>
+                      </li>
                       <li>
-                          <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
-                              {% csrf_token %}
-                              <button type="submit" class="dropdown-item btn btn-link border-0 text-danger">
-                                  Cerrar Sesión
-                              </button>
-                          </form>
+                        <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="dropdown-item btn btn-link border-0 text-danger">
+                            Cerrar Sesión
+                          </button>
+                        </form>
                       </li>
                     </ul>
                     </ul>

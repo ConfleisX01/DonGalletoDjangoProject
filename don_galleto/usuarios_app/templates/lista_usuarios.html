@@ -1,22 +1,39 @@
 {% extends "panel.html" %}
-
 {% block content %}
-<header class="header">
-    <span class="header-brand mb-0 h1">Lista de usuarios</span>
-    <a href="{% url 'crear_usuarios' %}" class="btn btn-success text-white">Crear Usuario</a>
-  </header>
-<div class="container-fluid p-2">
-    <div class="row g-2">
-        <!-- Tarjeta de Administradores -->
-        <div class="col-lg-4 col-md-12">
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock styles %}
+
+<div class="container-fluid">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs mb-3" id="userTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab">Administradores</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button" role="tab">Usuarios</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="off-tab" data-bs-toggle="tab" data-bs-target="#user-off" type="button" role="tab">Clientes</button>
+        </li>
+    </ul>
+
+    <a href="{% url 'crear_usuarios' %}" id="btnCrearUsuario" class="btn btn-success text-white mb-4">Crear Usuario</a>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+
+        <!-- Administradores -->
+        <div class="tab-pane fade show active" id="admin" role="tabpanel">
             <div class="card border rounded-3">
                 <div class="card-header bg-primary text-white text-center">
                     <h2 class="mb-0">Lista de Administradores</h2>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <input type="text" id="searchAdmin" class="form-control" placeholder="Buscar en administradores...">
-                    </div>
+
+                    <input type="text" id="searchAdmin" class="form-control mb-3" placeholder="Buscar en administradores...">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead class="table-dark">
@@ -24,24 +41,31 @@
                                     <th>Nombre</th>
                                     <th>Apellido</th>
                                     <th>Correo</th>
+                                    <th>estado</th>
                                     <th>Editar</th>
                                 </tr>
                             </thead>
                             <tbody id="adminTable">
-                                {% for usuario in admin %}
+                                {% for admin in admins %}
                                 <tr>
-                                    <td>{{ usuario.first_name }}</td>
-                                    <td>{{ usuario.last_name }}</td>
-                                    <td>{{ usuario.email }}</td>
+                                    <td>{{ admin.user.first_name }}</td>
+                                    <td>{{ admin.user.last_name }}</td>
+                                    <td>{{ admin.user.email }}</td>
                                     <td>
-                                        <a href={% url 'editar_usuarios' usuario.id %} class="btn btn-sm btn-warning">
+                                        {% if admin.user.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Desactivado</span>
+                                        {% endif %}
+                                    <td>
+                                        <a href="{% url 'editar_usuarios' admin.user.id %}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="4" class="text-center">No hay administradores registrados</td>
+                                    <td colspan="5" class="text-center">No hay administradores registrados</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -51,16 +75,14 @@
             </div>
         </div>
 
-        <!-- Tarjeta de Usuarios -->
-        <div class="col-lg-4 col-md-12">
+        <!-- Usuarios -->
+        <div class="tab-pane fade" id="user" role="tabpanel">
             <div class="card border rounded-3">
                 <div class="card-header bg-success text-white text-center">
                     <h2 class="mb-0">Lista de Usuarios</h2>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <input type="text" id="searchUser" class="form-control" placeholder="Buscar en usuarios...">
-                    </div>
+                    <input type="text" id="searchUser" class="form-control mb-3" placeholder="Buscar en usuarios...">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead class="table-dark">
@@ -68,24 +90,31 @@
                                     <th>Nombre</th>
                                     <th>Apellido</th>
                                     <th>Correo</th>
+                                    <th>estado</th>
                                     <th>Editar</th>
                                 </tr>
                             </thead>
                             <tbody id="userTable">
                                 {% for usuario in usuarios %}
                                 <tr>
-                                    <td>{{ usuario.first_name }}</td>
-                                    <td>{{ usuario.last_name }}</td>
-                                    <td>{{ usuario.email }}</td>
+                                    <td>{{ usuario.user.first_name }}</td>
+                                    <td>{{ usuario.user.last_name }}</td>
+                                    <td>{{ usuario.user.email }}</td>
                                     <td>
-                                        <a href="{% url 'editar_usuarios' usuario.id %}" class="btn btn-sm btn-warning">
+                                        {% if usuario.user.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Desactivado</span>
+                                        {% endif %}
+                                    <td>
+                                        <a href="{% url 'editar_usuarios' usuario.user.id %}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="4" class="text-center">No hay usuarios registrados</td>
+                                    <td colspan="5" class="text-center">No hay usuarios registrados</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -95,16 +124,15 @@
             </div>
         </div>
 
-
-        <div class="col-lg-4 col-md-12">
+        <!-- Clientes -->
+        <div class="tab-pane fade" id="user-off" role="tabpanel">
             <div class="card border rounded-3">
                 <div class="card-header bg-danger text-white text-center">
-                    <h2 class="mb-0">Lista de Usuarios desactivados</h2>
+                    <h2 class="mb-0">Lista de Clientes</h2>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <input type="text" id="searchUser_off" class="form-control" placeholder="Buscar en usuarios...">
-                    </div>
+                    <a href="{% url 'crear_cliente' %}" id="btnCrearCliente" class="btn btn-success text-white mb-4">Crear cliente</a>
+                    <input type="text" id="searchUser_off" class="form-control mb-3" placeholder="Buscar en usuarios...">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead class="table-dark">
@@ -112,24 +140,32 @@
                                     <th>Nombre</th>
                                     <th>Apellido</th>
                                     <th>Correo</th>
+                                    <th>estado</th>
                                     <th>Editar</th>
                                 </tr>
                             </thead>
-                            <tbody id="searchUser_off">
-                                {% for usuario in usuarios_off %}
+                            <tbody id="userOffTable">
+                                {% for cliente in clientes %}
                                 <tr>
-                                    <td>{{ usuario.first_name }}</td>
-                                    <td>{{ usuario.last_name }}</td>
-                                    <td>{{ usuario.email }}</td>
+                                    <td>{{ cliente.user.first_name }}</td>
+                                    <td>{{ cliente.user.last_name }}</td>
+                                    <td>{{ cliente.user.email }}</td>
                                     <td>
-                                        <a href="{% url 'editar_usuarios' usuario.id %}" class="btn btn-sm btn-warning">
+                                        {% if cliente.user.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Desactivado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'editar_cliente' cliente.user.id %}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="4" class="text-center">No hay usuarios desactivados</td>
+                                    <td colspan="5" class="text-center">No hay clientes registrados</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -138,58 +174,9 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
-
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<script>
-    document.getElementById('searchAdmin').addEventListener('keyup', function() {
-        var searchValue = this.value.toLowerCase();
-        var rows = document.querySelectorAll('#adminTable tr');
-        rows.forEach(function(row) {
-            var firstName = row.cells[0].textContent.toLowerCase();
-            var lastName = row.cells[1].textContent.toLowerCase();
-            var email = row.cells[2].textContent.toLowerCase();
-            if (firstName.includes(searchValue) || lastName.includes(searchValue) || email.includes(searchValue)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-
-    document.getElementById('searchUser').addEventListener('keyup', function() {
-        var searchValue = this.value.toLowerCase();
-        var rows = document.querySelectorAll('#userTable tr');
-        rows.forEach(function(row) {
-            var firstName = row.cells[0].textContent.toLowerCase();
-            var lastName = row.cells[1].textContent.toLowerCase();
-            var email = row.cells[2].textContent.toLowerCase();
-            if (firstName.includes(searchValue) || lastName.includes(searchValue) || email.includes(searchValue)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-
-    document.getElementById('searchUser_off').addEventListener('keyup', function() {
-        var searchValue = this.value.toLowerCase();
-        var rows = document.querySelectorAll('#searchUser_off tr');
-        rows.forEach(function(row) {
-            var firstName = row.cells[0].textContent.toLowerCase();
-            var lastName = row.cells[1].textContent.toLowerCase();
-            var email = row.cells[2].textContent.toLowerCase();
-            if (firstName.includes(searchValue) || lastName.includes(searchValue) || email.includes(searchValue)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/usuarios.js' %}"></script>
 {% endblock content %}

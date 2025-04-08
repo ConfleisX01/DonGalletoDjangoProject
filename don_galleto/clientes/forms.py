@@ -73,7 +73,7 @@ class ClienteEditarForm(forms.ModelForm):
 
     username = forms.CharField(
         max_length=150,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de usuario'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de usuario', 'readonly': 'readonly'})
     )
 
     email = forms.EmailField(
@@ -82,12 +82,23 @@ class ClienteEditarForm(forms.ModelForm):
 
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}),
-        required=False  # La contraseña es opcional en la edición
+        required=False 
     )
 
     class Meta:
         model = Cliente
         fields = ['first_name', 'last_name', 'username', 'email', 'password']
+    
+    def __init__(self, *args, **kwargs):
+        # Llamamos al init del formulario padre
+        super().__init__(*args, **kwargs)
+    
+    # Si la instancia existe (estamos editando un cliente), pre-poblamos los campos
+        if self.instance and self.instance.user:
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+            self.fields['username'].initial = self.instance.user.username  # Lo haremos readonly
+            self.fields['email'].initial = self.instance.user.email
 
     def save(self, commit=True):
         # Actualizar la información del usuario

@@ -9,7 +9,6 @@ class Receta(models.Model):
     cantidad_galletas_producidas = models.IntegerField()
     peso_individual = models.DecimalField(max_digits=10, decimal_places=2)
     precio_galleta = models.DecimalField(max_digits=5, decimal_places=2, default=10.00)
-    
 
     class Meta:
         permissions = [("puede_ver_recetas", "Puede ver recetas")]

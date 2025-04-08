@@ -91,7 +91,7 @@ class VentaDetalle(models.Model):
         ('ud', 'Unidad'),
     ]
 
-    total = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    total = models.DecimalField(default=0, max_digits=10, decimal_places=2 )
     cantidad = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     tipo_unidad = models.CharField(
         max_length=2,
@@ -99,5 +99,5 @@ class VentaDetalle(models.Model):
         default='ud'
     )
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, null=False)
-    venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True, related_name="detalles_venta")
+    venta = models.ForeignKey("ventas_app.Venta", on_delete=models.CASCADE, null=True, blank=True, related_name="detalles")
     carrito = models.ForeignKey("ventas_app.CarritoCompras", on_delete=models.CASCADE, related_name="detalles", null=True, blank=False)

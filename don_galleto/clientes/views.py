@@ -140,7 +140,7 @@ class ClienteEditarView(LoginRequiredMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         id = self.kwargs.get('id')
-        usuario = get_object_or_404(User, id=id)
+        usuario = get_object_or_404(Cliente, user_id=id)
         kwargs['instance'] = usuario
         return kwargs
     

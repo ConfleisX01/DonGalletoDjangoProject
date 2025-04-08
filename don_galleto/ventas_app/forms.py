@@ -29,15 +29,38 @@ class VentaForm(forms.ModelForm):
 class VentaDetalleForm(forms.ModelForm):
     class Meta:
         model = VentaDetalle
-        fields = ["receta", "cantidad"]  # receta es para saber la galleta vendida y la cantidad
+        fields = ["receta", "cantidad", "tipo_unidad"]  # Agregar unidad al form
 
     receta = forms.ModelChoiceField(
         queryset=Receta.objects.all(),
         label="Galleta",
-        empty_label="Seleccione una galleta...",  # ✅ Texto para la opción nula
-        required=False,  # ✅ Permite enviar el formulario sin selección
+        empty_label="Seleccione una galleta...",
+        required=False,
     )
-    cantidad = forms.IntegerField(min_value=1, label="Cantidad")
+    cantidad = forms.IntegerField(min_value=1, label="Cantidad", required=True)
+
+    tipo_unidad  = forms.ChoiceField(
+        choices=[
+            ('pq', 'Paq.'),  # Paquete (coincide con 'pq' de VentaDetalle)
+            ('g', 'Gr.'),    # Gramos (cambiado de 'gr' a 'g' para coincidir)
+            ('ud', 'Un.'),   # Unidad (igual que en VentaDetalle)
+        ],
+        label="Unidad",
+        required=True,
+        initial='ud',  # Establecer como 'Un.' por defecto
+    )
+
+    total = forms.DecimalField(max_digits=10, decimal_places=2, required=False, initial=0.0, widget=forms.HiddenInput())
+
+    def clean(self):
+        cleaned_data = super().clean()
+        receta = cleaned_data.get('receta')
+        cantidad = cleaned_data.get('cantidad')
+
+        if receta and cantidad:
+            total = receta.precio_galleta * cantidad
+            cleaned_data['total'] = total
+        return cleaned_data
 
 # Crear un Formset para manejar múltiples productos
 VentaDetalleFormSet = inlineformset_factory(

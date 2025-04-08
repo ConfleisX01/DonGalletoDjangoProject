@@ -6,6 +6,14 @@ from django.contrib.auth import login
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from Recetas_app.models import Receta
+from two_factor.views import LoginView as TwoFactorLoginView
+from django.contrib import messages
+
+class CustomTwoFactorLoginView(TwoFactorLoginView):
+    def form_invalid(self, form):
+        messages.error(self.request, "Credenciales incorrectas o código inválido.")
+        return redirect('2fa_login')
+
 class WelcomeView(ListView):
     template_name = 'welcome.html'
     model = Receta
@@ -38,3 +46,6 @@ def registro(request):
         form = RegistroForm()
 
     return render(request, "registration/registro.html", {"form": form})
+
+def mi_error_403(request, exception=None):
+    return render(request, '403.html', status=403)

@@ -5,28 +5,31 @@ from django.views.generic import FormView
 from . import forms
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-class lista_provedoresView(LoginRequiredMixin, TemplateView):
+class lista_provedoresView(LoginRequiredMixin, PermissionRequiredMixin,  TemplateView):
     template_name = "lista_provedores.html"
+    permission_required = 'usuarios_app.admin_permissions'
     def get_context_data(self):
         lista = Provedor.objects.all()
         return{
             "lista": lista
         }
     
-class CrearProvedorView(LoginRequiredMixin, FormView):
+class CrearProvedorView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "crear_provedor.html"
     form_class = forms.ProvedorRegistrarForm
     success_url = reverse_lazy('lista_provedores')
+    permission_required = 'usuarios_app.admin_permissions'
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
     
-class EditarProvedorView(LoginRequiredMixin, FormView):
+class EditarProvedorView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "editar_provedor.html"
     form_class = forms.ProvedorEditarForm
     success_url = reverse_lazy('lista_provedores')
+    permission_required = 'usuarios_app.admin_permissions'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

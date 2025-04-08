@@ -1,0 +1,108 @@
+{% extends "panel.html" %}
+
+{% load static %}
+{% block title %} Dashboard de Ventas por Presentacion{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Resumen General -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Resumen de Ventas - {{ fecha_hoy }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Total Hoy -->
+                        <div class="col-md-4">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Total Vendido Hoy</h5>
+                                    <p class="card-text h3 text-primary">${{ total_hoy|floatformat:2 }}</p>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar progress-bar-striped bg-success" 
+                                             role="progressbar" 
+                                             style="width: {{ progreso_ventas }}%" 
+                                             aria-valuenow="{{ progreso_ventas }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            {{ progreso_ventas|floatformat:0 }}%
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Objetivo: ${{ objetivo_ventas|floatformat:2 }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Número de Pedidos -->
+                        <div class="col-md-4">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Pedidos Realizados</h5>
+                                    <p class="card-text h3 text-info">{{ num_pedidos }}</p>
+                                    <p class="text-muted mb-0">Hoy</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resumen por Presentación -->
+                        <div class="col-md-4">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Ventas por Presentación</h5>
+                                    <ul class="list-group list-group-flush">
+                                        {% for venta in ventas_por_presentacion %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{ venta.tipo_unidad|title }}
+                                            <span class="badge bg-primary rounded-pill">
+                                                ${{ venta.total_vendido|floatformat:2 }}
+                                            </span>
+                                        </li>
+                                        {% empty %}
+                                        <li class="list-group-item text-center text-muted">
+                                            No hay ventas registradas
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Barras Principal -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Distribución de Ventas por Presentación</h4>
+                </div>
+                <div class="card-body">
+                    {{ graph_html_barras|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos de Pastel por Presentación -->
+    <div class="row">
+        {% for presentacion, grafica in graficas_pie.items %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header 
+                    {% cycle 'bg-warning text-dark' 'bg-danger text-white' 'bg-success text-white' %}">
+                    <h4 class="mb-0">Ventas en {{ presentacion|title }}</h4>
+                </div>
+                <div class="card-body">
+                    {{ grafica|safe }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -3,37 +3,57 @@
 {% load static %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2 class="mb-4">Mis Pedidos</h2>
-        
+<div class="mt-5">
+    <div class="container py-5">
+        <div class="container-fluid d-flex justify-content-between">
+            <h2>Mis Pedidos</h2>
+            <a class="mx-2 btn fs-5" href="{% url 'welcome' %}"><i class="bi bi-arrow-left fw-bold"></i></a>
+        </div>
         {% if pedidos %}
-            <div class="row row-cols-3 g-5">
-                {% for carrito in pedidos %}
-                <div class="col d-flex">
-                    <div class="p-4 border rounded shadow-sm mb-3 bg-white">
-                        <h4>Información del pedido</h4>
-                        <p><strong>Fecha:</strong> {{ carrito.detalles.first.venta.fecha_venta }}</p>
-                        <p><strong>Fecha de recolección:</strong> {{ carrito.detalles.first.venta.fecha_recoleccion }}</p>
-                        <p><strong>Estado:</strong> 
-                            {% if carrito.detalles.first.venta.estatus %}
-                                <span class="text-primary">Creado</span>
-                            {% else %}
-                                <span class="text-warning">Pendiente</span>
-                            {% endif %}
-                        </p>
-                        <p><strong>Total:</strong> ${{ carrito.calcular_total }}</p>
-                        <h5>Productos:</h5>
-                        <ul>
-                            {% for detalle in carrito.detalles.all %}
-                                <li>{{ detalle.receta.nombre }} - {{ detalle.cantidad }} {{ detalle.tipo_unidad }}</li>
-                            {% endfor %}
-                        </ul>
+            {% for item in pedidos %}
+                <div class="container-fluid py-1">
+                    <div class="container p-2 w-75">
+                        <div class="border bg-light rounded-4">
+                            <div class="container-fluid d-flex justify-content-between">
+                                <div class="my-2">
+                                    <small class="text-secondary">Pedido realizado el:</small>
+                                    <p><i class="bi bi-calendar"></i> {{ item.detalles.first.venta.fecha_venta }}</p>
+                                </div>
+                                <div class="my-2">
+                                    <a class="btn" href="{% url 'detalles_pedido' item.id %}"><i class="bi bi-arrow-right fs-5"></i></a>
+                                </div>
+                            </div>  
+                            <div class="container-fluid d-flex justify-content-between">
+                                <div>
+                                    <small class="text-secondary">Fecha de recolección:</small>
+                                    <p><i class="bi bi-calendar-check"></i> {{ item.detalles.first.venta.fecha_recoleccion }}</p>
+                                </div>
+                                <div>
+                                    <small class="text-secondary">Estatus:</small>
+                                    <p><i class="bi bi-bag-check"></i>
+                                    {% if item.detalles.first.venta.estatus == '1' %}
+                                        <span class="text-primary">Creado</span>
+                                    {% else %}
+                                        <span class="text-warning">Pendiente</span>
+                                    {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
         {% else %}
-            <p class="text-center text-secondary">Aún no tienes pedidos realizados.</p>
+        <div class="container text-center">
+            <h2 class="display-3 fw-bold text-danger">¡Aún no tienes pedidos realizados!</h2>
+            <p class="lead text-muted">Parece que tu carrito está vacío por ahora.</p>
+            <p class="text-secondary">Explora nuestro catálogo y elige tus productos favoritos para comenzar tu pedido.</p>
+            <div class="container-fluid">
+                <img class="w-25" src="{% static '/img/carrito_vacio.png' %}">
+            </div>
+            <a class="btn btn-outline-dark btn-lg mt-3" href="{% url 'lista_productos' %}">Ver productos disponibles</a>
+        </div>
         {% endif %}
     </div>
+</div>
 {% endblock %}

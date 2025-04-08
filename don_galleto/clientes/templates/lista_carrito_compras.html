@@ -16,7 +16,10 @@
 </div>
 {% else %}
 <div class="container mt-5">
-    <div class="row">
+    <div class="row py-5">
+        <div class="container-fluid">
+            <h5>Carrito de compras</h5>
+        </div>
         <div class="col-8 p-2">
             {% for detalle in detalles %}
                 <div class="container-fluid border p-2 rounded shadow-sm d-flex mb-2">
@@ -42,8 +45,7 @@
                     <div class="container-fluid">
                         <p class="m-0 text-secondary mt-5">Total del carrito: <span class="text-success fw-bold">${{carrito.calcular_total}}</span></p>
                         <div class="d-grid gap-2 mt-5 mb-2 text-center">
-                            <a class="btn btn-primary btn-lg rounded-0" href="{% url 'confirmar_pedido' carrito.id%}">Hacer pedido</a>
-                            <a class="btn btn-info btn-lg rounded-0" href="{% url 'lista_pedidos_cliente' %}">Ver pedidos</a>
+                            <a class="btn btn-dark btn-lg rounded-0" href="{% url 'confirmar_pedido' carrito.id%}">Hacer pedido</a>
                         </div>
                     </div>
                 </div>

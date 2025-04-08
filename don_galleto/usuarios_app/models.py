@@ -11,8 +11,8 @@ class Usuario(models.Model):
 
     class Meta:
         permissions = [
-            ('view_user', 'Can view user'),
-            ('add_user', 'Can add user'),
-            ('change_user', 'Can change user'),
-            ('view_dashboard', 'Can view dash')
+            ('admin_permissions', 'admin actions'),
+            ('user_permissions', 'user actions'),
+            ('client_permissions', 'client actions'),
+            
         ]

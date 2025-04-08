@@ -15,6 +15,7 @@ class InventarioProducto(models.Model):
     def calcular_stock(self):
         lotes_validos = self.galleta.lotes.filter(fecha_caducidad__gte=now().date())
         stock_total = sum(lote.cantidad for lote in lotes_validos)
+        print(stock_total)
         return stock_total
 
     def verificar_stock(self, cantidad):
@@ -39,6 +40,10 @@ class InventarioMaterial(models.Model):
 
     def agregar_cantidad(self, cantidad_agregada):
         self.cantidad += cantidad_agregada
+        self.save()
+
+    def agregar_cantidad(self, cantidad):
+        self.cantidad += cantidad
         self.save()
 
 class Merma(models.Model):

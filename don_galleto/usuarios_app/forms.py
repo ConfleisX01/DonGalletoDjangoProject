@@ -88,11 +88,14 @@ class UsuarioForm(forms.ModelForm):
         password = cleaned_data.get("password")
         password2 = cleaned_data.get("password2")
 
+
         # Validar que ambas contraseñas coincidan
         if password and password2 and password != password2:
             raise forms.ValidationError("Las contraseñas no coinciden.")
+        
 
         return cleaned_data
+
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -100,7 +103,10 @@ class UsuarioForm(forms.ModelForm):
         user.email = self.cleaned_data["email"]
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
-        user.is_staff = self.cleaned_data["rol"] == "admin"
+
+        rol = self.cleaned_data["rol"]
+        user.is_staff = True  # Siempre será True para ambos roles
+        user.is_superuser = rol == "admin"  # Solo True para admin
 
         # Encriptar la contraseña antes de guardarla
         user.password = make_password(self.cleaned_data["password"])
@@ -108,18 +114,19 @@ class UsuarioForm(forms.ModelForm):
         if commit:
             user.save()
 
-        # Crear el modelo Usuario asociado
-        usuario = Usuario(user=user, telefono=self.cleaned_data["telefono"], user_type=self.cleaned_data["rol"])
+        # Crear el modelo Usuario asociado (modelo adicional que tú manejas)
+        usuario = Usuario(user=user, telefono=self.cleaned_data["telefono"], user_type=rol)
         if commit:
             usuario.save()
 
         # Asignar el usuario al grupo correspondiente
-        if self.cleaned_data["rol"] == "admin":
-            group = Group.objects.get(name="Administrador")
-        else:
-            group = Group.objects.get(name="Usuario")
-        user.groups.clear()  # Limpiar los grupos actuales del usuario
-        user.groups.add(group)  # Añadir el usuario al grupo correspondiente
+        group_name = "Administrador" if rol == "admin" else "Usuario"
+        try:
+            group = Group.objects.get(name=group_name)
+            user.groups.clear()
+            user.groups.add(group)
+        except Group.DoesNotExist:
+            pass  # Podrías también lanzar una excepción si prefieres asegurarte de que el grupo exista
 
         return user
 
@@ -150,7 +157,7 @@ class EditarUsuarioForm(forms.ModelForm):
     )
     rol = forms.ChoiceField(
         label="Rol", 
-        choices=[("admin", "Administrador"), ("user", "admin")],
+        choices=[("admin", "Administrador"), ("user", "Usuario")],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     
@@ -194,7 +201,8 @@ class EditarUsuarioForm(forms.ModelForm):
         user.email = self.cleaned_data["email"]
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
-        user.is_staff = self.cleaned_data["rol"] == "admin"
+        user.is_staff = self.cleaned_data["rol"] == "user"
+        user.is_superuser = self.cleaned_data["rol"] == 'admin'
         
         # Si el usuario ingresó una nueva contraseña, la encriptamos antes de guardarla
         password = self.cleaned_data.get("password")

@@ -11,27 +11,24 @@
     <script src="{% static 'js/config.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Favicon - loaded as static -->
-  <link rel="icon" href="/static/assets/img/brand/favicon.png" type="image/png">
-  <!-- Fonts -->
-  <link rel="stylesheet" href="/static/assets/vendor/nucleo/css/nucleo.css" type="text/css">
-  <link rel="stylesheet" href="/static/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
-  <!-- Page plugins -->
-  <!-- Argon CSS -->
-  <link rel="stylesheet" href="/static/assets/css/argon.css?v=1.2.0" type="text/css">
-  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <link rel="icon" href="/static/assets/img/brand/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/static/assets/vendor/nucleo/css/nucleo.css" type="text/css">
+    <link rel="stylesheet" href="/static/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="/static/assets/css/argon.css?v=1.2.0" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <title>Don Ricoche - Clientes</title>
+    <title>Galette</title>
 </head>
 <body>
     <div class="vh-100 d-flex">
         <div class="sidebar sidebar-dark border-end">
             <div class="sidebar-header border-bottom">
               <div class="sidebar-brand">
-                <h1 class="fs-5 m-0 text-white">Don Ricoche</h1>
+                <h1 class="fs-5 m-0 text-white">Galette</h1>
               </div>
             </div>
+            {% if user.is_authenticated %}
+            {% if user.is_superuser or user.is_staff %}
             <ul class="sidebar-nav">
               <li class="nav-item nav-group hide">
                 <a class="nav-link nav-group-toggle" href="#">
@@ -39,12 +36,15 @@
                 </a>
                 <ul class="nav-group-items">
                   <li class="nav-item">
+<<<<<<< HEAD
                     <a class="nav-link" href="#">
                       
                       <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Inicio
                     </a>
                   </li>
                   <li class="nav-item">
+=======
+>>>>>>> 46339a6db870ecd5a5e43f619051a278544119d9
                     <a class="nav-link" href="{% url 'creacion_produccion' %}">
                       <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Producción
                     </a>
@@ -61,53 +61,59 @@
                   </li>
                 </ul>
               </li>
-              <!-- TERMINA LA SECCION PRINCIPAL -->
+              {% endif %}
+                <!-- SECCIÓN INVENTARIOS (correcta) -->
+                {% if user.is_superuser or user.is_staff %}
+                <li class="nav-item nav-group hide">
+                  <a class="nav-link nav-group-toggle" href="#">
+                      <i class="nav-icon bi bi-box-seam"></i> Inventarios
+                  </a>
+                  <ul class="nav-group-items">
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'inventario_materia' %}">
+                              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Materia Prima
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'inventario_productos' %}">
+                              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Productos
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'lista_mermas' %}">
+                              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Merma
+                          </a>
+                      </li>
+                  </ul>
+                </li>
+                {% endif %}
+              <!-- SECCIÓN VENTAS (corregida) -->
+              {% if user.is_superuser or user.is_staff %}
               <li class="nav-item nav-group hide">
-                <a class="nav-link nav-group-toggle" href="#">
-                  <i class="nav-icon bi bi-box-seam"></i> Inventarios
+                <a class="nav-link nav-group-toggle" href="#"> <!-- Eliminado el enlace a mermas aquí -->
+                    <i class="nav-icon bi bi-graph-up-arrow"></i> Ventas
                 </a>
                 <ul class="nav-group-items">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'inventario_materia' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Materia Prima
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'inventario_productos' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Productos
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_mermas' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Merma
-                    </a>
-                  </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_ventas' %}">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Lista de ventas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'corteVenta' %}">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Corte de ventas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_pedidos' %}">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Pedidos realizados
+                        </a>
+                    </li>
                 </ul>
               </li>
-              <!-- TERMINA LA SECCION INVENTARIO -->
-              <li class="nav-item nav-group hide">
-                <a class="nav-link nav-group-toggle" href="#">
-                  <i class="nav-icon bi bi-graph-up-arrow"></i> Ventas
-                </a>
-                <ul class="nav-group-items">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_ventas' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Lista de ventas
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'corteVenta' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Corte de ventas
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_pedidos' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Pedidos realizados
-                    </a>
-                  </li>
-                </ul>
-              </li>
+              {% endif %}
               <!-- TERMINA LA SECCION VENTAS -->
+              {% if user.is_superuser %}
               <li class="nav-item nav-group hide">
                 <a class="nav-link nav-group-toggle" href="#">
                   <i class="nav-icon bi bi-table"></i> Dashboards
@@ -119,18 +125,15 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboardProductos' %}">
-                      <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Más vendidos
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="{% url 'dashboardPresentaciones' %}">
                       <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Presentaciones
                     </a>
                   </li>
                 </ul>
               </li>
+              {% endif %}
               <!-- TERMINA LA SECCION DASHBOARDS -->
+              {% if user.is_superuser %}
               <li class="nav-item nav-group hide">
                 <a class="nav-link nav-group-toggle" href="#">
                   <i class="nav-icon bi bi-building-gear"></i> Administración
@@ -158,8 +161,10 @@
                   </li>
                 </ul>
               </li>
+              {% endif %}
               <!-- TERMINA LA SECCION ADMINISTRACION -->
             </ul>
+            {% endif %}
           </div>
           <div class="container-fluid p-0 h-100 overflow-auto position-relative">
             <div class="toast-container position-fixed top-0 end-0 p-3">
@@ -187,13 +192,16 @@
                     </a>
                     <ul class="dropdown-menu">
                       <li><h6 class="dropdown-header">Ajustes</h6></li>
+                      <li class="nav-item">
+                        <a class="dropdown-item text-primary" href="{% url 'welcome' %}">Regresar</a>
+                      </li>
                       <li>
-                          <form id="logout-form" method="post" action="{% url 'welcome' %}" class="d-inline">
-                              {% csrf_token %}
-                              <button type="submit" class="dropdown-item btn btn-link border-0 text-danger">
-                                  Cerrar Sesión
-                              </button>
-                          </form>
+                        <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="dropdown-item btn btn-link border-0 text-danger">
+                            Cerrar Sesión
+                          </button>
+                        </form>
                       </li>
                     </ul>
                     </ul>

@@ -22,7 +22,7 @@ from datetime import datetime
 from django.utils.dateparse import parse_date
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.utils import timezone
 
 class ListaVentasView(ListView):
     model = Venta
@@ -51,7 +51,6 @@ class DashboardVentasView(TemplateView):
         # Obtener la fecha de hoy
         fecha_hoy = localtime(now()).date()
 
-        
         # Obtener las fechas desde los parámetros GET
         fecha_inicio = self.request.GET.get('fecha_inicio', fecha_hoy)
         fecha_fin = self.request.GET.get('fecha_fin', fecha_hoy)
@@ -67,7 +66,7 @@ class DashboardVentasView(TemplateView):
         fin_dia = datetime.combine(fecha_fin, datetime.max.time())
         inventarios = InventarioMaterial.objects.annotate(
             costo_total=Sum(
-                F('insumo__lotes__costo_uniario') * F('cantidad')
+                F('insumo__lotes__costo_unitario') * F('cantidad')
             )
         )
         
@@ -92,6 +91,23 @@ class DashboardVentasView(TemplateView):
             .order_by('-total_vendidas')
         )
 
+        # Recetas más vendidas en toda la historia
+        top_recetas = (
+            VentaDetalle.objects
+            .values('receta__nombre')
+            .annotate(
+                total_vendidas=Sum('cantidad'),
+                total_vendido=Sum('total')
+            )
+            .order_by('-total_vendidas')
+        )
+
+        # Cantidad total histórica vendida de todas las recetas
+        cantidad_total_vendida = (
+            VentaDetalle.objects
+            .aggregate(total_vendida=Sum('cantidad'))['total_vendida'] or 0
+        )
+
         # Total vendido en el rango de fechas
         total_vendido = sum(
             venta['total_vendido'] or 0 for venta in ventas_diarias
@@ -107,7 +123,7 @@ class DashboardVentasView(TemplateView):
         # Consulta para calcular el costo de los ingredientes por receta
         inventarios_productos = InventarioProducto.objects.annotate(
             costo_produccion=Sum(
-                (F('galleta__ingredientes__cantidad_necesaria') / 1000) * F('galleta__ingredientes__insumo__lotes__costo_uniario'),
+                (F('galleta__ingredientes__cantidad_necesaria') / 1000) * F('galleta__ingredientes__insumo__lotes__costo_unitario'),
                 output_field=DecimalField(decimal_places=2)
             )
         ).annotate(
@@ -119,8 +135,6 @@ class DashboardVentasView(TemplateView):
             total_ganancia_maxima=Sum('ganancia_total')
         )
 
-        print(ganancia_maxima_total)
-        
         # Receta más pedida en el rango de fechas
         receta_mas_pedida = (
             VentaDetalle.objects
@@ -160,10 +174,13 @@ class DashboardVentasView(TemplateView):
             'objetivo_ventas': objetivo_ventas,
             'progreso_ventas': progreso_ventas,
             'fecha_inicio': fecha_inicio,
-            'fecha_fin': fecha_fin
+            'fecha_fin': fecha_fin,
+            'top_recetas': top_recetas,  # Añadimos las recetas más vendidas históricamente
+            'cantidad_total_vendida': cantidad_total_vendida  # Añadimos la cantidad total histórica vendida
         })
 
         return context
+
 
 class DetallesPedidoClienteView(LoginRequiredMixin, TemplateView):
     template_name = 'detalles_pedido_cliente.html'
@@ -304,97 +321,6 @@ class DashboardPresentacionesView(TemplateView):
         </div>
         """
     
-class VerListaPedidosView(ListView):
-    def generar_ticket_pdf(venta, detalles_guardados):
-        buffer = BytesIO()
-        p = canvas.Canvas(buffer, pagesize=letter)
-        width, height = letter
-
-        margen_izq = 50
-        y = height - 50
-
-        # Encabezado
-        p.setFont("Helvetica-Bold", 18)
-        p.drawCentredString(width / 2, y, "🍪 Don Galleto - Ticket de Venta")
-        y -= 30
-
-        p.setFont("Helvetica", 10)
-        p.drawCentredString(width / 2, y, "¡Gracias por tu compra!")
-        y -= 30
-
-        # Información general
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(margen_izq, y, "Fecha: ")
-        p.setFont("Helvetica", 12)
-        p.drawString(margen_izq + 50, y, venta.fecha_venta.strftime('%d/%m/%Y %H:%M'))
-        y -= 20
-
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(margen_izq, y, "Número de venta:")
-        p.setFont("Helvetica", 12)
-        p.drawString(margen_izq + 110, y, str(venta.id))
-        y -= 30
-
-        # Línea separadora
-        p.line(margen_izq, y, width - margen_izq, y)
-        y -= 20
-
-        # Encabezados de tabla
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(margen_izq, y, "Producto")
-        p.drawString(margen_izq + 200, y, "Cantidad")
-        p.drawString(margen_izq + 300, y, "Precio Unit.")
-        p.drawString(margen_izq + 400, y, "Subtotal")
-        y -= 20
-
-        total_galletas = 0
-        total_precio = 0
-
-        p.setFont("Helvetica", 11)
-        for detalle in detalles_guardados:
-            # Obtenemos los datos específicos de cada detalle
-            receta = detalle.receta  # Accedemos a la receta relacionada
-            nombre = receta.nombre
-            cantidad = detalle.cantidad
-            precio_unitario = receta.precio_galleta  # Precio exacto de ESA receta
-            subtotal = cantidad * precio_unitario
-
-            # Mostramos los datos en columnas alineadas
-            p.drawString(margen_izq, y, f"{nombre}")
-            p.drawString(margen_izq + 200, y, f"{cantidad}")
-            p.drawString(margen_izq + 300, y, f"${precio_unitario:.2f}")
-            p.drawString(margen_izq + 400, y, f"${subtotal:.2f}")
-            y -= 20
-
-            total_galletas += cantidad
-            total_precio += subtotal
-
-            if y < 100:  # Salto de página si nos quedamos sin espacio
-                p.showPage()
-                y = height - 50
-                p.setFont("Helvetica", 11)  # Restablecemos la fuente después del salto
-
-        # Totales
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(margen_izq, y, "Total Galletas:")
-        p.drawString(margen_izq + 400, y, f"{total_galletas}")
-        y -= 20
-
-        p.drawString(margen_izq, y, "Total a Pagar:")
-        p.drawString(margen_izq + 400, y, f"${total_precio:.2f}")
-        y -= 30
-
-        # Pie de página
-        p.setFont("Helvetica-Oblique", 10)
-        p.drawCentredString(width / 2, y, "¡Vuelva pronto! 🍪")
-
-        p.showPage()
-        p.save()
-        buffer.seek(0)
-
-        return HttpResponse(buffer, content_type="application/pdf", headers={
-            "Content-Disposition": f'attachment; filename="ticket_venta_{venta.id}.pdf"'
-        })
 
 class VerListaPedidosClientesView(LoginRequiredMixin, ListView):
     model = CarritoCompras
@@ -503,6 +429,7 @@ class VentaCreateView(FormView):
 
         with transaction.atomic():
             venta = form.save(commit=False)
+            venta.fecha_recoleccion = timezone.now()
             venta.save()
 
             if formset.is_valid():
@@ -513,6 +440,7 @@ class VentaCreateView(FormView):
 
                     detalle = detalle_form.save(commit=False)
                     detalle.venta = venta
+                    detalle.total = detalle_form.cleaned_data.get('total')
 
                     try:
                         inventario = InventarioProducto.objects.get(galleta=detalle.receta)
@@ -530,13 +458,11 @@ class VentaCreateView(FormView):
                         messages.error(self.request, error)
                     return redirect("/corteVenta")
 
-                if self.request.POST.get("generar_pdf") == "true":
-                    return generar_ticket_pdf(venta, detalles_guardados)
+                #  Aquí devolvemos el PDF directamente
+                return generar_ticket_pdf(venta, detalles_guardados)
 
-                messages.success(self.request, "Venta registrada con éxito.")
-                return redirect("/ventas/corteVenta/")
-
-        return self.form_invalid(form)
+        # Si algo falla, redirige al corte
+        return redirect("/ventas/corteVenta/")
     
 def dashboard_view(request):
     return render(request, 'dashboardProductos.html')
@@ -588,14 +514,14 @@ def generar_ticket_pdf(venta, detalles_guardados):
 
     p.setFont("Helvetica", 11)
     for detalle in detalles_guardados:
-        # Obtenemos los datos específicos de cada detalle
+        # Datos específicos de cada detalle
         receta = detalle.receta  # Accedemos a la receta relacionada
         nombre = receta.nombre
         cantidad = detalle.cantidad
         precio_unitario = receta.precio_galleta  # Precio exacto de ESA receta
         subtotal = cantidad * precio_unitario
 
-        # Mostramos los datos en columnas alineadas
+        # Mostrar los datos en columnas
         p.drawString(margen_izq, y, f"{nombre}")
         p.drawString(margen_izq + 200, y, f"{cantidad}")
         p.drawString(margen_izq + 300, y, f"${precio_unitario:.2f}")
@@ -626,8 +552,32 @@ def generar_ticket_pdf(venta, detalles_guardados):
 
     p.showPage()
     p.save()
+
+    # Restablecer el buffer a su inicio
     buffer.seek(0)
 
+    # Crear el ticket y guardar el PDF en binario en la base de datos
+    ticket_venta = TicketVenta(venta=venta)
+    ticket_venta.ticket_pdf = buffer.read()  # Guardamos el PDF en binario
+    ticket_venta.save()
+
+    # Crear la respuesta HTTP para la descarga del archivo PDF
+    response = HttpResponse(ticket_venta.ticket_pdf, content_type="application/pdf")
+    response['Content-Disposition'] = f'attachment; filename="ticket_venta_{venta.id}.pdf"'
+
+    # Cerrar el buffer después de la respuesta
+    buffer.close()
+
+    return response
+    # Restablecer el buffer a su inicio
+
+    # Crear el ticket y guardar el PDF en binario en la base de datos
+    ticket_venta = TicketVenta(venta=venta)
+    ticket_venta.ticket_pdf = buffer.read()  # Guardamos el PDF en binario
+    ticket_venta.save()
+    buffer.seek(0)
+
+    # Devolver el archivo PDF como respuesta al navegador
     return HttpResponse(buffer, content_type="application/pdf", headers={
         "Content-Disposition": f'attachment; filename="ticket_venta_{venta.id}.pdf"'
     })

@@ -25,7 +25,7 @@ class LoteMateriaPrima(models.Model):
     fecha_compra = models.DateField(auto_now=True)
     fecha_caducidad = models.DateField(null=False)
     proveedor = models.ForeignKey(Provedor, on_delete=models.DO_NOTHING ,related_name='insumo_proveedor')
-    costo_uniario = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
+    costo_unitario = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
     
     def esta_caducado(self):
         return now().date() > self.fecha_caducidad

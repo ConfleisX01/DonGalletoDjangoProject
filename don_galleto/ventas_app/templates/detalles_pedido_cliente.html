@@ -1,0 +1,105 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.toast').forEach(toastEl => {
+        new bootstrap.Toast(toastEl).show();
+      });
+    });
+</script>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% if messages %}
+        {% for message in messages %}
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+          
+              <strong class="me-auto">Mensajes</strong>
+              <small>Ahora</small>
+              <button type="button" class="btn-close" data-coreui-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+              {{ message }}
+            </div>
+          </div>
+        {% endfor %}
+    {% endif %}
+</div>
+    <div class="mt-5">
+        <div class="container py-5">
+            <div class="container-fluid d-flex justify-content-between">
+                <h2>Detalles del pedido</h2>
+                <a class="mx-2 btn fs-5" href="{% url 'lista_pedidos_cliente' %}"><i class="bi bi-arrow-left fw-bold"></i></a>
+            </div>
+        </div>
+        <div class="container-fluid py-1">
+            {% if pedido %}
+                <div class="container p-2 w-50 border rounded-2">
+                    <div class="container-fluid d-flex justify-content-between border-bottom">
+                        <div>
+                            <h5><i class="bi bi-box2-fill me-2"></i>Pedido <span class="text-secondary">#13</span></h5>
+                            <small class="text-secondary">Estatus: <span class="text-primary fw-bold">{% if pedido.estatus == '1' %}Creado{% else %}Pendiente{% endif %}</span></small>
+                        </div>
+                        <div>
+                            <small class="text-secondary">Realizado el</small>
+                            <p><i class="bi bi-calendar"></i> {{ pedido.detalles.first.venta.fecha_venta }}</p>
+                        </div>
+                        <div>
+                            <small class="text-secondary">Fecha de recolección</small>
+                            <p><i class="bi bi-calendar-check"></i> {{ pedido.detalles.first.venta.fecha_recoleccion }} </p>
+                        </div>
+                    </div>
+                    
+                    <div class="container-fluid py-2">
+                        <div class="">
+                            <h5>Detalles del pedido</h5>
+                        </div>
+                        <div
+                            class="table-responsive"
+                        >
+                            <table
+                                class="table table-striped"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detalle in pedido.detalles.all %}
+                                        <tr class="">
+                                            <td scope="row">{{ detalle.receta.nombre }}</td>
+                                            <td>{{ detalle.cantidad }}{{ detalle.tipo_unidad }}</td>
+                                            <td>${{ detalle.total }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot class="">
+                                    <tr class="">
+                                        <td scope="row" class="bg-secondary fw-bold">Total:</td>
+                                        <td class="bg-secondary"></td>
+                                        <td class="bg-secondary fw-bold">${{ pedido.calcular_total }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            {% else %}
+            <div class="container-fluid text-center">
+                {% if messages %}
+                    {% for message in messages %}
+                        <h2 class="display-3 text-center text-secondary">{{ message }}</h2>
+                        <a class="btn btn-outline-dark" href="{% url 'lista_pedidos_cliente' %}">Regresar</a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

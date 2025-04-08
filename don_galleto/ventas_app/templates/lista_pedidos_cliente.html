@@ -5,20 +5,39 @@
 {% block content %}
 <div class="mt-5">
     <div class="container py-5">
-        <div class="container-fluid d-flex">
-            <a class="mx-2 btn" href="{% url 'welcome' %}"><i class="bi bi-arrow-left"></i></a>
+        <div class="container-fluid d-flex justify-content-between">
             <h2>Mis Pedidos</h2>
+            <a class="mx-2 btn fs-5" href="{% url 'welcome' %}"><i class="bi bi-arrow-left fw-bold"></i></a>
         </div>
         {% if pedidos %}
             {% for item in pedidos %}
                 <div class="container-fluid py-1">
                     <div class="container p-2 w-75">
-                        <div class="p-4 border bg-light rounded-4">
+                        <div class="border bg-light rounded-4">
                             <div class="container-fluid d-flex justify-content-between">
-                                <p><strong>Fecha:</strong> {{ item.detalles.first.venta.fecha_venta }}</p>
-                            </div>
-                            <div class="container-fluid">
-        
+                                <div class="my-2">
+                                    <small class="text-secondary">Pedido realizado el:</small>
+                                    <p><i class="bi bi-calendar"></i> {{ item.detalles.first.venta.fecha_venta }}</p>
+                                </div>
+                                <div class="my-2">
+                                    <a class="btn" href="{% url 'detalles_pedido' item.id %}"><i class="bi bi-arrow-right fs-5"></i></a>
+                                </div>
+                            </div>  
+                            <div class="container-fluid d-flex justify-content-between">
+                                <div>
+                                    <small class="text-secondary">Fecha de recolección:</small>
+                                    <p><i class="bi bi-calendar-check"></i> {{ item.detalles.first.venta.fecha_recoleccion }}</p>
+                                </div>
+                                <div>
+                                    <small class="text-secondary">Estatus:</small>
+                                    <p><i class="bi bi-bag-check"></i>
+                                    {% if item.detalles.first.venta.estatus == '1' %}
+                                        <span class="text-primary">Creado</span>
+                                    {% else %}
+                                        <span class="text-warning">Pendiente</span>
+                                    {% endif %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

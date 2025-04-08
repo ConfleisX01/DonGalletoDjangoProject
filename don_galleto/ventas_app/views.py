@@ -8,18 +8,16 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from inventarios.models import InventarioProducto, InventarioMaterial
-from materia_prima.models import LoteMateriaPrima
 from Recetas_app.models import Receta
 from django.contrib import messages
-from .forms import VentaForm, VentaDetalleForm, VentaDetalleFormSet, DetallesProductoForm
+from .forms import VentaForm, VentaDetalleForm, DetallesProductoForm
 from django.db import transaction
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, FileResponse, HttpResponse
+from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
-from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras
-from django.utils import timezone
+from ventas_app.models import Venta, VentaDetalle, calcularPrecioGalleta, CarritoCompras, TicketVenta
 from datetime import datetime
 from django.utils.dateparse import parse_date
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
@@ -45,7 +43,7 @@ class ListaVentasView(ListView):
                 else:
                     detalle.precio_unitario = 0
         return ventas
-
+    
 class DashboardVentasView(TemplateView):
     template_name = 'dashboard_ventas.html'
 
@@ -633,3 +631,16 @@ def generar_ticket_pdf(venta, detalles_guardados):
     return HttpResponse(buffer, content_type="application/pdf", headers={
         "Content-Disposition": f'attachment; filename="ticket_venta_{venta.id}.pdf"'
     })
+
+def descargar_ticket_pdf(request, venta_id):
+    # Intentar obtener el ticket de la venta
+    try:
+        ticket_venta = TicketVenta.objects.get(venta_id=venta_id)
+    except TicketVenta.DoesNotExist:
+        # Si no existe el ticket, devolver un error 404
+        return HttpResponse("Ticket no encontrado", status=404)
+
+    # Crear la respuesta HTTP para la descarga del archivo PDF
+    response = HttpResponse(ticket_venta.ticket_pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="ticket_venta_{venta_id}.pdf"'
+    return response

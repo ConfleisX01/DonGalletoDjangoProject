@@ -17,7 +17,7 @@ class MateriaPrima(models.Model):
     )
 
     def __str__(self):
-        return f"{self.nombre_insumo}" 
+        return f"{self.nombre_insumo}-{self.unidad_base}" 
 
 class LoteMateriaPrima(models.Model):
     insumo = models.ForeignKey(MateriaPrima, on_delete=models.CASCADE, related_name='lotes')

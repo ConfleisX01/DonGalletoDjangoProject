@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class listaUsuariosAdmin(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'lista_usuarios.html'
-    permission_required = 'usuarios_app.view_user'
+    permission_required = 'usuarios_app.admin_permissions'
     
     
     def handle_no_permission(self):
@@ -32,7 +32,7 @@ class CrearUsuario(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "crear_usuarios.html"
     form_class = UsuarioForm
     success_url = reverse_lazy("lista_usuarios")
-    permission_required = 'usuarios_app.add_user'
+    permission_required = 'usuarios_app.admin_permissions'
     
     def handle_no_permission(self):
         return super().has_permission() and self.request.user.is_active
@@ -49,7 +49,7 @@ class editarUsuario(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "editar_usuarios.html"
     form_class = EditarUsuarioForm
     success_url = reverse_lazy("lista_usuarios")
-    permission_required = 'usuarios_app.change_user'
+    permission_required = 'usuarios_app.admin_permissions'
     
     def handle_no_permission(self):
         return super().has_permission() and self.request.user.is_active

@@ -46,3 +46,6 @@ def registro(request):
         form = RegistroForm()
 
     return render(request, "registration/registro.html", {"form": form})
+
+def mi_error_403(request, exception=None):
+    return render(request, '403.html', status=403)

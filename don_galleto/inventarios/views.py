@@ -4,14 +4,15 @@ from django.views.generic.base import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 from inventarios.models import InventarioProducto, InventarioMaterial
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from produccion_app.models import LoteGalletas
 from Recetas_app.models import IngredienteReceta
 from django.views.generic import ListView
 from .models import Merma
 
 
-class RegistrarMermaView(View):
+class RegistrarMermaView(LoginRequiredMixin, PermissionRequiredMixin,View):
+    permission_required ='usuarios_app.user_permissions'
     template_name = 'merma_formulario.html'
 
     def get(self, request, lote_id):
@@ -62,8 +63,10 @@ class RegistrarMermaView(View):
         #
         return redirect('inventario_materia')
 
-class inventarioProductoView(LoginRequiredMixin, TemplateView):
+class inventarioProductoView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'inventario_productos.html'
+    permission_required ='usuarios_app.user_permissions'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -71,8 +74,9 @@ class inventarioProductoView(LoginRequiredMixin, TemplateView):
         context['lista']=listaGalletas
         return context
     
-class inventrioMateriaView(LoginRequiredMixin, TemplateView):
+class inventrioMateriaView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'inventario_materia.html'
+    permission_required ='usuarios_app.user_permissions'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -80,7 +84,8 @@ class inventrioMateriaView(LoginRequiredMixin, TemplateView):
         context['lista']=listaInsumos
         return context
     
-class ListaMermaView(ListView):
+class ListaMermaView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required ='usuarios_app.user_permissions'
     model = Merma
     template_name = 'merma_lista.html'
     context_object_name = 'mermas'

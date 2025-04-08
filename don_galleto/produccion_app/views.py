@@ -8,11 +8,14 @@ from datetime import timedelta
 from inventarios.models import  InventarioProducto
 from django.http import JsonResponse
 from inventarios.models import InventarioProducto
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 
-class ListaLotesProduccionView(ListView):
+
+class ListaLotesProduccionView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = LoteGalletas
     template_name = 'lotes_Produccion.html'
     context_object_name = 'solicitudes_lote'
+    permission_required = 'usuarios_app.user_permissions'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -20,10 +23,11 @@ class ListaLotesProduccionView(ListView):
         context['solicitudes_lote'] = LoteGalletas.objects.exclude(estado='TERMINADO')
         return context
 
-class ListaSolicitudesProduccionView(ListView):
+class ListaSolicitudesProduccionView(LoginRequiredMixin, PermissionRequiredMixin,ListView):
     model = SolicitudProduccion
     template_name = 'produccion_activa.html'
     context_object_name = 'solicitudes'
+    permission_required = 'usuarios_app.user_permissions'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,15 +52,12 @@ def aprobar_solicitud(request, solicitud_id):
 
     return redirect('lotes_produccion')
 
-
 def rechazar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(SolicitudProduccion, id=solicitud_id)
-
     if solicitud.estado == 'PENDIENTE':
         solicitud.estado = 'RECHAZADA'
         solicitud.save()
     return redirect('lotes_produccion')
-
 
 def actualizar_estado(request, lote_id):
     lote = get_object_or_404(LoteGalletas, id=lote_id)
@@ -80,18 +81,19 @@ def actualizar_estado(request, lote_id):
 
     return redirect('lotes_produccion')  # Redirige a la lista de lotes de producción
 
-
-class CrearSolicitudProduccionView(FormView): ## esta sirve para crear la solicitud para luego pedir ser aceptada
+class CrearSolicitudProduccionView(LoginRequiredMixin, PermissionRequiredMixin, FormView): ## esta sirve para crear la solicitud para luego pedir ser aceptada
     template_name = 'agregar_solicitud_produccion.html'
     form_class = forms.AgregarSolicitudForm
     success_url = reverse_lazy('lista_solicitudes')
+    permission_required = 'usuarios_app.user_permissions'
 
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
     
-class CreacionProduccionGalletasView(TemplateView): ##solo para para mostrarla en la zona de
+class CreacionProduccionGalletasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView): ##solo para para mostrarla en la zona de
     template_name = 'produccion_activa.html'
+    permission_required = 'usuarios_app.user_permissions'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

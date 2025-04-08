@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h2 class="text-center mb-4">Lista de Ventas</h2>
 
-    <div class="table-responsive">
+    <div class="table-responsive" >
         <table class="table table-striped table-bordered table-hover">
             <thead class="table-dark">
                 <tr>
@@ -18,7 +18,7 @@
             </thead>
             <tbody>
                 {% for venta in ventas %}
-                <tr class="clickable"  data-bs-target="#detalle-{{ venta.id }}">
+                <tr class="clickable"  data-bs-toggle="collapse" data-bs-target="#detalle-{{ venta.id }}">
                     <td>{{ venta.id }}</td>
                     <td>{{ venta.fecha_recoleccion }}</td>
                     <td>{{ venta.fecha_venta }}</td>

@@ -3,7 +3,41 @@
 {% load static %}
 
 {% block content %}
-    <div class="container mt-5">
+<div class="mt-5">
+    <div class="container py-5">
+        <div class="container-fluid d-flex">
+            <a class="mx-2 btn" href="{% url 'welcome' %}"><i class="bi bi-arrow-left"></i></a>
+            <h2>Mis Pedidos</h2>
+        </div>
+        {% if pedidos %}
+            {% for item in pedidos %}
+                <div class="container-fluid py-1">
+                    <div class="container p-2 w-75">
+                        <div class="p-4 border bg-light rounded-4">
+                            <div class="container-fluid d-flex justify-content-between">
+                                <p><strong>Fecha:</strong> {{ item.detalles.first.venta.fecha_venta }}</p>
+                            </div>
+                            <div class="container-fluid">
+        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+        <div class="container text-center">
+            <h2 class="display-3 fw-bold text-danger">¡Aún no tienes pedidos realizados!</h2>
+            <p class="lead text-muted">Parece que tu carrito está vacío por ahora.</p>
+            <p class="text-secondary">Explora nuestro catálogo y elige tus productos favoritos para comenzar tu pedido.</p>
+            <div class="container-fluid">
+                <img class="w-25" src="{% static '/img/carrito_vacio.png' %}">
+            </div>
+            <a class="btn btn-outline-dark btn-lg mt-3" href="{% url 'lista_productos' %}">Ver productos disponibles</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+    <!-- <div class="container mt-5">
         <h2 class="mb-4">Mis Pedidos</h2>
         
         {% if pedidos %}
@@ -35,5 +69,5 @@
         {% else %}
             <p class="text-center text-secondary">Aún no tienes pedidos realizados.</p>
         {% endif %}
-    </div>
+    </div> -->
 {% endblock %}

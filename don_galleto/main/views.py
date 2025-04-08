@@ -6,6 +6,14 @@ from django.contrib.auth import login
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from Recetas_app.models import Receta
+from two_factor.views import LoginView as TwoFactorLoginView
+from django.contrib import messages
+
+class CustomTwoFactorLoginView(TwoFactorLoginView):
+    def form_invalid(self, form):
+        messages.error(self.request, "Credenciales incorrectas o código inválido.")
+        return redirect('2fa_login')
+
 class WelcomeView(ListView):
     template_name = 'welcome.html'
     model = Receta

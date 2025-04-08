@@ -17,7 +17,7 @@ class MateriaPrima(models.Model):
     )
 
     def __str__(self):
-        return f"{self.nombre_insumo} - {self.unidad_base}" 
+        return f"{self.nombre_insumo}" 
 
 class LoteMateriaPrima(models.Model):
     insumo = models.ForeignKey(MateriaPrima, on_delete=models.CASCADE, related_name='lotes')
@@ -25,7 +25,8 @@ class LoteMateriaPrima(models.Model):
     fecha_compra = models.DateField(auto_now=True)
     fecha_caducidad = models.DateField(null=False)
     proveedor = models.ForeignKey(Provedor, on_delete=models.DO_NOTHING ,related_name='insumo_proveedor')
-
+    costo_uniario = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
+    
     def esta_caducado(self):
         return now().date() > self.fecha_caducidad
     

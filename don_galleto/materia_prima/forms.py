@@ -29,7 +29,7 @@ class EditarMateriaPrimaForm(forms.ModelForm):
 class ComprarInsumoForm(forms.ModelForm):
     class Meta:
         model = LoteMateriaPrima
-        fields = ['insumo', 'cantidad', 'fecha_caducidad', 'proveedor']
+        fields = ['insumo', 'cantidad', 'fecha_caducidad', 'proveedor', 'costo_uniario']
         widgets = {
             'insumo': forms.Select(attrs={
                 "class": "form-select",
@@ -48,6 +48,12 @@ class ComprarInsumoForm(forms.ModelForm):
             'proveedor': forms.Select(attrs={
                 "class": "form-select",
                 "placeholder": "Selecciona un proveedor"
+            }),
+            'costo_uniario': forms.NumberInput(attrs={
+                "class": "form-control",
+                "placeholder": "Costo unitario",
+                "min": "0",
+                "step": "0.01"
             })
         }
 
@@ -57,5 +63,6 @@ class ComprarInsumoForm(forms.ModelForm):
         lote.cantidad = self.cleaned_data['cantidad']
         lote.fecha_caducidad = self.cleaned_data['fecha_caducidad']
         lote.proveedor = self.cleaned_data['proveedor']
+        lote.costo_uniario = self.cleaned_data['costo_uniario']
         lote.save()
         return lote

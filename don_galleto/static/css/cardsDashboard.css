@@ -2,7 +2,6 @@
 .card-metric {
     flex: 1;
     min-width: 250px;
-    max-width: 400px;
     padding: 1px;
     background: white;
     border-radius: 10px;
@@ -10,6 +9,11 @@
     border-left: 5px solid #007bff; /* Azul por defecto */
     transition: border-color 0.3s ease;
     margin-bottom: 1rem; /* Espacio inferior para separar las tarjetas */
+}
+
+/* Si tiene w-100, forzamos a que no use flex-grow */
+.card-metric.w-100 {
+    flex: 0 0 100%;
 }
 
 .card-metric:hover {
@@ -42,7 +46,7 @@
 
 /* Estilos para la barra de progreso */
 .progress {
-    height: 8px;            /* Barra de progreso un poco más delgada */
+    height: 16px;            /* Barra de progreso un poco más delgada */
     background-color: #e9ecef; /* Fondo gris claro */
     border-radius: 0.25rem;  /* Bordes redondeados */
     margin-top: 0.5rem;     /* Espacio superior para separar la barra del texto */

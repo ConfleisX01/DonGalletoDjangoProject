@@ -150,7 +150,7 @@ class EditarUsuarioForm(forms.ModelForm):
     )
     rol = forms.ChoiceField(
         label="Rol", 
-        choices=[("admin", "Administrador"), ("user", "Usuario")],
+        choices=[("admin", "Administrador"), ("user", "admin")],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     
@@ -168,7 +168,7 @@ class EditarUsuarioForm(forms.ModelForm):
     is_active = forms.BooleanField(
         label="Activo", 
         required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        widget=forms.CheckboxInput(attrs={'class': 'form-control' 'form-check-input'})
     )
 
     class Meta:

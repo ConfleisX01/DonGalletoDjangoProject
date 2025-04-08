@@ -12,7 +12,8 @@ urlpatterns = [
     path('', include('main.urls')),
     path('panel/', panel, name='panel'),
     path('accounts/', include('django.contrib.auth.urls')),  # URLs estándar de Django
-    path('accounts/', include(tf_urls)),  # URLs de autenticación en dos pasos
+    path('cuentas/', include(tf_urls)),  # URLs de autenticación en dos pasos
+    path('cuentas/login/', views.CustomTwoFactorLoginView.as_view(), name='2fa_login'),  # URLs de autenticación en dos pasos
     path('accounts/registro/', views.registro, name="registro"),
     path('panel', panel, name='panel'),
     path('principal', principal, name='principal'),

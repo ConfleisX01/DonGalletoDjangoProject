@@ -25,7 +25,6 @@ from django.utils.dateparse import parse_date
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-
 class ListaVentasView(ListView):
     model = Venta
     template_name = "lista_ventas.html"
@@ -427,6 +426,22 @@ class DetallesProductoView(LoginRequiredMixin, FormView):
         receta = get_object_or_404(Receta, id=id)
         kwargs['initial'] = {'receta': receta}
         return kwargs
+
+    def get_receta(self):
+        if not hasattr(self, 'receta'):
+            self.receta = get_object_or_404(Receta, id=self.kwargs.get('id'))
+        return self.receta
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        receta = self.get_receta()
+        kwargs['initial'] = {'receta': receta}
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['producto'] = self.get_receta()
+        return context
 
     def form_valid(self, form):
         carrito = CarritoCompras.objects.filter(usuario=self.request.user, estatus='0').first()

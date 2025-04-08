@@ -21,13 +21,13 @@ class AgregarIngredienteForm(forms.Form):
 
 class IngredienteRecetaForm(forms.ModelForm):
     cantidad_necesaria = forms.DecimalField(
-        max_digits=5,
-        decimal_places=2,  # Usualmente dos decimales son suficientes
+        max_digits=10,
+        decimal_places=2,  
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'placeholder': 'Cantidad necesaria',
-            'min': 0,  # Garantizar que la cantidad sea positiva
-            'step': 'any'  # Permite decimales
+            'min': 0,  
+            'step': 'any' 
         })
     )
 
@@ -64,7 +64,7 @@ class RecetaRegistrarForm(forms.ModelForm):
     def save(self, commit=True):
         receta = super().save(commit=False)
         if commit:
-            receta.save()  # Guarda la receta
+            receta.save()
         return receta
 
 

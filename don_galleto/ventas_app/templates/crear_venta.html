@@ -32,9 +32,9 @@
                 </span>
                 <input type="number" id="cantidadSelect" class="form-control shadow-sm" min="1" placeholder="Ej. 5" style="border-radius: 0 !important;">
                 <select id="unidadSelect" class="form-select shadow-sm" style="max-width: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                  <option value="pq">Paq.</option>
+                  <option value="g">Gr.</option>
                   <option value="ud">Un.</option>
-                  <option value="gr">Gr.</option>
-                  <option value="12">Paq.</option>
                 </select>
               </div>
             </div>
@@ -59,6 +59,8 @@
                 <tr>
                   <th>Receta</th>
                   <th>Cantidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Total</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -71,6 +73,9 @@
 
         <form method="post" id="ventaForm">
           {% csrf_token %}
+          <div id="totalGeneralContainer" class="text-end mt-2 fw-bold" style="display: none;">
+            Total general: $<span id="totalGeneral">0.00</span>
+          </div>
 
           <!-- Información de los productos (oculta visualmente) -->
           <div class="mb-4">
@@ -79,7 +84,7 @@
               {% for form in formset %}
                 {% for form, receta in forms_and_recipes %}
                   <div class="col-md-6">
-                    <div class="card mb-3 producto-form" data-id="{{ receta.id }}" style="border-top: 3px solid #1d4774; display: none !important;">
+                    <div class="card mb-3 producto-form" data-id="{{ receta.id }}"  data-precio="{{ receta.precio_galleta }} " style="border-top: 3px solid #1d4774;display: none !important; ">
                       <div class="card-header bg-white">
                         <h5 class="mb-0">
                           <button class="btn btn-link w-100 text-start p-0 text-decoration-none collapsed" 
@@ -89,9 +94,9 @@
                                   aria-expanded="false"
                                   style="color: #1d4774; font-weight: 500;">
                             <i class="bi bi-caret-right-fill me-2"></i>
-                            {{ receta.nombre }} {{ receta.id }}
+                            {{ receta.nombre }} {{ receta.id }} {{ receta.id }}{{ receta.precio_galleta }}
                           </button>
-                        </h5>
+                        </h5>precio_galleta
                       </div>
                       <div id="collapseProducto{{ forloop.counter }}" class="collapse" data-coreui-parent="#productos-container">
                         <div class="card-body pt-2">
@@ -108,7 +113,7 @@
           <button type="submit" class="btn btn-lg mt-3 flex-grow-1" 
           style="background-color: #0d6efd; color: white; border: none; font-weight: 500;"
           name="generar_pdf" value="true">
-    <i class="bi bi-file-earmark-pdf-fill me-2"></i> Generar Ticket PDF
+    <i class="bi bi-file-earmark-pdf-fill me-2"></i> Confirmar Venta / Ticket
   </button>
 
             <button type="button" class="btn btn-lg mt-3 flex-grow-1" 
@@ -188,194 +193,217 @@
       }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-       document.addEventListener("DOMContentLoaded", function () {
-    const unidadSelect = document.getElementById("unidadSelect");
-    const cantidadInput = document.getElementById("cantidadSelect");
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const unidadSelect = document.getElementById("unidadSelect");
+  const cantidadInput = document.getElementById("cantidadSelect");
 
-    unidadSelect.addEventListener("change", function () {
-      if (unidadSelect.value === "12" && cantidadInput.value.trim() === "") {
-        cantidadInput.value = 12;
+  unidadSelect.addEventListener("change", function () {
+    if (unidadSelect.value === "12" && cantidadInput.value.trim() === "") {
+      cantidadInput.value = 12;
+    }
+  });
+
+  document.getElementById('btnBuscarReceta').addEventListener('click', function () {
+    const selectedRecetaId = document.getElementById('recetaSelect').value;
+    const cantidad = document.getElementById('cantidadSelect').value;
+    const recetaNombre = document.getElementById('recetaSelect').options[document.getElementById('recetaSelect').selectedIndex].text;
+    const unidad = document.getElementById('unidadSelect').value;
+
+    if (selectedRecetaId && cantidad) {
+      document.getElementById('tablaProductosContainer').style.display = 'block';
+
+      const cards = document.querySelectorAll('.producto-form');
+      let encontrado = false;
+
+      cards.forEach(card => {
+        const cardId = card.getAttribute('data-id');
+
+        if (cardId === selectedRecetaId) {
+          const selectCard = card.querySelector('[name$="receta"]');
+          const cantidadCard = card.querySelector('[name$="cantidad"]');
+          const unidadCard = card.querySelector('[name$="unidad"]');
+
+          if (selectCard) selectCard.value = selectedRecetaId;
+          if (cantidadCard) cantidadCard.value = cantidad;
+          if (unidadCard) unidadCard.value = unidad;
+
+          const precio = parseFloat(card.getAttribute('data-precio')) || 0;
+          const totalReceta = (precio * parseInt(cantidad)).toFixed(2);
+
+          const filaExistente = document.querySelector(`#tbodyProductos tr[data-id="${selectedRecetaId}"]`);
+
+          if (filaExistente) {
+            filaExistente.querySelector('td:nth-child(2)').textContent = cantidad;
+            filaExistente.querySelector('td:nth-child(4)').textContent = `$${totalReceta}`;
+          } else {
+            const nuevaFila = document.createElement('tr');
+            nuevaFila.setAttribute('data-id', selectedRecetaId);
+            nuevaFila.innerHTML = `
+              <td>${recetaNombre}</td>
+              <td>${cantidad}</td>
+              <td>$${precio.toFixed(2)}</td>
+              <td>$${totalReceta}</td>
+              <td>
+                <button class="btn btn-sm btn-danger btnEliminarProducto">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            `;
+            document.getElementById('tbodyProductos').appendChild(nuevaFila);
+          }
+
+          encontrado = true;
+        }
+      });
+
+      if (!encontrado) {
+        console.log('No se encontró ninguna card con esa receta.');
+      }
+
+      actualizarTotalGeneral();
+
+      document.getElementById('recetaSelect').value = '';
+      document.getElementById('cantidadSelect').value = '1';
+      document.getElementById('unidadSelect').value = 'ud';
+
+    } else {
+      Swal.fire('Error', 'Por favor, selecciona una receta y una cantidad válida', 'error');
+    }
+  });
+
+  function copiarRecetas() {
+    let recetasSet = new Set();
+
+    document.querySelectorAll('select[name$="-receta"] option').forEach(option => {
+      if (option.value.trim() !== "") {
+        recetasSet.add(JSON.stringify({ id: option.value, nombre: option.textContent.trim() }));
       }
     });
+
+    let recetasArray = Array.from(recetasSet).map(item => JSON.parse(item));
+    return recetasArray;
+  }
+
+  function llenarSelectRecetas(recetas) {
+    let selectRecetas = document.getElementById("recetaSelect");
+    selectRecetas.innerHTML = '<option value="">Seleccione una receta...</option>';
+    recetas.forEach(receta => {
+      let option = document.createElement("option");
+      option.value = receta.id;
+      option.textContent = receta.nombre;
+      selectRecetas.appendChild(option);
+    });
+  }
+
+  setTimeout(() => {
+    let recetasCopiadas = copiarRecetas();
+    llenarSelectRecetas(recetasCopiadas);
+  }, 1000);
+
+  document.querySelectorAll('select[name$="-receta"]').forEach(select => {
+    select.value = '';
   });
-      // Función para buscar receta (modificada para incluir la tabla)
-      document.getElementById('btnBuscarReceta').addEventListener('click', function() {
-        const selectedRecetaId = document.getElementById('recetaSelect').value;
-        const cantidad = document.getElementById('cantidadSelect').value;
-        const recetaNombre = document.getElementById('recetaSelect').options[document.getElementById('recetaSelect').selectedIndex].text;
 
-        if (selectedRecetaId && cantidad) {
-          // Mostrar la tabla si está oculta
-          document.getElementById('tablaProductosContainer').style.display = 'block';
-          
-          // Lógica existente para actualizar los formularios ocultos
-          const cards = document.querySelectorAll('.producto-form');
-          let encontrado = false;
-          
-          cards.forEach(card => {
-            const cardId = card.getAttribute('data-id');
-            
-            if (cardId === selectedRecetaId) {
-              const selectCard = card.querySelector('[name$="receta"]');
-              const cantidadCard = card.querySelector('[name$="cantidad"]');
-              
-              if (selectCard) selectCard.value = selectedRecetaId;
-              if (cantidadCard) cantidadCard.value = cantidad;
-              
-              // Verificar si ya existe en la tabla
-              const filaExistente = document.querySelector(`#tbodyProductos tr[data-id="${selectedRecetaId}"]`);
-              
-              if (filaExistente) {
-                // Actualizar cantidad si ya existe
-                filaExistente.querySelector('td:nth-child(2)').textContent = cantidad;
-              } else {
-                // Agregar nueva fila a la tabla
-                const nuevaFila = document.createElement('tr');
-                nuevaFila.setAttribute('data-id', selectedRecetaId);
-                nuevaFila.innerHTML = `
-                  <td>${recetaNombre}</td>
-                  <td>${cantidad}</td>
-                  <td>
-                    <button class="btn btn-sm btn-danger btnEliminarProducto">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </td>
-                `;
-                document.getElementById('tbodyProductos').appendChild(nuevaFila);
-              }
-              
-              encontrado = true;
-            }
-          });
+  const collapseElements = document.querySelectorAll('[data-coreui-toggle="collapse"]');
+  collapseElements.forEach(el => {
+    el.addEventListener('click', function () {
+      const icon = this.querySelector('i');
+      this.classList.toggle('collapsed');
+    });
+  });
 
-          if (!encontrado) {
-            console.log('No se encontró ninguna card con esa receta.');
-          }
-          
-          // Limpiar selección
-          document.getElementById('recetaSelect').value = '';
-          document.getElementById('cantidadSelect').value = '1';
-          
-        } else {
-          Swal.fire('Error', 'Por favor, selecciona una receta y una cantidad válida', 'error');
-        }
-      });
+  // Botón de Ticket (ahora limpia todo)
+  document.getElementById('btnTicket').addEventListener('click', function () {
+    Swal.fire({
+      title: 'Venta confirmada',
+      text: 'Gracias por tu compra. Se ha limpiado el formulario.',
+      icon: 'success',
+      confirmButtonColor: '#6f42c1'
+    }).then(() => {
+      limpiarTodo();
+    });
+  });
 
-      // Función para eliminar productos de la tabla (CORREGIDA)
-      document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btnEliminarProducto')) {
-          const fila = e.target.closest('tr');
-          const recetaId = fila.getAttribute('data-id');
-          
-          // Buscar el formulario oculto correspondiente y limpiarlo
-          const cards = document.querySelectorAll('.producto-form');
-          cards.forEach(card => {
-            if (card.getAttribute('data-id') === recetaId) {
-              const selectCard = card.querySelector('[name$="receta"]');
-              const cantidadCard = card.querySelector('[name$="cantidad"]');
-              if (selectCard) selectCard.value = '';
-              if (cantidadCard) cantidadCard.value = '';
-            }
-          });
-          
-          // Eliminar la fila de la tabla
-          fila.remove();
-          
-          // Ocultar tabla si no hay productos
-          if (document.getElementById('tbodyProductos').children.length === 0) {
-            document.getElementById('tablaProductosContainer').style.display = 'none';
-          }
-        }
-      });
+  // Botón de Resumen
+  document.getElementById('btnResumen').addEventListener('click', function () {
+    const fechaActual = new Date().toLocaleDateString('es-MX');
+    let total = parseFloat(document.getElementById('totalGeneral').textContent) || 0;
 
-      // Resto de tus funciones existentes...
-      document.addEventListener('DOMContentLoaded', function() {
-        function copiarRecetas() {
-          let recetasSet = new Set();
+    Swal.fire({
+      title: 'Resumen de Venta',
+      html: `
+        <div class="resumen-venta">
+          <p><strong>Fecha de Venta:</strong> ${fechaActual}</p>
+          <p><strong>Total a Pagar:</strong> $${total.toFixed(2)}</p>
+          <hr>
+          <p class="small text-muted">* Los datos reales se calcularán al confirmar la venta</p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonColor: '#6f42c1',
+      confirmButtonText: 'Entendido'
+    });
+  });
 
-          document.querySelectorAll('select[name$="-receta"] option').forEach(option => {
-            if (option.value.trim() !== "") {
-              recetasSet.add(JSON.stringify({ id: option.value, nombre: option.textContent.trim() }));
-            }
-          });
+  // Delegación para botón eliminar producto
+  document.getElementById('tbodyProductos').addEventListener('click', function (e) {
+    if (e.target.closest('.btnEliminarProducto')) {
+      const fila = e.target.closest('tr');
+      const recetaId = fila.getAttribute('data-id');
 
-          let recetasArray = Array.from(recetasSet).map(item => JSON.parse(item));
-          console.log("Copias de recetas:", recetasArray);
-          return recetasArray;
-        }
+      // Limpiar card
+      const card = document.querySelector(`.producto-form[data-id="${recetaId}"]`);
+      if (card) {
+        card.querySelector('[name$="receta"]').value = '';
+        card.querySelector('[name$="cantidad"]').value = '';
+        card.querySelector('[name$="unidad"]').value = 'ud';
+      }
 
-        function llenarSelectRecetas(recetas) {
-          let selectRecetas = document.getElementById("recetaSelect");
+      fila.remove();
+      actualizarTotalGeneral();
+    }
+  });
 
-          // Limpiar el select antes de agregar opciones (excepto la opción inicial)
-          selectRecetas.innerHTML = '<option value="">Seleccione una receta...</option>';
+  // Total general
+  function actualizarTotalGeneral() {
+    let total = 0;
+    document.querySelectorAll('#tbodyProductos tr').forEach(fila => {
+      const totalCelda = fila.querySelector('td:nth-child(4)');
+      if (totalCelda) {
+        const valor = parseFloat(totalCelda.textContent.replace('$', '')) || 0;
+        total += valor;
+      }
+    });
 
-          // Agregar cada receta como opción
-          recetas.forEach(receta => {
-            let option = document.createElement("option");
-            option.value = receta.id;
-            option.textContent = receta.nombre;
-            selectRecetas.appendChild(option);
-          });
-        }
+    const totalContainer = document.getElementById('totalGeneralContainer');
+    const totalSpan = document.getElementById('totalGeneral');
 
-        setTimeout(() => {
-          let recetasCopiadas = copiarRecetas();
-          llenarSelectRecetas(recetasCopiadas);
-        }, 1000);
+    if (total > 0) {
+      totalContainer.style.display = 'block';
+      totalSpan.textContent = total.toFixed(2);
+    } else {
+      totalContainer.style.display = 'none';
+      totalSpan.textContent = '0.00';
+    }
+  }
 
-        document.querySelectorAll('select[name$="-receta"]').forEach(select => {
-          select.value = '';
-        });
+  // Función para limpiar cards y tabla
+  function limpiarTodo() {
+    document.querySelectorAll('#tbodyProductos tr').forEach(fila => fila.remove());
 
-        const collapseElements = document.querySelectorAll('[data-coreui-toggle="collapse"]');
-        collapseElements.forEach(el => {
-          el.addEventListener('click', function() {
-            const icon = this.querySelector('i');
-            this.classList.toggle('collapsed');
-          });
-        });
+    document.querySelectorAll('.producto-form').forEach(card => {
+      card.querySelector('[name$="receta"]').value = '';
+      card.querySelector('[name$="cantidad"]').value = '';
+      card.querySelector('[name$="unidad"]').value = 'ud';
+    });
 
-        // Botón de Ticket 
-        document.getElementById('btnTicket').addEventListener('click', function() {
-          Swal.fire({
-            title: 'Función no implementada',
-            text: 'La generación de tickets estará disponible en la próxima actualización',
-            icon: 'info',
-            confirmButtonColor: '#6f42c1'
-          });
-        });
+    document.getElementById('tablaProductosContainer').style.display = 'none';
+    document.getElementById('totalGeneralContainer').style.display = 'none';
+    document.getElementById('totalGeneral').textContent = '0.00';
+  }
+});
+</script>
 
-        // Botón de Resumen
-        document.getElementById('btnResumen').addEventListener('click', function() {
-          const fechaActual = new Date().toLocaleDateString('es-MX');
-          let totalGalletas = 0;
-          
-          // Calcular total de galletas (simulado)
-          document.querySelectorAll('input[name$="-cantidad"]').forEach(input => {
-            if(input.value) {
-              totalGalletas += parseInt(input.value);
-            }
-          });
-          
-          Swal.fire({
-            title: 'Resumen de Venta',
-            html: `
-              <div class="resumen-venta">
-                <p><strong>Fecha de Venta:</strong> ${fechaActual}</p>
-                <p><strong>Total de Galletas:</strong> ${totalGalletas}</p>
-                <p><strong>Total a Pagar:</strong> $${(totalGalletas * 15).toFixed(2)} (simulado)</p>
-                <hr>
-                <p class="small text-muted">* Los datos reales se calcularán al confirmar la venta</p>
-              </div>
-            `,
-            icon: 'info',
-            confirmButtonColor: '#6f42c1',
-            confirmButtonText: 'Entendido'
-          });
-        });
-      });
-    </script>
   {% endblock %}

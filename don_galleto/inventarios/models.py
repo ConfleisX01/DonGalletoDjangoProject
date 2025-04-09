@@ -46,6 +46,11 @@ class InventarioMaterial(models.Model):
         self.cantidad += cantidad
         self.save()
 
+    def calcular_stock(self):
+        lotes_validos = self.insumo.lotes.filter(fecha_caducidad__gte=now().date())
+        stock_total = sum(lote.cantidad for lote in lotes_validos)
+        return stock_total
+
 class Merma(models.Model):
     lote = models.ForeignKey(LoteGalletas, on_delete=models.CASCADE)
     cantidad = models.DecimalField(max_digits=10, decimal_places=2) 

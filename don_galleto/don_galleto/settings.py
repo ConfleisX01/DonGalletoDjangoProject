@@ -177,3 +177,5 @@ AUTHENTICATION_BACKENDS = (
     'axes.backends.AxesBackend',  # Habilita el control de accesos
     'django.contrib.auth.backends.ModelBackend',
 )
+
+handler403 = 'main.views.mi_error_403'

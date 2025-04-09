@@ -37,10 +37,9 @@ class Migration(migrations.Migration):
             name='Merma',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('cantidad', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('fecha', models.DateTimeField(auto_now_add=True)),
                 ('justificacion', models.TextField()),
-                ('cantidad', models.PositiveBigIntegerField(default=0)),
-                ('ultima_actualizacion', models.DateTimeField(auto_now=True)),
                 ('lote', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='produccion_app.lotegalletas')),
             ],
         ),

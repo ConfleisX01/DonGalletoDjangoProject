@@ -174,7 +174,7 @@ class DashboardVentasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateV
             df_recetas_agrupadas = pd.DataFrame(recetas_agrupadas)
             if not df_recetas_agrupadas.empty:
                 fig_pie = px.pie(df_recetas_agrupadas, names='receta__nombre', values='total_vendidas',
-                                 title=f'Recetas vendidas en: {fecha_inicio} - {fecha_fin}')
+                                title=f'Recetas vendidas en: {fecha_inicio} - {fecha_fin}')
                 graph_html_pie = fig_pie.to_html(full_html=False)
             else:
                 graph_html_pie = "<p>No hay recetas vendidas en este periodo.</p>"

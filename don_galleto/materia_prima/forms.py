@@ -63,6 +63,6 @@ class ComprarInsumoForm(forms.ModelForm):
         lote.cantidad = self.cleaned_data['cantidad']
         lote.fecha_caducidad = self.cleaned_data['fecha_caducidad']
         lote.proveedor = self.cleaned_data['proveedor']
-        lote.costo_unitario = self.cleaned_data['costo_unitario']
+        lote.costo_unitario = (self.cleaned_data['costo_unitario']/100)
         lote.save()
         return lote

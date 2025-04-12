@@ -22,9 +22,22 @@ class DetallesProductoForm(forms.ModelForm):
         }
         
 class VentaForm(forms.ModelForm):
+    cantidad = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad total a comprar'})
+    )
+
+    receta = forms.ModelChoiceField(
+        queryset=Receta.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select', 'placeholder': 'Cantidad total a comprar'})
+    )
+
     class Meta:
-        model = Venta
-        fields = []  # La venta se genera automáticamente
+        model = VentaDetalle
+        fields = ['receta', 'tipo_unidad', 'cantidad']
+        widgets = {
+            'tipo_unidad': forms.Select(attrs={"class": "form-select"}),
+        }
 
 class VentaDetalleForm(forms.ModelForm):
     class Meta:

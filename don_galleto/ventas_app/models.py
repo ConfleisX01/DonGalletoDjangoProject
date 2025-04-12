@@ -43,6 +43,7 @@ class CarritoCompras(models.Model):
     ESTATUS_CARRITO = [
         ('0', 'Abierto'),
         ('1', 'Confirmado'),
+        ('2', 'POS')
     ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -69,6 +70,11 @@ class CarritoCompras(models.Model):
         for detalle in self.detalles.all():
             if detalle.venta:
                 detalle.venta.confirmar_pedido()
+
+    def confirmar_venta(self, venta_obj):
+        for detalle in self.detalles.all():
+            detalle.venta = venta_obj
+            detalle.save()
 
     def eliminar_producto(self, detalle_id):
         detalle = self.detalles.get(id=detalle_id)

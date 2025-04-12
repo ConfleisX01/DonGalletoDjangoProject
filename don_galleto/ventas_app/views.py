@@ -23,6 +23,8 @@ from django.utils.dateparse import parse_date
 from ventas_app.models import Venta, calcularPrecioGalleta, CarritoCompras
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.utils import timezone
+from django.db.models import DecimalField, ExpressionWrapper
+
 
 class ListaVentasView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Venta
@@ -55,23 +57,26 @@ class DashboardVentasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateV
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        
         try:
+            recetas = Receta.objects.all()
+            recetas_con_ganancia = []
+            for receta in recetas:
+                costo = receta.calcular_costo()
+                print(f'El costo total de la receta "{receta.nombre}" es {costo}')
+                recetas_con_ganancia.append({
+                    'nombre': receta.nombre,
+                    'precio_galleta': receta.precio_galleta,
+                    'costo_total': costo,
+                    'cantidad_galletas_producidas': receta.cantidad_galletas_producidas,
+                    'ganancia': (receta.cantidad_galletas_producidas * receta.precio_galleta) - costo 
+                })
+                
+            recetas_con_ganancia.sort(key=lambda r: r['ganancia'], reverse=True)
             fecha_hoy = localtime(now()).date()
             fecha_inicio = self.request.GET.get('fecha_inicio', fecha_hoy)
             fecha_fin = self.request.GET.get('fecha_fin', fecha_hoy)
 
-            # Conversión segura de fechas
-            fecha_inicio = parse_date(str(fecha_inicio)) or fecha_hoy
-            fecha_fin = parse_date(str(fecha_fin)) or fecha_hoy
-
-            inicio_dia = datetime.combine(fecha_inicio, datetime.min.time())
-            fin_dia = datetime.combine(fecha_fin, datetime.max.time())
-
-            # Costo inventario
-            inventarios = InventarioMaterial.objects.annotate(
-                costo_total=Sum(F('insumo__lotes__costo_unitario') * F('cantidad')))
-            # Conversión segura de fechas
             fecha_inicio = parse_date(str(fecha_inicio)) or fecha_hoy
             fecha_fin = parse_date(str(fecha_fin)) or fecha_hoy
 
@@ -97,7 +102,7 @@ class DashboardVentasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateV
             recetas_agrupadas = list(VentaDetalle.objects
                 .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
                 .values('receta__nombre')
-                .annotate(total_vendidas=Count('id'))
+                .annotate(total_vendidas=Sum('cantidad'))
                 .order_by('-total_vendidas'))
 
             # Número de pedidos
@@ -106,37 +111,8 @@ class DashboardVentasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateV
             # Ganancia máxima esperada
             inventarios_productos = InventarioProducto.objects.annotate(
                 costo_produccion=Sum(
-                    (F('galleta__ingredientes__cantidad_necesaria') / 1000) * F('galleta__ingredientes__insumo__lotes__costo_unitario'),
-                    output_field=DecimalField(decimal_places=2)
-                )
-            ).annotate(
-                ganancia_total=F('galleta__precio_galleta') * F('cantidad') - F('costo_produccion')
-            )
-            total_costo_inventario = inventarios.aggregate(total_costo=Sum('costo_total')).get('total_costo') or 0
-
-            # Ventas diarias
-            ventas_diarias = list(VentaDetalle.objects
-                .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
-                .values('venta__fecha_venta')
-                .annotate(total_vendido=Sum('total'))
-                .order_by('venta__fecha_venta'))
-
-            total_vendido = sum(v.get('total_vendido') or 0 for v in ventas_diarias)
-
-            # Recetas más vendidas
-            recetas_agrupadas = list(VentaDetalle.objects
-                .filter(venta__fecha_venta__range=[inicio_dia, fin_dia])
-                .values('receta__nombre')
-                .annotate(total_vendidas=Count('id'))
-                .order_by('-total_vendidas'))
-
-            # Número de pedidos
-            num_pedidos = Venta.objects.filter(estatus=True, fecha_venta__range=[inicio_dia, fin_dia]).count()
-
-            # Ganancia máxima esperada
-            inventarios_productos = InventarioProducto.objects.annotate(
-                costo_produccion=Sum(
-                    (F('galleta__ingredientes__cantidad_necesaria') / 1000) * F('galleta__ingredientes__insumo__lotes__costo_unitario'),
+                    (F('galleta__ingredientes__cantidad_necesaria') / 1000) *
+                    F('galleta__ingredientes__insumo__lotes__costo_unitario'),
                     output_field=DecimalField(decimal_places=2)
                 )
             ).annotate(
@@ -174,7 +150,7 @@ class DashboardVentasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateV
             df_recetas_agrupadas = pd.DataFrame(recetas_agrupadas)
             if not df_recetas_agrupadas.empty:
                 fig_pie = px.pie(df_recetas_agrupadas, names='receta__nombre', values='total_vendidas',
-                                title=f'Recetas vendidas en: {fecha_inicio} - {fecha_fin}')
+                                 title=f'Recetas vendidas en: {fecha_inicio} - {fecha_fin}')
                 graph_html_pie = fig_pie.to_html(full_html=False)
             else:
                 graph_html_pie = "<p>No hay recetas vendidas en este periodo.</p>"
@@ -190,13 +166,15 @@ class DashboardVentasView(LoginRequiredMixin, PermissionRequiredMixin, TemplateV
                 'objetivo_ventas': objetivo_ventas,
                 'progreso_ventas': progreso_ventas,
                 'fecha_inicio': fecha_inicio,
-                'fecha_fin': fecha_fin
+                'fecha_fin': fecha_fin,
+                'recetas_con_ganancia': recetas_con_ganancia
             })
 
         except Exception as e:
             context['error'] = f"Ocurrió un error al cargar el dashboard: {str(e)}"
 
         return context
+
 
 class DetallesPedidoClienteView(LoginRequiredMixin, TemplateView):
     template_name = 'detalles_pedido_cliente.html'

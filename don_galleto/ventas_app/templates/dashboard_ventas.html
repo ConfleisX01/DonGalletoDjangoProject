@@ -152,8 +152,8 @@
                         </div>
                         <div class="progress">
                             <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                 role="progressbar"
-                                 style="width: {{ progreso_ventas }}%;">
+                                role="progressbar"
+                                style="width: {{ progreso_ventas }}%;">
                                 {{ progreso_ventas|floatformat:2 }}%
                             </div>
                         </div>
@@ -184,61 +184,82 @@
     </div>
 
 <!-- Tabla final mejorada - Versión con más espacio -->
-<div class="row mt-5 mb-5">  <!-- Añadido mb-5 para margen inferior -->
+<div class="row mt-5 mb-5">  
     <div class="col-lg-12">
-        <div class="card shadow-sm h-100 border-0 overflow-hidden" style="margin-bottom: 3rem;">  <!-- Margen adicional -->
+        <div class="card shadow-sm h-100 border-0 overflow-hidden" style="margin-bottom: 3rem;">  
             <div class="card-header bg-gradient-primary text-white border-0">
                 <h5 class="card-title m-0">
                     <i class="bi bi-trophy-fill mr-2"></i>
-                    Top Galletas Más Vendidas
+                    Costo de produccion de galletas
                 </h5>
             </div>
             <div class="card-body p-0">
-                <div class="table-wrapper" style="padding: 1.5rem;">  <!-- Más padding interno -->
+                <div class="table-wrapper" style="padding: 1.5rem;"> 
                     <table class="table table-hover m-0">
                         <thead>
                             <tr class="bg-pastel-gradient">
-                                <th class="py-3 px-4 text-purple-800 border-0" style="min-width: 250px;">  <!-- Ancho mínimo -->
+                                <th class="py-3 px-4 text-purple-800 border-0" style="min-width: 250px;">  
                                     <i class="bi bi-cookie mr-2"></i>Galleta
                                 </th>
+                                <th class="py-3 px-4 text-purple-800 border-0" style="min-width: 250px;">  
+                                    <i class="bi bi-cookie mr-2"></i>unidades producidas
+                                </th>
                                 <th class="py-3 px-4 text-purple-800 border-0" style="min-width: 200px;">
-                                    <i class="bi bi-bar-chart-line mr-2"></i>Cantidad
+                                    <i class="bi bi-bar-chart-line mr-2"></i>costo de venta por unidad
                                 </th>
                                 <th class="py-3 px-4 text-purple-800 border-0" style="min-width: 150px;">
-                                    <i class="bi bi-currency-dollar mr-2"></i>Total
+                                    <i class="bi bi-currency-dollar mr-2"></i>costo de produccion
+                                </th>
+                                <th class="py-3 px-4 text-purple-800 border-0" style="min-width: 150px;">
+                                    <i class="bi bi-currency-dollar mr-2"></i>Ganancia
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for receta in top_recetas %}
+                            {% for receta in recetas_con_ganancia %}
                                 <tr class="hover:bg-pastel-light transition-all">
                                     <td class="py-3 px-4 border-0 font-medium">
                                         <div class="flex items-center">
                                             <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 text-yellow-800 mr-3">
                                                 {{ forloop.counter }}
                                             </span>
-                                            <span class="text-gray-700">{{ receta.receta__nombre }}</span>
+                                            <span class="text-gray-700">{{ receta.nombre }}</span>
                                         </div>
                                     </td>
                                     <td class="py-3 px-4 border-0">
                                         <div class="flex items-center">
                                             <div class="w-24 bg-gray-200 rounded-full h-2.5 mr-3">
                                                 <div class="bg-blue-500 h-2.5 rounded-full" 
-                                                     style="width: {% widthratio receta.total_vendidas max_vendidas 100 %}%"></div>
+                                                    style="width: {% widthratio receta.total_vendidas max_vendidas 100 %}%"></div>
                                             </div>
-                                            <span class="text-blue-600 font-semibold">{{ receta.total_vendidas }}</span>
+                                            <span class="text-blue-600 font-semibold">{{ receta.cantidad_galletas_producidas}}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 border-0">
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2.5 mr-3">
+                                                <div class="bg-blue-500 h-2.5 rounded-full" 
+                                                    style="width: {% widthratio receta.total_vendidas max_vendidas 100 %}%"></div>
+                                            </div>
+                                            <span class="text-blue-600 font-semibold">{{receta.precio_galleta}}</span>
                                         </div>
                                     </td>
                                     <td class="py-3 px-4 border-0">
                                         <span class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 font-semibold">
                                             <i class="bi bi-currency-dollar mr-1"></i>
-                                            {{ receta.total_vendido|floatformat:2 }}
+                                            {{ receta.costo_total|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4 border-0">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 font-semibold">
+                                            <i class="bi bi-currency-dollar mr-1"></i>
+                                            {{ receta.ganancia|floatformat:2 }}
                                         </span>
                                     </td>
                                 </tr>
                             {% empty %}
                                 <tr>
-                                    <td colspan="3" class="py-4 px-4 text-center border-0">
+                                    <td colspan="4" class="py-4 px-4 text-center border-0">
                                         <div class="flex flex-col items-center justify-center py-4 text-gray-400">
                                             <i class="bi bi-emoji-frown text-3xl mb-2"></i>
                                             <span>No hay datos disponibles</span>
@@ -249,10 +270,10 @@
                         </tbody>
                     </table>
                 </div>
-                {% if top_recetas %}
+                {% if recetas_con_ganancia %}
                 <div class="px-4 pb-4 pt-2 text-right">  <!-- Aumentado padding -->
                     <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-3 py-1 rounded-full">
-                        Mostrando {{ top_recetas|length }} registros
+                        Mostrando {{ recetas_con_ganancia|length }} registros
                     </span>
                 </div>
                 {% endif %}

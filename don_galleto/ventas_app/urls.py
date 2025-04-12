@@ -1,7 +1,7 @@
 
 from django.urls import path, include
 from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,dashboard_view,DashboardVentasView,DashboardPresentacionesView,  ListaVentasView, VerListaPedidosClientesView, descargar_ticket_pdf
-from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView,VerListaPedidosView, dashboard_view,DashboardVentasView,DashboardPresentacionesView,  ListaVentasView 
+from ventas_app.views import ListaProductosView, DetallesProductoView,VentaCreateView, dashboard_view,DashboardVentasView,DashboardPresentacionesView,  ListaVentasView 
 from ventas_app.views import VerListaPedidosClientesView, DetallesPedidoClienteView
 
 urlpatterns = [

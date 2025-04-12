@@ -1,37 +1,56 @@
-{% extends 'panel.html' %}
+{% extends 'panel.html' %}  
 
 {% block content %}
-<header class="header mb-2">
+<header class="header mb-3">
     <span class="header-brand mb-0 h1">Producción Activa</span>
 </header>
+
 <div class="container-fluid p-4">
-    
-        <!-- Lista de solicitudes pendientes -->
-        <div class="col row row-cols-2">
+    <!-- Lista de solicitudes pendientes -->
+    <div class="row g-4">
         {% for item in solicitudes_abiertas %}
-            <div class="card overflow-hidden rounded shadow-sm p-0 mb-2">
-                <div class="card-body p-0">
-                    <div class="bg-dark py-1 text-white text-center">
-                        <p class="m-0 fw-bold fs-4">Pedido de Galleta</p>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 overflow-hidden rounded shadow-lg border-0">
+                    <div class="card-header bg-dark py-2 text-white text-center p-3">
+                        <h5 class="m-0 fw-bold text-light">Pedido de Galleta</h5>
                     </div>
-                    <div class="p-2">
-                        <p><i class="bi bi-gear-wide mx-2"></i>Solicitud: {{ item.id }}</p>
-                        <p><i class="bi bi-cookie mx-2"></i>{{ item.galleta.nombre }}</p>
-                        <p><i class="bi bi-box-seam-fill mx-2"></i>Cantidad: {{ item.galleta.cantidad_galletas_producidas }}</p>
-                        <p><i class="bi bi-calendar2-week mx-2"></i>Fecha: {{ item.fecha_solicitud }}</p>
-                    </div>
-                    <div class="d-grid gap-2 p-2">
-                        <a class="btn btn-outline-primary" href="{% url 'aprobar_solicitud' item.id %}">Aceptar solicitud</a>
-                    </div>
-                    <div class="d-grid gap-2 p-2">
-                        <a class="btn btn-outline-danger" href="{% url 'rechazar_solicitud' item.id %}" >Rechazar solicitud</a>
+                    <div class="card-body p-3">
+                        <div class="mb-3">
+                            <p class="d-flex align-items-center mb-2">
+                                <i class="bi bi-gear-wide me-3 text-primary"></i>
+                                <strong>Solicitud:</strong> <span class="ms-2">{{ item.id }}</span>
+                            </p>
+                            <p class="d-flex align-items-center mb-2">
+                                <i class="bi bi-cookie me-3 text-warning"></i>
+                                <strong>Galleta:</strong> <span class="ms-2">{{ item.galleta.nombre }}</span>
+                            </p>
+                            <p class="d-flex align-items-center mb-2">
+                                <i class="bi bi-box-seam-fill me-3 text-success"></i>
+                                <strong>Cantidad:</strong> <span class="ms-2">{{ item.galleta.cantidad_galletas_producidas }}</span>
+                            </p>
+                            <p class="d-flex align-items-center mb-2">
+                                <i class="bi bi-calendar2-week me-3 text-info"></i>
+                                <strong>Fecha:</strong> <span class="ms-2">{{ item.fecha_solicitud }}</span>
+                            </p>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <a class="btn btn-outline-primary py-2" href="{% url 'aprobar_solicitud' item.id %}">
+                                <i class="bi bi-check-circle me-2"></i>Aceptar solicitud
+                            </a>
+                            <a class="btn btn-outline-danger py-2" href="{% url 'rechazar_solicitud' item.id %}">
+                                <i class="bi bi-x-circle me-2"></i>Rechazar solicitud
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <p>No hay solicitudes pendientes.</p>
+            <div class="col-12">
+                <div class="alert alert-info py-3">
+                    <i class="bi bi-info-circle me-2"></i>No hay solicitudes pendientes.
+                </div>
+            </div>
         {% endfor %}
-        </div>
-    
+    </div>
 </div>
 {% endblock %}

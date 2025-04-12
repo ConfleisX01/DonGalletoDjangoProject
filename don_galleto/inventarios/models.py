@@ -31,7 +31,7 @@ class InventarioProducto(models.Model):
 
 class InventarioMaterial(models.Model):
     insumo = models.OneToOneField(MateriaPrima, on_delete=models.CASCADE)
-    cantidad = models.PositiveBigIntegerField(default=500, null=False, blank=False)
+    cantidad = models.PositiveBigIntegerField(null=False, blank=False)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
     
     def disminuir_cantidad(self, cantidad_solicitada):
@@ -46,6 +46,11 @@ class InventarioMaterial(models.Model):
         self.cantidad += cantidad
         self.save()
 
+    def calcular_stock(self):
+        lotes_validos = self.insumo.lotes.filter(fecha_caducidad__gte=now().date())
+        stock_total = sum(lote.cantidad for lote in lotes_validos)
+        return stock_total
+
 class Merma(models.Model):
     lote = models.ForeignKey(LoteGalletas, on_delete=models.CASCADE)
     cantidad = models.DecimalField(max_digits=10, decimal_places=2) 
@@ -54,24 +59,4 @@ class Merma(models.Model):
 
     def __str__(self):
         return f"Merma - Lote {self.lote.id} ({self.lote.galleta.nombre_galleta}) - {self.fecha.strftime('%Y-%m-%d')}"
-    cantidad = models.PositiveBigIntegerField(default=0, null=False, blank=False)
-    ultima_actualizacion = models.DateTimeField(auto_now=True)
-
-    def calcular_stock(self):
-        lotes_validos = self.insumo.lotes.filter(fecha_caducidad__gte=now().date())
-        stock_total = sum(lote.cantidad for lote in lotes_validos)
-        return stock_total
-    
-    def verificar_stock(self, cantidad):
-        return self.cantidad >= cantidad
-    
-    def disminuir_cantidad(self, cantidad_solicitada):
-        self.cantidad -= cantidad_solicitada
-        self.save()
-
-    def agregar_cantidad(self, cantidad_agregada):
-        self.cantidad += cantidad_agregada
-        self.save()
-
-    def __str__(self):
-        return f"Nombre insumo: {self.insumo.nombre_insumo} - Cantidad: {self.cantidad} - Ultima vez acualizado: {self.ultima_actualizacion}"
+        

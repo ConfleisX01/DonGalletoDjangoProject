@@ -1,0 +1,47 @@
+{% extends "panel.html" %}
+
+{% load static %}
+
+{% block content %}
+<header class="header mb-2">
+    <span class="header-brand mb-0 h1">
+        <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Error en Producción
+    </span>
+</header>
+
+<div class="container-fluid">
+    <div class="card shadow-sm border-0 border-start border-danger border-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0 text-center">
+                <i class="bi bi-bag-x me-2"></i>¡Insuficientes Insumos!
+            </h5>
+        </div>
+        <div class="card-body">
+         
+            <div class="alert alert-danger">
+                <h6 class="fw-bold"><i class="bi bi-clipboard-x me-2"></i>Verifica los siguientes problemas:</h6>
+                <ul class="mt-2 mb-0">
+                    {% for error in errores %}
+                        <li>{{ error }}</li>
+                    {% empty %}
+                        <li>Error no especificado en el inventario</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted mb-4">Corrige los problemas en el inventario antes de continuar con la producción.</p>
+                
+                <div class="d-grid gap-2 col-md-6 mx-auto">
+                    <a href="{% url 'comprar_insumo' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-cart-plus me-2"></i>Ir a Comprar Insumos
+                    </a>
+                    <a href="{% url 'lotes_produccion' %}" class="btn btn-outline-info">
+                        <i class="bi bi-arrow-left me-2"></i>Volver a Producción
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

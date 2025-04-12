@@ -37,7 +37,7 @@ class ComprarInsumoForm(forms.ModelForm):
             }),
             'cantidad': forms.NumberInput(attrs={
                 "class": "form-control",
-                "placeholder": "Cantidad a comprar",
+                "placeholder": "Ej: 1 kg, 0.5 l, 3 unidades",
                 "min": "0",
                 "step": "0.01"
             }),
@@ -60,7 +60,10 @@ class ComprarInsumoForm(forms.ModelForm):
     def save(self):
         lote = self.instance
         lote.insumo = self.cleaned_data['insumo']
-        lote.cantidad = self.cleaned_data['cantidad']
+        if lote.insumo.unidad_base != 'ud':
+            lote.cantidad = (self.cleaned_data['cantidad'] * 1000)
+        else:
+            lote.cantidad = self.cleaned_data['cantidad']
         lote.fecha_caducidad = self.cleaned_data['fecha_caducidad']
         lote.proveedor = self.cleaned_data['proveedor']
         lote.costo_unitario = (self.cleaned_data['costo_unitario']/100)

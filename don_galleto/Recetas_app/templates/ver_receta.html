@@ -19,6 +19,9 @@
                     <li class="list-group-item">
                         <strong>Peso individual:</strong> <span class="fw-bold">{{ receta.peso_individual }}g.</span>
                     </li>
+                    <li class="list-group-item">
+                        <strong>Costo Produccion:</strong> <span class="fw-bold">${{ receta.calcular_costo|floatformat:2}}</span>
+                    </li>
                 </ul>
             </div>
 

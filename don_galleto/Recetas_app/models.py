@@ -9,6 +9,15 @@ class Receta(models.Model):
     cantidad_galletas_producidas = models.IntegerField()
     peso_individual = models.DecimalField(max_digits=10, decimal_places=2)
     precio_galleta = models.DecimalField(max_digits=5, decimal_places=2, default=10.00)
+    
+    def calcular_costo(self):
+        costo_total = 0
+        for ingrediente in self.ingredientes.all():
+            # Buscar el último lote del insumo
+            ultimo_lote = ingrediente.insumo.lotes.order_by('-fecha_compra').first()
+            if ultimo_lote:
+                costo_total += ingrediente.cantidad_necesaria * ultimo_lote.costo_unitario
+        return costo_total
 
     class Meta:
         permissions = [("puede_ver_recetas", "Puede ver recetas")]
